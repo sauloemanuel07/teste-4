@@ -36,6 +36,443 @@
     @media(max-width:430px){.stats{grid-template-columns:1fr}.crumb{display:none}.card-pad{padding:17px}.page-head h1{font-size:31px}}
     @media print{body>*:not(dialog[open]){display:none!important}dialog[open]{position:static;width:100%;max-height:none;box-shadow:none}.dialog-head,.dialog-actions{display:none}.dialog-body{padding:0}.customer-sheet{font-size:12pt}}
   </style>
+  <style id="saas-refresh">
+    :root {
+      --brand-950:#071725;
+      --brand-900:#0b2034;
+      --brand-800:#123553;
+      --brand-700:#1768dc;
+      --brand-600:#2678ee;
+      --brand-100:#dcecff;
+      --brand-50:#f0f6ff;
+      --accent:#34d5c5;
+      --accent-soft:#dffbf6;
+      --ink-950:#101828;
+      --ink-800:#25324a;
+      --ink-700:#344054;
+      --ink-600:#475467;
+      --ink-500:#667085;
+      --line:#e1e7ef;
+      --line-strong:#cbd5e1;
+      --canvas:#f3f6fa;
+      --surface:#ffffff;
+      --success:#087f5b;
+      --success-bg:#e9fbf3;
+      --warning:#b54708;
+      --warning-bg:#fff7e6;
+      --sidebar:264px;
+      --radius:18px;
+      --radius-lg:26px;
+      --shadow:0 16px 36px rgba(16,24,40,.08);
+      --shadow-lg:0 28px 70px rgba(7,23,37,.24);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 90% 0,rgba(38,120,238,.07),transparent 28rem),
+        var(--canvas);
+      font-family:"Segoe UI Variable Text","Segoe UI",Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;
+    }
+
+    .sidebar {
+      width:var(--sidebar);
+      padding:22px 16px 18px;
+      background:
+        radial-gradient(circle at 22% 0,rgba(52,213,197,.12),transparent 17rem),
+        linear-gradient(180deg,var(--brand-900),var(--brand-950));
+      border-right:1px solid rgba(255,255,255,.06);
+    }
+
+    .brand {
+      gap:12px;
+      padding:0 8px 22px;
+      font-size:21px;
+      letter-spacing:-.04em;
+    }
+
+    .brand-mark {
+      width:42px;
+      height:42px;
+      background:linear-gradient(145deg,#3185ff,#1f66e6 60%,#28b9b0);
+      border-radius:13px;
+      box-shadow:0 10px 24px rgba(24,105,226,.35),inset 0 1px rgba(255,255,255,.28);
+      font-size:13px;
+      letter-spacing:-.03em;
+    }
+
+    .brand small {
+      margin-top:1px;
+      color:#8ba7c5;
+      font-size:9px;
+      letter-spacing:.16em;
+    }
+
+    .sidebar-create {
+      width:100%;
+      min-height:58px;
+      margin-bottom:22px;
+      padding:10px 12px;
+      display:flex;
+      align-items:center;
+      gap:11px;
+      border:1px solid rgba(99,179,255,.38);
+      border-radius:14px;
+      background:linear-gradient(135deg,#287df1,#1764d4);
+      color:#fff;
+      text-align:left;
+      box-shadow:0 12px 26px rgba(0,75,190,.3),inset 0 1px rgba(255,255,255,.2);
+      transition:transform var(--ease),box-shadow var(--ease);
+    }
+
+    .sidebar-create:hover {
+      transform:translateY(-1px);
+      box-shadow:0 16px 30px rgba(0,75,190,.38),inset 0 1px rgba(255,255,255,.2);
+    }
+
+    .sidebar-create-icon {
+      width:34px;
+      height:34px;
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+      border-radius:10px;
+      background:rgba(255,255,255,.15);
+      font-size:22px;
+      line-height:1;
+    }
+
+    .sidebar-create strong,.sidebar-create small {display:block}
+    .sidebar-create strong {font-size:14px}
+    .sidebar-create small {margin-top:1px;color:#d9e9ff;font-size:10px}
+
+    .nav-label {
+      margin:0 10px 8px;
+      color:#7892ad;
+      font-size:9px;
+      letter-spacing:.18em;
+    }
+
+    .nav {gap:4px}
+    .nav button {
+      min-height:48px;
+      padding:9px 10px;
+      border-radius:12px;
+      color:#afc2d8;
+      font-size:14px;
+      font-weight:650;
+    }
+
+    .nav button:hover {background:rgba(255,255,255,.055)}
+    .nav button[aria-current="page"] {
+      background:linear-gradient(90deg,rgba(44,128,242,.24),rgba(44,128,242,.08));
+      box-shadow:inset 3px 0 #4da2ff;
+    }
+
+    .nav-icon {
+      width:31px;
+      height:31px;
+      background:rgba(255,255,255,.055);
+      color:#86a4c2;
+    }
+
+    .nav-icon svg {width:17px;height:17px;stroke:currentColor}
+    .nav button[aria-current="page"] .nav-icon {background:rgba(70,151,255,.2);color:#fff}
+
+    .sidebar-bottom {gap:10px}
+    .local-badge {
+      padding:13px;
+      border-color:rgba(128,170,210,.17);
+      background:rgba(255,255,255,.035);
+    }
+    .local-badge p {color:#8ea7bf;line-height:1.5}
+    .workshop-mini {padding:12px 9px 3px;border-top-color:rgba(255,255,255,.08)}
+    .workshop-mini strong {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+    .workshop-mini span {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#7892ad;font-size:11px}
+
+    .topbar {
+      height:72px;
+      padding:0 clamp(20px,3vw,44px);
+      background:rgba(255,255,255,.84);
+      border-bottom-color:rgba(211,220,231,.8);
+      box-shadow:0 1px 0 rgba(16,24,40,.02);
+    }
+
+    .topbar-left {gap:14px}
+    .mobile-brand {display:none;color:var(--ink-800);font-size:16px;font-weight:800;letter-spacing:-.035em}
+    .crumb {font-size:13px}
+    .topbar-state {
+      display:flex;
+      align-items:center;
+      gap:7px;
+      color:var(--ink-500);
+      font-size:11px;
+      font-weight:650;
+    }
+    .topbar-state:before {
+      content:"";
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:#20b486;
+      box-shadow:0 0 0 4px rgba(32,180,134,.12);
+    }
+
+    .main {padding:clamp(28px,4vw,48px);max-width:1540px}
+    .page-head {margin-bottom:26px}
+    .page-head h1 {font-weight:760}
+    .eyebrow {font-size:10px;letter-spacing:.16em}
+
+    .btn {border-radius:12px;font-weight:700}
+    .btn-primary {
+      background:linear-gradient(135deg,#2b7ff2,#1767dc);
+      box-shadow:0 9px 20px rgba(23,103,220,.23),inset 0 1px rgba(255,255,255,.18);
+    }
+    .btn-primary:hover {box-shadow:0 12px 24px rgba(23,103,220,.3),inset 0 1px rgba(255,255,255,.18)}
+    .btn-secondary {border-color:#d8e0ea;box-shadow:0 1px 2px rgba(16,24,40,.03)}
+    .btn-icon {font-size:17px;line-height:1}
+
+    .card {
+      border-color:var(--line);
+      border-radius:var(--radius);
+      box-shadow:0 3px 12px rgba(16,24,40,.035);
+    }
+    .card-head {padding:19px 21px}
+    .card-head h2,.card-head h3 {font-weight:760}
+
+    .dashboard-hero {
+      position:relative;
+      min-height:250px;
+      margin-bottom:20px;
+      padding:clamp(26px,4vw,42px);
+      display:grid;
+      grid-template-columns:minmax(0,1.45fr) minmax(260px,.55fr);
+      align-items:center;
+      gap:32px;
+      overflow:hidden;
+      border:1px solid rgba(84,144,208,.22);
+      border-radius:var(--radius-lg);
+      background:
+        radial-gradient(circle at 82% 10%,rgba(52,213,197,.18),transparent 18rem),
+        radial-gradient(circle at 40% 140%,rgba(48,125,239,.28),transparent 25rem),
+        linear-gradient(135deg,#0a1e31,#113b60 64%,#0f5066);
+      color:#fff;
+      box-shadow:0 20px 44px rgba(10,30,49,.16);
+    }
+
+    .dashboard-hero:after {
+      content:"";
+      position:absolute;
+      width:290px;
+      height:290px;
+      right:-150px;
+      bottom:-220px;
+      border:48px solid rgba(255,255,255,.045);
+      border-radius:50%;
+      pointer-events:none;
+    }
+
+    .hero-copy,.hero-panel {position:relative;z-index:1}
+    .hero-kicker {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:13px;
+      color:#a9c6df;
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:.15em;
+      text-transform:uppercase;
+    }
+    .hero-kicker:before {content:"";width:18px;height:2px;border-radius:99px;background:var(--accent)}
+    .dashboard-hero h1 {
+      margin:0;
+      max-width:760px;
+      font-size:clamp(32px,4vw,50px);
+      font-weight:740;
+      line-height:1.04;
+      letter-spacing:-.052em;
+    }
+    .dashboard-hero h1 span {color:#8fe8de}
+    .dashboard-hero p {margin:13px 0 0;max-width:650px;color:#b9cde0;font-size:15px}
+    .hero-actions {margin-top:23px;display:flex;gap:10px;flex-wrap:wrap}
+    .dashboard-hero .btn-primary {background:#fff;color:#114c93;box-shadow:0 12px 30px rgba(0,0,0,.2)}
+    .dashboard-hero .btn-secondary {border-color:rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:#fff;box-shadow:none}
+
+    .hero-panel {
+      padding:18px;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:18px;
+      background:rgba(255,255,255,.07);
+      backdrop-filter:blur(10px);
+      box-shadow:inset 0 1px rgba(255,255,255,.08);
+    }
+    .hero-panel-label {display:flex;align-items:center;justify-content:space-between;color:#a9c6df;font-size:11px}
+    .hero-panel-label strong {color:#fff;font-size:12px}
+    .hero-panel-grid {margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .hero-mini {padding:11px 8px;border-radius:12px;background:rgba(5,22,38,.3);text-align:center}
+    .hero-mini strong,.hero-mini span {display:block}
+    .hero-mini strong {font-size:22px;font-variant-numeric:tabular-nums}
+    .hero-mini span {margin-top:2px;color:#96b1ca;font-size:9px;line-height:1.25;text-transform:uppercase;letter-spacing:.07em}
+
+    .local-strip {
+      margin-bottom:20px;
+      padding:11px 14px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid #c7ddf8;
+      border-radius:13px;
+      background:rgba(240,246,255,.8);
+      color:#315579;
+      font-size:12px;
+    }
+    .local-strip-icon {width:24px;height:24px;display:grid;place-items:center;flex:0 0 auto;border-radius:8px;background:#dcecff;color:#1768dc;font-weight:800}
+    .local-strip strong {color:#173f6a}
+    .local-strip .btn {margin-left:auto;min-height:32px;padding:5px 10px;background:#fff;font-size:11px}
+
+    .stats {gap:16px;margin-bottom:20px}
+    .stat {
+      min-height:152px;
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      box-shadow:0 5px 18px rgba(16,24,40,.045);
+    }
+    .stat:before {content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--stat-accent,#2678ee)}
+    .stat:after {width:96px;height:96px;right:-38px;top:-40px;background:color-mix(in srgb,var(--stat-accent,#2678ee) 8%,white)}
+    .stat.orders {--stat-accent:#2678ee}
+    .stat.approval {--stat-accent:#f59e0b}
+    .stat.ready {--stat-accent:#16a77a}
+    .stat.revenue {--stat-accent:#8b5cf6}
+    .stat-top {position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .stat-icon {width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:color-mix(in srgb,var(--stat-accent) 10%,white);color:var(--stat-accent)}
+    .stat-icon svg {width:18px;height:18px;stroke:currentColor}
+    .stat-chip {padding:4px 7px;border-radius:999px;background:#f5f7fa;color:#7c8799;font-size:9px;font-weight:750;text-transform:uppercase;letter-spacing:.06em}
+    .stat-label {margin-top:13px;font-size:12px}
+    .stat-value {position:relative;z-index:1;margin-top:4px;font-size:32px;line-height:1.1;font-variant-numeric:tabular-nums}
+    .stat-value.money {max-width:100%;font-size:clamp(17px,1.6vw,22px);letter-spacing:-.045em;white-space:nowrap}
+    .stat-note {margin-top:auto;padding-top:7px}
+
+    .pipeline-card {margin-bottom:20px}
+    .pipeline {
+      padding:18px 20px 21px;
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:10px;
+    }
+    .pipeline-stage {position:relative;padding:13px 12px;border:1px solid #e6ebf1;border-radius:13px;background:#fafbfd}
+    .pipeline-stage:not(:last-child):after {content:"";position:absolute;width:12px;height:2px;right:-11px;top:29px;background:#d7e1ed}
+    .pipeline-stage strong,.pipeline-stage span {display:block}
+    .pipeline-stage strong {font-size:22px;font-variant-numeric:tabular-nums}
+    .pipeline-stage span {margin-top:2px;color:var(--ink-500);font-size:10px;font-weight:700;line-height:1.3;text-transform:uppercase;letter-spacing:.055em}
+    .pipeline-stage.active {border-color:#bcd5f8;background:#f2f7ff}
+    .pipeline-stage.active strong {color:#1768dc}
+
+    .dashboard-grid {grid-template-columns:minmax(0,1.7fr) minmax(270px,.62fr);gap:20px}
+    .quick-card {display:flex;flex-direction:column}
+    .quick-actions {padding:13px;display:grid;gap:8px}
+    .quick-action {
+      width:100%;
+      padding:11px;
+      display:flex;
+      align-items:center;
+      gap:11px;
+      border:0;
+      border-radius:12px;
+      background:#f7f9fc;
+      color:var(--ink-700);
+      text-align:left;
+      transition:background var(--ease),transform var(--ease);
+    }
+    .quick-action:hover {background:#eef4fc;transform:translateX(2px)}
+    .quick-action-icon {width:32px;height:32px;display:grid;place-items:center;flex:0 0 auto;border:1px solid #dce6f2;border-radius:10px;background:#fff;color:#1768dc;font-size:17px}
+    .quick-action strong,.quick-action small {display:block}
+    .quick-action strong {font-size:12px}
+    .quick-action small {margin-top:1px;color:var(--ink-500);font-size:10px}
+    .quick-action-arrow {margin-left:auto;color:#9aa7b8}
+    .quick-footer {margin-top:auto;padding:13px 16px;border-top:1px solid var(--line);color:var(--ink-500);font-size:10px;line-height:1.5}
+    .quick-footer strong {display:block;margin-bottom:2px;color:var(--success);font-size:11px}
+
+    .table th {padding:11px 16px;background:#fafbfd;color:#788397;font-size:10px}
+    .table td {padding:14px 16px}
+    .table tbody tr:last-child td {border-bottom:0}
+    .badge {padding:5px 8px}
+    input,select,textarea {border-color:#cfd8e5}
+
+    .mobile-dock {display:none}
+    .menu-scrim {display:none}
+
+    @media(max-width:1100px) {
+      .dashboard-hero {grid-template-columns:1fr;gap:22px}
+      .hero-panel {max-width:460px}
+      .pipeline {overflow-x:auto;grid-template-columns:repeat(5,minmax(142px,1fr))}
+    }
+
+    @media(max-width:760px) {
+      :root {--sidebar:280px}
+      .sidebar {z-index:50;padding-top:18px}
+      .menu-scrim {position:fixed;inset:0;z-index:45;border:0;background:rgba(7,23,37,.46);backdrop-filter:blur(2px)}
+      body.menu-open .menu-scrim {display:block}
+      body.menu-open .mobile-dock {opacity:0;pointer-events:none}
+      .mobile-brand {display:inline}
+      .topbar-state {display:none}
+      .main {padding:20px 14px 104px}
+      .dashboard-hero {min-height:0;padding:26px 20px;border-radius:20px}
+      .dashboard-hero h1 {font-size:34px}
+      .dashboard-hero p {font-size:13px}
+      .hero-actions {flex-direction:column}
+      .hero-actions .btn {width:100%}
+      .hero-panel {width:100%;padding:14px}
+      .hero-mini strong {font-size:19px}
+      .local-strip {align-items:flex-start;flex-wrap:wrap}
+      .local-strip .btn {margin-left:34px}
+      .stats {gap:11px}
+      .stat {min-height:140px;padding:15px}
+      .stat-value {font-size:28px}
+      .stat-value.money {font-size:18px}
+      .pipeline {padding:14px}
+      .dashboard-grid {gap:14px}
+      .mobile-dock {
+        position:fixed;
+        left:12px;
+        right:12px;
+        bottom:10px;
+        z-index:30;
+        height:66px;
+        padding:7px;
+        display:grid;
+        grid-template-columns:1fr 1.28fr 1fr;
+        gap:7px;
+        border:1px solid rgba(202,212,225,.9);
+        border-radius:18px;
+        background:rgba(255,255,255,.94);
+        backdrop-filter:blur(18px);
+        box-shadow:0 16px 44px rgba(7,23,37,.2);
+      }
+      .mobile-dock button {
+        border:0;
+        border-radius:12px;
+        background:transparent;
+        color:var(--ink-500);
+        font-size:10px;
+        font-weight:700;
+      }
+      .mobile-dock button[aria-current="page"] {background:#edf4ff;color:#1768dc}
+      .mobile-dock .dock-primary {background:linear-gradient(135deg,#2b7ff2,#1767dc);color:#fff;box-shadow:0 8px 16px rgba(23,103,220,.24);font-size:12px}
+    }
+
+    @media(max-width:430px) {
+      .hero-panel-grid {gap:5px}
+      .hero-mini {padding:10px 5px}
+      .local-strip .btn {width:calc(100% - 34px)}
+      .stat {min-height:128px}
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+      *,*::before,*::after {scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+    }
+  </style>
 </head>
 <body>
   <a class="skip" href="#main">Ir para o conteúdo</a>
@@ -54,22 +491,25 @@
   </section>
 
   <div id="app" class="app hidden">
+    <button class="menu-scrim" data-action="close-menu" aria-label="Fechar menu"></button>
     <aside class="sidebar" aria-label="Menu principal">
       <div class="brand"><span class="brand-mark">OC</span><span>Oficlaro<small>Gestão local</small></span></div>
-      <span class="nav-label">Operação</span>
+      <button class="sidebar-create" data-action="new-order"><span class="sidebar-create-icon">+</span><span><strong>Nova ordem</strong><small>Iniciar atendimento</small></span></button>
+      <span class="nav-label">Menu principal</span>
       <nav class="nav">
-        <button data-view="dashboard"><span class="nav-icon">01</span>Visão geral</button>
-        <button data-view="clients"><span class="nav-icon">02</span>Clientes</button>
-        <button data-view="vehicles"><span class="nav-icon">03</span>Veículos</button>
-        <button data-view="orders"><span class="nav-icon">04</span>Ordens de serviço</button>
-        <button data-view="backup"><span class="nav-icon">05</span>Backup e dados</button>
+        <button data-view="dashboard"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z"/></svg></span>Visão geral</button>
+        <button data-view="clients"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M16 20v-1.5a4.5 4.5 0 0 0-4.5-4.5h-3A4.5 4.5 0 0 0 4 18.5V20M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7-1a3 3 0 0 1 0 6m2.5 5v-1a4 4 0 0 0-2.7-3.8"/></svg></span>Clientes</button>
+        <button data-view="vehicles"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="m5 16-1.5-1.5V11l2-5h13l2 5v3.5L19 16M3.5 12h17M7 12h.01M17 12h.01M6 16v2M18 16v2"/></svg></span>Veículos</button>
+        <button data-view="orders"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M9 5h10v16H5V5h4Zm0 0V3h6v2M8 10h8M8 14h8M8 18h5"/></svg></span>Ordens de serviço</button>
+        <button data-view="backup"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg></span>Backup e dados</button>
       </nav>
-      <div class="sidebar-bottom"><div class="local-badge"><strong>Modo gratuito ativo</strong><p>Sem Firebase e sem cobranças. Faça backups regularmente.</p></div><div class="workshop-mini"><strong id="side-workshop"></strong><span id="side-owner"></span></div></div>
+      <div class="sidebar-bottom"><div class="local-badge"><strong>Modo local ativo</strong><p>Seus dados ficam neste navegador. Faça backups regularmente.</p></div><div class="workshop-mini"><strong id="side-workshop"></strong><span id="side-owner"></span></div></div>
     </aside>
     <section class="shell">
-      <header class="topbar"><div class="topbar-left"><button class="icon-btn menu" id="menu" aria-label="Abrir menu">☰</button><div class="crumb">Oficlaro / <strong id="crumb">Visão geral</strong></div></div><div class="top-actions"><button class="btn btn-secondary btn-sm" data-action="export">Exportar backup</button><button class="btn btn-primary btn-sm" data-action="new-order">+ Nova ordem</button></div></header>
+      <header class="topbar"><div class="topbar-left"><button class="icon-btn menu" id="menu" aria-label="Abrir menu">☰</button><span class="mobile-brand">Oficlaro</span><div class="crumb">Oficlaro / <strong id="crumb">Visão geral</strong></div><span class="topbar-state">Dados neste dispositivo</span></div><div class="top-actions"><button class="btn btn-secondary btn-sm" data-action="export">Exportar backup</button><button class="btn btn-primary btn-sm" data-action="new-order"><span class="btn-icon">+</span> Nova ordem</button></div></header>
       <main id="main" class="main" tabindex="-1"></main>
     </section>
+    <nav class="mobile-dock" aria-label="Ações rápidas"><button data-view="dashboard">Visão geral</button><button class="dock-primary" data-action="new-order">+ Nova ordem</button><button data-view="orders">Ordens</button></nav>
   </div>
   <dialog id="modal" aria-modal="true"></dialog>
   <input id="import-file" type="file" accept="application/json,.json" hidden>
@@ -77,6 +517,7 @@
 
   <script>
     "use strict";
+    if("scrollRestoration" in history)history.scrollRestoration="manual";
     const KEY="oficlaro_local_v1";
     const STATUS={RECEIVED:"Veículo recebido",DIAGNOSING:"Em diagnóstico",DIAGNOSED:"Diagnóstico concluído",AWAITING_APPROVAL:"Aguardando aprovação",WAITING_PARTS:"Aguardando peça",IN_PROGRESS:"Serviço em execução",FINAL_TESTS:"Testes finais",READY:"Veículo pronto",DELIVERED:"Entregue",CANCELLED:"Cancelado"};
     const STATUS_TONE={RECEIVED:"info",DIAGNOSING:"warning",DIAGNOSED:"info",AWAITING_APPROVAL:"warning",WAITING_PARTS:"warning",IN_PROGRESS:"info",FINAL_TESTS:"info",READY:"success",DELIVERED:"success",CANCELLED:"danger"};
@@ -101,14 +542,71 @@
     function modal(title,body,wide=false){const d=$("#modal");d.style.width=wide?"min(980px,calc(100vw - 28px))":"";d.innerHTML=`<div class="dialog-head"><h2>${esc(title)}</h2><button class="icon-btn" data-action="close" aria-label="Fechar">×</button></div><div class="dialog-body">${body}</div>`;wireLabels(d);d.showModal()}
     function closeModal(){const d=$("#modal");if(d.open)d.close()}
     function navigate(next,idValue=null){view=next;selectedOrder=idValue;search="";document.body.classList.remove("menu-open");render();$("#main").focus()}
-    function start(){if(!state.workshop){$("#setup").classList.remove("hidden");return}$("#app").classList.remove("hidden");$("#side-workshop").textContent=state.workshop.name;$("#side-owner").textContent=state.workshop.ownerName;render()}
+    function start(){if(!state.workshop){$("#setup").classList.remove("hidden");return}$("#app").classList.remove("hidden");$("#side-workshop").textContent=state.workshop.name;$("#side-owner").textContent=state.workshop.ownerName;render();window.scrollTo(0,0)}
     function render(){const active=view==="order-detail"?"orders":view;$$('[data-view]').forEach(b=>b.setAttribute("aria-current",b.dataset.view===active?"page":"false"));$("#crumb").textContent=TITLES[view]||"Oficlaro";const renderers={dashboard:renderDashboard,clients:renderClients,vehicles:renderVehicles,orders:renderOrders,backup:renderBackup,"order-detail":renderOrderDetail};renderers[view]?.();wireLabels($("#main"))}
     function pageHead(eyebrow,title,description,action="",label=""){return `<header class="page-head"><div><span class="eyebrow">${eyebrow}</span><h1>${title}</h1><p>${description}</p></div>${action?`<button class="btn btn-primary" data-action="${action}">${label}</button>`:""}</header>`}
 
     function renderDashboard(){
-      const open=state.orders.filter(o=>!["DELIVERED","CANCELLED"].includes(o.status)).length,delivered=state.orders.filter(o=>o.status==="DELIVERED").length,revenue=state.orders.reduce((s,o)=>s+(o.payments||[]).reduce((a,p)=>a+p.amountCents,0),0),pending=state.orders.filter(o=>o.status==="AWAITING_APPROVAL").length;
+      const open=state.orders.filter(o=>!["DELIVERED","CANCELLED"].includes(o.status)).length;
+      const delivered=state.orders.filter(o=>o.status==="DELIVERED").length;
+      const revenue=state.orders.reduce((s,o)=>s+(o.payments||[]).reduce((a,p)=>a+p.amountCents,0),0);
+      const pending=state.orders.filter(o=>o.status==="AWAITING_APPROVAL").length;
+      const ready=state.orders.filter(o=>o.status==="READY").length;
+      const todayKey=new Date().toDateString();
+      const changedToday=state.orders.filter(o=>new Date(o.updatedAt).toDateString()===todayKey).length;
+      const hour=new Date().getHours(),greeting=hour<12?"Bom dia":hour<18?"Boa tarde":"Boa noite";
+      const firstName=esc(state.workshop.ownerName.trim().split(/\s+/)[0]||"equipe");
       const recent=[...state.orders].sort((a,b)=>b.updatedAt-a.updatedAt).slice(0,6);
-      $("#main").innerHTML=`${pageHead("Operação local",`Olá, ${esc(state.workshop.ownerName.split(" ")[0])}`,`Acompanhe a rotina da ${esc(state.workshop.name)} sem mensalidade.`,"new-order","+ Nova ordem")}<div class="notice"><strong>● Dados locais</strong><span>Este arquivo salva tudo neste navegador. Exporte um backup sempre que encerrar o dia.</span></div><section class="grid stats"><article class="card stat"><span class="stat-label">Ordens abertas</span><strong class="stat-value">${open}</strong><span class="stat-note">Em atendimento agora</span></article><article class="card stat"><span class="stat-label">Entregues</span><strong class="stat-value">${delivered}</strong><span class="stat-note">Desde o início</span></article><article class="card stat"><span class="stat-label">Recebimentos</span><strong class="stat-value money">${money(revenue)}</strong><span class="stat-note">Pagamentos registrados</span></article><article class="card stat"><span class="stat-label">Aguardando aprovação</span><strong class="stat-value">${pending}</strong><span class="stat-note">Orçamentos pendentes</span></article></section><section class="grid dashboard-grid"><article class="card"><div class="card-head"><div><h2>Ordens recentes</h2><p>Últimas movimentações da oficina</p></div><button class="btn btn-secondary btn-sm" data-view="orders">Ver todas</button></div>${recent.length?ordersTable(recent):empty("Nenhuma ordem ainda","Cadastre seu primeiro atendimento para começar.","new-order","Criar primeira ordem")}</article><aside class="card card-pad"><span class="eyebrow">Fluxo recomendado</span><h2 style="margin:8px 0 18px">Do recebimento à entrega</h2><ol class="timeline"><li><strong>Cadastre cliente e veículo</strong><time>Base do prontuário</time></li><li><strong>Abra a ordem</strong><time>Registre relato e quilometragem</time></li><li><strong>Atualize diagnóstico</strong><time>Explique com clareza</time></li><li><strong>Monte o orçamento</strong><time>Acompanhe aprovação</time></li></ol></aside></section>`;
+      const stages=[
+        ["Recebidos",["RECEIVED"]],
+        ["Diagnóstico",["DIAGNOSING","DIAGNOSED"]],
+        ["Aprovação",["AWAITING_APPROVAL"]],
+        ["Em execução",["WAITING_PARTS","IN_PROGRESS","FINAL_TESTS"]],
+        ["Prontos",["READY"]]
+      ];
+      const icon={
+        orders:'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M9 5h10v16H5V5h4Zm0 0V3h6v2M8 10h8M8 14h8"/></svg>',
+        approval:'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 8v5m0 3h.01M4.5 19h15L12 4 4.5 19Z"/></svg>',
+        ready:'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="m5 13 4 4L19 7"/></svg>',
+        revenue:'<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3v18m5-14.5c-1-1-2.4-1.5-4.3-1.5-2.3 0-4.2 1.2-4.2 3.2 0 4.8 8.5 1.8 8.5 6.6 0 2-1.8 3.2-4.5 3.2-2 0-3.7-.6-5-1.8"/></svg>'
+      };
+      $("#main").innerHTML=`
+        <section class="dashboard-hero" aria-labelledby="dashboard-title">
+          <div class="hero-copy">
+            <span class="hero-kicker">Central da oficina</span>
+            <h1 id="dashboard-title">${greeting}, <span>${firstName}.</span><br>Vamos cuidar da operação?</h1>
+            <p>Acompanhe os atendimentos da ${esc(state.workshop.name)}, identifique prioridades e mantenha cada serviço em movimento.</p>
+            <div class="hero-actions"><button class="btn btn-primary" data-action="new-order"><span class="btn-icon">+</span> Criar nova ordem</button><button class="btn btn-secondary" data-view="orders">Ver ordens abertas</button></div>
+          </div>
+          <aside class="hero-panel" aria-label="Resumo da operação">
+            <div class="hero-panel-label"><span>Resumo da operação</span><strong>Agora</strong></div>
+            <div class="hero-panel-grid">
+              <div class="hero-mini"><strong>${changedToday}</strong><span>Movidas hoje</span></div>
+              <div class="hero-mini"><strong>${delivered}</strong><span>Entregues</span></div>
+              <div class="hero-mini"><strong>${state.clients.length}</strong><span>Clientes</span></div>
+            </div>
+          </aside>
+        </section>
+        <div class="local-strip"><span class="local-strip-icon">✓</span><span><strong>Operação local e privada.</strong> Os dados ficam neste navegador; faça uma cópia ao final do expediente.</span><button class="btn btn-secondary btn-sm" data-action="export">Fazer backup</button></div>
+        <section class="grid stats" aria-label="Indicadores da oficina">
+          <article class="card stat orders"><div class="stat-top"><span class="stat-icon">${icon.orders}</span><span class="stat-chip">Agora</span></div><span class="stat-label">Ordens em aberto</span><strong class="stat-value">${open}</strong><span class="stat-note">Atendimentos em andamento</span></article>
+          <article class="card stat approval"><div class="stat-top"><span class="stat-icon">${icon.approval}</span><span class="stat-chip">Atenção</span></div><span class="stat-label">Aguardando aprovação</span><strong class="stat-value">${pending}</strong><span class="stat-note">Orçamentos pendentes</span></article>
+          <article class="card stat ready"><div class="stat-top"><span class="stat-icon">${icon.ready}</span><span class="stat-chip">Entrega</span></div><span class="stat-label">Veículos prontos</span><strong class="stat-value">${ready}</strong><span class="stat-note">Liberados para retirada</span></article>
+          <article class="card stat revenue"><div class="stat-top"><span class="stat-icon">${icon.revenue}</span><span class="stat-chip">Total</span></div><span class="stat-label">Recebimentos</span><strong class="stat-value money">${money(revenue)}</strong><span class="stat-note">Pagamentos registrados</span></article>
+        </section>
+        <section class="card pipeline-card" aria-labelledby="pipeline-title">
+          <div class="card-head"><div><h2 id="pipeline-title">Fluxo da oficina</h2><p>Distribuição das ordens ativas por etapa</p></div><button class="btn btn-secondary btn-sm" data-view="orders">Gerenciar ordens</button></div>
+          <div class="pipeline">${stages.map(([label,statuses])=>{const count=state.orders.filter(o=>statuses.includes(o.status)).length;return `<div class="pipeline-stage ${count?"active":""}"><strong>${count}</strong><span>${label}</span></div>`}).join("")}</div>
+        </section>
+        <section class="grid dashboard-grid">
+          <article class="card"><div class="card-head"><div><h2>Ordens recentes</h2><p>Últimas movimentações da oficina</p></div><button class="btn btn-secondary btn-sm" data-view="orders">Ver todas</button></div>${recent.length?ordersTable(recent):empty("Nenhuma ordem ainda","Cadastre seu primeiro atendimento para começar.","new-order","Criar primeira ordem")}</article>
+          <aside class="card quick-card"><div class="card-head"><div><h2>Ações rápidas</h2><p>Atalhos da rotina</p></div></div><div class="quick-actions">
+            <button class="quick-action" data-action="new-order"><span class="quick-action-icon">+</span><span><strong>Nova ordem</strong><small>Iniciar atendimento</small></span><span class="quick-action-arrow">›</span></button>
+            <button class="quick-action" data-action="new-client"><span class="quick-action-icon">◯</span><span><strong>Novo cliente</strong><small>Adicionar contato</small></span><span class="quick-action-arrow">›</span></button>
+            <button class="quick-action" data-action="new-vehicle"><span class="quick-action-icon">◇</span><span><strong>Novo veículo</strong><small>Vincular ao prontuário</small></span><span class="quick-action-arrow">›</span></button>
+            <button class="quick-action" data-action="export"><span class="quick-action-icon">↓</span><span><strong>Exportar backup</strong><small>Proteger os dados</small></span><span class="quick-action-arrow">›</span></button>
+          </div><div class="quick-footer"><strong>✓ Tudo salvo neste dispositivo</strong>A nuvem continua fora do escopo desta versão.</div></aside>
+        </section>`;
     }
     function ordersTable(items){return `<div class="table-wrap"><table class="table"><thead><tr><th>OS</th><th>Cliente</th><th>Veículo</th><th>Status</th><th>Atualização</th><th></th></tr></thead><tbody>${items.map(o=>{const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId);return `<tr><td class="strong">${esc(o.number)}</td><td>${esc(c?.name||"Cliente removido")}</td><td>${esc(v?`${v.brand} ${v.model} · ${v.plate}`:"Veículo removido")}</td><td>${badge(o.status)}</td><td>${date(o.updatedAt,true)}</td><td><button class="btn btn-secondary btn-sm" data-action="open-order" data-id="${o.id}">Abrir</button></td></tr>`}).join("")}</tbody></table></div>`}
 
@@ -131,7 +629,7 @@
     function bindSearch(){const input=$("#search");input?.addEventListener("input",e=>{search=e.target.value;render()})}
     function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`oficlaro-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Backup exportado com sucesso.")}
 
-    document.addEventListener("click",e=>{const viewButton=e.target.closest("[data-view]");if(viewButton){navigate(viewButton.dataset.view);return}const action=e.target.closest("[data-action]")?.dataset.action,idValue=e.target.closest("[data-id]")?.dataset.id;if(!action)return;({close:closeModal,"new-client":()=>clientForm(),"edit-client":()=>clientForm(state.clients.find(x=>x.id===idValue)),"new-vehicle":()=>vehicleForm(),"edit-vehicle":()=>vehicleForm(state.vehicles.find(x=>x.id===idValue)),"new-order":orderForm,"open-order":()=>navigate("order-detail",idValue),"new-item":itemForm,"new-payment":paymentForm,"customer-view":customerView,print:()=>window.print(),export:exportData,import:()=>$("#import-file").click(),"edit-workshop":workshopForm,reset:()=>{if(confirm("Apagar definitivamente todos os dados locais do Oficlaro?")){localStorage.removeItem(KEY);location.reload()}}})[action]?.()});
+    document.addEventListener("click",e=>{const viewButton=e.target.closest("[data-view]");if(viewButton){navigate(viewButton.dataset.view);return}const action=e.target.closest("[data-action]")?.dataset.action,idValue=e.target.closest("[data-id]")?.dataset.id;if(!action)return;({close:closeModal,"close-menu":()=>document.body.classList.remove("menu-open"),"new-client":()=>clientForm(),"edit-client":()=>clientForm(state.clients.find(x=>x.id===idValue)),"new-vehicle":()=>vehicleForm(),"edit-vehicle":()=>vehicleForm(state.vehicles.find(x=>x.id===idValue)),"new-order":orderForm,"open-order":()=>navigate("order-detail",idValue),"new-item":itemForm,"new-payment":paymentForm,"customer-view":customerView,print:()=>window.print(),export:exportData,import:()=>$("#import-file").click(),"edit-workshop":workshopForm,reset:()=>{if(confirm("Apagar definitivamente todos os dados locais do Oficlaro?")){localStorage.removeItem(KEY);location.reload()}}})[action]?.()});
     $("#menu").addEventListener("click",()=>document.body.classList.toggle("menu-open"));
     $("#modal").addEventListener("click",e=>{if(e.target===$("#modal"))closeModal()});
     document.addEventListener("keydown",e=>{if(e.key==="Escape")document.body.classList.remove("menu-open")});
