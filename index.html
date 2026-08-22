@@ -3,8 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#123b8f">
-  <title>Oficlaro Nuvem — Gestão e Acompanhamento</title>
+  <meta name="theme-color" content="#071426">
+  <meta name="description" content="Oficlaro é a plataforma de gestão que organiza clientes, veículos, ordens de serviço e o acompanhamento da sua oficina.">
+  <title>Oficlaro — Gestão inteligente para oficinas</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231f5fd1'/%3E%3Cpath d='M43 17a18 18 0 1 0 0 30' fill='none' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3Cpath d='M43 26h-8a6 6 0 1 0 0 12h8' fill='none' stroke='%23b9d4ff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231f5fd1'/%3E%3Cpath d='M43 17a18 18 0 1 0 0 30' fill='none' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3Cpath d='M43 26h-8a6 6 0 1 0 0 12h8' fill='none' stroke='%23b9d4ff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231f5fd1'/%3E%3Cpath d='M43 17a18 18 0 1 0 0 30' fill='none' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3Cpath d='M43 26h-8a6 6 0 1 0 0 12h8' fill='none' stroke='%23b9d4ff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
   
   <!-- Scripts do Firebase (CDN) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -12,59 +16,487 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <style>
-    :root {
-      --brand-950:#071725;--brand-900:#0b2034;--brand-800:#123553;--brand-700:#1768dc;--brand-600:#2678ee;--brand-100:#dcecff;--brand-50:#f0f6ff;
-      --accent:#34d5c5;--accent-soft:#dffbf6;
-      --ink-950:#0b1220;--ink-800:#1d2939;--ink-700:#344054;--ink-500:#667085;--ink-400:#98a2b3;
-      --line:#e4e7ec;--line-strong:#d0d5dd;--surface:#fff;--canvas:#f5f7fb;
-      --success:#067647;--success-bg:#ecfdf3;--warning:#b54708;--warning-bg:#fffaeb;--danger:#b42318;--danger-bg:#fef3f2;
-      --radius-sm:10px;--radius:16px;--radius-lg:24px;--shadow:0 10px 30px rgba(16,24,40,.08);--shadow-lg:0 24px 64px rgba(16,24,40,.18);
-      --sidebar:264px;--ease:180ms cubic-bezier(.2,.8,.2,1)
-    }
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--canvas);color:var(--ink-950);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
-    button,input,select,textarea{font:inherit}button,a{touch-action:manipulation}button{cursor:pointer}a{color:inherit}.hidden{display:none!important}
-    :focus-visible{outline:3px solid rgba(34,101,220,.3);outline-offset:2px}.skip{position:fixed;top:8px;left:8px;z-index:99;padding:10px 14px;background:#fff;border-radius:8px;transform:translateY(-150%)}.skip:focus{transform:none}
-    
-    /* Layout Base App */
-    .app{min-height:100vh;display:grid;grid-template-columns:var(--sidebar) 1fr}.sidebar{position:sticky;top:0;height:100vh;padding:24px 18px;background:linear-gradient(175deg,var(--brand-900),#071a41);color:#fff;display:flex;flex-direction:column;overflow:auto;z-index:20}
-    .brand{display:flex;align-items:center;gap:11px;padding:0 10px 26px;font-size:20px;font-weight:800;letter-spacing:-.03em}.brand-mark{width:38px;height:38px;display:grid;place-items:center;background:linear-gradient(135deg,#3b82f6,#1d4ed8);border:1px solid rgba(255,255,255,.22);border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,.24);font-size:14px}.brand small{display:block;color:#a9c4ff;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
-    .sidebar-create{width:100%;min-height:58px;margin-bottom:22px;padding:10px 12px;display:flex;align-items:center;gap:11px;border:1px solid rgba(99,179,255,.38);border-radius:14px;background:linear-gradient(135deg,#287df1,#1764d4);color:#fff;text-align:left;box-shadow:0 12px 26px rgba(0,75,190,.3),inset 0 1px rgba(255,255,255,.2);transition:transform var(--ease)}.sidebar-create:hover{transform:translateY(-1px)}.sidebar-create-icon{width:34px;height:34px;display:grid;place-items:center;flex:0 0 auto;border-radius:10px;background:rgba(255,255,255,.15);font-size:22px}
-    .sidebar-create strong,.sidebar-create small{display:block}.sidebar-create strong{font-size:14px}.sidebar-create small{margin-top:1px;color:#d9e9ff;font-size:10px}
-    .nav-label{margin:4px 10px 9px;color:#7fa5f4;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.nav{display:grid;gap:5px}.nav button{width:100%;min-height:46px;border:0;border-radius:12px;padding:10px 12px;background:transparent;color:#c7d7f8;display:flex;align-items:center;gap:12px;text-align:left;font-weight:650;transition:var(--ease)}.nav button:hover{background:rgba(255,255,255,.07);color:#fff}.nav button[aria-current="page"]{background:linear-gradient(90deg,rgba(59,130,246,.28),rgba(59,130,246,.12));color:#fff;box-shadow:inset 3px 0 #60a5fa}.nav-icon{width:27px;height:27px;display:grid;place-items:center;border-radius:8px;background:rgba(255,255,255,.08);font-size:13px}
-    .sidebar-bottom{margin-top:auto;display:grid;gap:12px}.local-badge{padding:14px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.06)}.local-badge strong{display:flex;align-items:center;gap:7px;font-size:13px}.local-badge strong:before{content:"";width:8px;height:8px;border-radius:50%;background:#3b82f6;box-shadow:0 0 0 4px rgba(59,130,246,.13)}.local-badge p{margin:6px 0 0;color:#a9bde4;font-size:11px}.workshop-mini{padding:12px 10px;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;align-items:center}.workshop-mini div strong,.workshop-mini div span{display:block}.workshop-mini div span{color:#9fb6e4;font-size:12px}
-    .shell{min-width:0}.topbar{height:76px;position:sticky;top:0;z-index:15;padding:0 clamp(18px,3vw,42px);display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.86);backdrop-filter:blur(16px);border-bottom:1px solid rgba(228,231,236,.8)}.topbar-left{display:flex;align-items:center;gap:12px}.menu{display:none}.crumb{color:var(--ink-500);font-size:14px}.crumb strong{color:var(--ink-800)}.top-actions{display:flex;gap:9px}.main{padding:clamp(24px,4vw,48px);max-width:1500px;margin:auto}.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:28px}.eyebrow{color:var(--brand-700);font-size:11px;font-weight:850;letter-spacing:.13em;text-transform:uppercase}.page-head h1{margin:6px 0 4px;font-size:clamp(28px,3vw,40px);line-height:1.1;letter-spacing:-.045em}.page-head p{margin:0;color:var(--ink-500);max-width:660px}
-    
-    /* Componentes */
-    .btn{min-height:42px;border:1px solid transparent;border-radius:11px;padding:9px 15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:750;text-decoration:none;transition:transform var(--ease),box-shadow var(--ease),background var(--ease)}.btn:hover{transform:translateY(-1px)}.btn-primary{background:linear-gradient(135deg,var(--brand-600),var(--brand-700));color:#fff;box-shadow:0 7px 18px rgba(23,92,211,.22)}.btn-secondary{background:#fff;border-color:var(--line-strong);color:var(--ink-700)}.btn-ghost{background:transparent;color:var(--ink-600);border-color:transparent}.btn-danger{background:var(--danger-bg);color:var(--danger);border-color:#fecdca}.btn-sm{min-height:36px;padding:7px 11px;font-size:13px}.icon-btn{width:42px;height:42px;padding:0;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink-700)}
-    .grid{display:grid;gap:20px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:22px}.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 1px 2px rgba(16,24,40,.02);overflow:hidden}.card-pad{padding:22px}.dashboard-grid{grid-template-columns:minmax(0,1.7fr) minmax(280px,.8fr)}.card-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:14px}.card-head h2,.card-head h3{margin:0;font-size:17px;letter-spacing:-.02em}.card-head p{margin:3px 0 0;color:var(--ink-500);font-size:12px}
-    .toolbar{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:16px}.search{position:relative;flex:1;max-width:430px}.search input{padding-left:40px}.search:before{content:"⌕";position:absolute;left:14px;bottom:10px;color:var(--ink-400);font-size:20px}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;white-space:nowrap}.table th{padding:12px 16px;background:#f9fafb;color:var(--ink-500);font-size:11px;text-align:left;text-transform:uppercase;letter-spacing:.06em}.table td{padding:15px 16px;border-top:1px solid var(--line);font-size:14px}.table tr:hover td{background:#fcfcfd}.table .strong{font-weight:750;color:var(--ink-800)}.empty{padding:50px 22px;text-align:center}.empty-icon{width:54px;height:54px;margin:0 auto 14px;display:grid;place-items:center;border-radius:16px;background:var(--brand-50);color:var(--brand-700);font-size:25px;font-weight:800}.empty h3{margin:0 0 6px}.empty p{margin:0 auto 18px;color:var(--ink-500);max-width:410px}
-    .badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800;background:#f2f4f7;color:var(--ink-700)}.badge:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}.badge.success{background:var(--success-bg);color:var(--success)}.badge.warning{background:var(--warning-bg);color:var(--warning)}.badge.danger{background:var(--danger-bg);color:var(--danger)}.badge.info{background:var(--brand-50);color:var(--brand-700)}
-    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label,.field-label{font-size:12px;font-weight:750;color:var(--ink-700)}input,select,textarea{width:100%;min-height:44px;border:1px solid var(--line-strong);border-radius:10px;background:#fff;color:var(--ink-950);padding:10px 12px;transition:border var(--ease),box-shadow var(--ease)}textarea{min-height:100px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:#84adff;box-shadow:0 0 0 4px rgba(34,101,220,.1);outline:0}.help{color:var(--ink-500);font-size:11px}.form-actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:10px;padding-top:5px}
-    dialog{width:min(680px,calc(100vw - 28px));max-height:90vh;padding:0;border:0;border-radius:20px;box-shadow:var(--shadow-lg);overflow:auto}dialog::backdrop{background:rgba(9,20,44,.58);backdrop-filter:blur(4px)}.dialog-head{position:sticky;top:0;z-index:2;padding:20px 22px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.dialog-head h2{margin:0;font-size:21px}.dialog-body{padding:22px}.dialog-actions{padding:16px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;background:#fff}
-    .notice{margin-bottom:20px;padding:13px 15px;border:1px solid #b2ccff;border-radius:12px;background:var(--brand-50);color:#1849a9;font-size:13px;display:flex;gap:10px}.notice strong{white-space:nowrap}.notice.warning{border-color:#fedf89;background:var(--warning-bg);color:#93370d}.toast-region{position:fixed;right:22px;bottom:22px;z-index:100;display:grid;gap:10px}.toast{min-width:270px;max-width:420px;padding:13px 15px;border-left:4px solid var(--brand-700);border-radius:10px;background:#fff;box-shadow:var(--shadow-lg);font-size:13px;animation:toast-in .22s ease}.toast.success{border-color:var(--success)}.toast.error{border-color:var(--danger)}@keyframes toast-in{from{opacity:0;transform:translateY(10px)}}
-    .timeline{list-style:none;margin:0;padding:0}.timeline li{position:relative;padding:0 0 22px 25px}.timeline li:before{content:"";position:absolute;left:4px;top:7px;width:9px;height:9px;border-radius:50%;background:var(--brand-600);box-shadow:0 0 0 4px var(--brand-100)}.timeline li:not(:last-child):after{content:"";position:absolute;left:8px;top:18px;bottom:4px;width:2px;background:var(--line)}.timeline strong,.timeline time{display:block}.timeline time{color:var(--ink-500);font-size:11px}.detail-grid{grid-template-columns:minmax(0,1.35fr) minmax(320px,.8fr)}.stack{display:grid;gap:18px}.split{display:flex;align-items:center;justify-content:space-between;gap:15px}.order-hero{padding:23px;background:linear-gradient(135deg,#102a66,#175cd3);color:#fff;border-radius:var(--radius);box-shadow:var(--shadow)}.order-hero h1{margin:5px 0;font-size:30px}.order-hero p{margin:0;color:#ccdcff}.order-meta{margin-top:18px;display:flex;gap:22px;flex-wrap:wrap}.order-meta span{font-size:12px;color:#b7cdfc}.order-meta strong{display:block;color:#fff;font-size:14px}.money{font-variant-numeric:tabular-nums}.item-row{padding:13px 0;border-bottom:1px solid var(--line)}.item-row:last-child{border:0}.item-row p{margin:3px 0;color:var(--ink-500);font-size:12px}.total-box{padding:16px;border-radius:12px;background:#f8fafc}.total-box strong{font-size:22px}.customer-sheet{background:#fff;color:#172033}
-    
-    /* Autenticação & Configuração */
-    .setup{min-height:100vh;display:grid;grid-template-columns:minmax(420px,.8fr) minmax(520px,1.2fr);background:#fff}.setup-form{padding:clamp(32px,7vw,92px);display:flex;flex-direction:column;justify-content:center}.setup-form h1{margin:10px 0;font-size:clamp(35px,5vw,50px);line-height:1;letter-spacing:-.055em}.setup-form>p{color:var(--ink-500);margin:0 0 28px}.setup-aside{position:relative;overflow:hidden;padding:clamp(45px,7vw,100px);display:flex;flex-direction:column;justify-content:center;color:#fff;background:linear-gradient(145deg,#071a41,#123b8f 55%,#2161d5)}.setup-aside:before,.setup-aside:after{content:"";position:absolute;border:1px solid rgba(255,255,255,.16);border-radius:50%}.setup-aside:before{width:440px;height:440px;right:-180px;top:-190px}.setup-aside:after{width:360px;height:360px;left:-120px;bottom:-180px}.setup-aside h2{position:relative;margin:14px 0;font-size:clamp(36px,5vw,64px);line-height:.98;letter-spacing:-.055em;max-width:780px}.setup-aside p{position:relative;color:#d7e4ff;font-size:18px;max-width:620px}.setup-points{position:relative;margin-top:30px;display:flex;gap:26px;flex-wrap:wrap}.setup-point strong{display:block}.setup-point span{font-size:12px;color:#a9c4ff}
+/* Design Tokens */
+:root {
+  --brand-950:#071426;
+  --brand-900:#0b1d35;
+  --brand-800:#123154;
+  --brand-700:#1f5fd1;
+  --brand-600:#2d6cdf;
+  --brand-500:#4b83e7;
+  --brand-100:#dce9fb;
+  --brand-50:#f2f7fd;
+  --brand:var(--brand-700);
+  --brand-hover:#174da9;
+  --brand-soft:var(--brand-50);
+  --background:#f4f6f9;
+  --surface:#ffffff;
+  --surface-secondary:#f8fafc;
+  --surface-tertiary:#eef2f7;
+  --text-primary:#101828;
+  --text-secondary:#344054;
+  --text-muted:#667085;
+  --text-subtle:#667085;
+  --border:#e3e8ef;
+  --border-strong:#cbd4df;
+  --success:#187a55;
+  --success-soft:#eaf7f0;
+  --warning:#9a5b13;
+  --warning-soft:#fff5df;
+  --danger:#b13a3a;
+  --danger-soft:#fdf0f0;
+  --info:#3267b5;
+  --info-soft:#edf4ff;
+  --whatsapp:#177e4d;
+  --shadow-xs:0 1px 2px rgba(16,24,40,.04);
+  --shadow-sm:0 4px 12px rgba(16,24,40,.06);
+  --shadow-md:0 14px 34px rgba(16,24,40,.09);
+  --shadow-lg:0 28px 70px rgba(7,20,38,.18);
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:18px;
+  --radius-xl:24px;
+  --space-1:4px;
+  --space-2:8px;
+  --space-3:12px;
+  --space-4:16px;
+  --space-5:20px;
+  --space-6:24px;
+  --space-8:32px;
+  --space-10:40px;
+  --space-12:48px;
+  --sidebar:264px;
+  --topbar:68px;
+  --motion-fast:160ms;
+  --motion-base:220ms;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
 
-    /* Visão do Cliente (Public Tracking) */
-    .public-view{min-height:100vh;background:#f9fafc;display:flex;flex-direction:column;align-items:center;padding:clamp(20px,4vw,60px) 20px;color:var(--ink-950)}.public-card{width:100%;max-width:680px;background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);overflow:hidden}.public-header{padding:30px;background:linear-gradient(135deg,var(--brand-900),var(--brand-700));color:#fff;text-align:center}.public-header h1{margin:0;font-size:32px;letter-spacing:-.03em}.public-header p{margin:6px 0 0;color:#cddcff;font-size:18px}.public-status{padding:24px 30px;background:#f2f7ff;border-bottom:1px solid var(--line);text-align:center}.public-status-label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--brand-700);font-weight:800;margin-bottom:4px}.public-status-value{font-size:28px;font-weight:800;color:var(--ink-950);margin:0}.public-body{padding:30px}.public-section{margin-bottom:30px}.public-section:last-child{margin-bottom:0}.public-section h2{font-size:20px;margin:0 0 16px;padding-bottom:10px;border-bottom:2px solid var(--line);color:var(--ink-800)}.public-text{font-size:18px;line-height:1.6;color:var(--ink-700);margin:0}.public-list{list-style:none;padding:0;margin:0}.public-list li{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px dashed var(--line);font-size:18px}.public-list li:last-child{border-bottom:none}.public-list li strong{color:var(--ink-950)}.public-actions{padding:30px;background:#f9fafc;border-top:1px solid var(--line);display:grid;gap:12px}.public-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:54px;border-radius:14px;font-size:18px;font-weight:750;text-decoration:none;border:none;cursor:pointer;transition:transform var(--ease)}.public-btn-whatsapp{background:#25D366;color:#fff;box-shadow:0 6px 16px rgba(37,211,102,.3)}.public-btn-secondary{background:#fff;border:2px solid var(--line-strong);color:var(--ink-800)}
+/* Reset */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--background);color:var(--text-primary);font-family:Inter,"Segoe UI Variable Text","Segoe UI",ui-sans-serif,system-ui,-apple-system,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+button,input,select,textarea{font:inherit}
+button,a{touch-action:manipulation}
+button{cursor:pointer}
+a{color:inherit}
+svg{display:block}
+.hidden{display:none!important}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+:focus-visible{outline:3px solid rgba(45,108,223,.28);outline-offset:2px}
+.skip{position:fixed;top:8px;left:8px;z-index:200;padding:10px 14px;background:#fff;border-radius:8px;transform:translateY(-150%);box-shadow:var(--shadow-md)}
+.skip:focus{transform:none}
 
-    /* Resumo Dashboard & Smart Panel */
-    .smart-panel{background:linear-gradient(to right, #f2f7ff, #ffffff);border:1px solid #c9deff;border-radius:12px;padding:20px;margin-bottom:20px}.smart-panel h3{margin:0 0 10px;color:var(--brand-800);font-size:16px;display:flex;align-items:center;gap:8px}.smart-panel textarea{background:#fff;border:1px solid #b2ccff;font-size:15px;min-height:80px;margin-bottom:12px}
+/* Layout */
+.app{min-height:100vh;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr)}
+.shell{min-width:0}
+.main{width:min(100%,1500px);margin:0 auto;padding:clamp(24px,3.2vw,46px)}
+.grid{display:grid;gap:var(--space-5)}
+.stack{display:grid;gap:var(--space-5)}
+.split{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)}
+.mobile-brand,.mobile-dock{display:none}
+.menu-scrim{display:none}
 
-    @media(max-width:1050px){.stats{grid-template-columns:repeat(2,1fr)}.dashboard-grid,.detail-grid{grid-template-columns:1fr}.setup{grid-template-columns:1fr}.setup-aside{display:none}}
-    @media(max-width:760px){:root{--sidebar:280px}.app{display:block}.sidebar{position:fixed;left:0;transform:translateX(-102%);transition:transform var(--ease);box-shadow:var(--shadow-lg)}body.menu-open .sidebar{transform:none}.menu{display:grid;place-items:center}.topbar{height:68px;padding:0 15px}.topbar .btn-primary{display:none}.main{padding:22px 15px 90px}.page-head{align-items:flex-start;flex-direction:column}.page-head .btn{width:100%}.stats{grid-template-columns:1fr 1fr;gap:12px}.stat{min-height:120px;padding:16px}.stat-value{font-size:26px}.toolbar{align-items:stretch;flex-direction:column}.search{max-width:none}.form-grid{grid-template-columns:1fr}.field.full,.form-actions{grid-column:auto}.form-actions{flex-direction:column-reverse}.form-actions .btn{width:100%}.top-actions .btn-secondary{display:none}.notice{flex-direction:column}.table th,.table td{padding:12px}.setup-form{padding:32px 20px}.toast-region{left:14px;right:14px;bottom:14px}.toast{min-width:0}.order-meta{gap:14px}.split.mobile-stack{align-items:flex-start;flex-direction:column}}
-    @media print{
-      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background:#fff!important; color:#000!important;}
-      body>*:not(#public-view){display:none!important}
-      #public-view {display:block!important; padding:0; background:none;}
-      .public-card {box-shadow:none; max-width:100%; border-radius:0; border:none;}
-      .public-actions {display:none!important;}
-      .public-header {background:#fff!important; color:#000!important; padding:10px 0; border-bottom:2px solid #000; text-align:left;}
-      .public-header p {color:#333!important;}
-      .public-status {background:#fff!important; border:2px solid #000; margin:20px 0;}
-    }
+/* Brand */
+.brand{display:inline-flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.brand-copy{display:grid;line-height:1.08}
+.brand-name{font-size:20px;font-weight:720;letter-spacing:-.035em}
+.brand-tagline{margin-top:4px;color:#879bb4;font-size:10px;font-weight:600;letter-spacing:.11em;text-transform:uppercase}
+.logo-mark{width:38px;height:38px;display:grid;place-items:center;flex:0 0 auto;border-radius:11px;background:#fff;color:var(--brand-700);box-shadow:0 1px 0 rgba(255,255,255,.15),0 8px 22px rgba(0,0,0,.14)}
+.logo-mark svg{width:24px;height:24px}
+.brand-dark{color:var(--brand-900)}
+.brand-dark .logo-mark{background:var(--brand-700);color:#fff;box-shadow:0 8px 20px rgba(31,95,209,.18)}
+.brand-dark .brand-tagline{color:var(--text-muted)}
+
+/* Sidebar */
+.sidebar{position:sticky;top:0;height:100vh;padding:22px 14px 16px;background:var(--brand-950);color:#fff;display:flex;flex-direction:column;overflow-y:auto;z-index:40;border-right:1px solid rgba(255,255,255,.05)}
+.sidebar>.brand{padding:0 10px 22px}
+.sidebar-create{width:100%;min-height:50px;margin-bottom:26px;padding:8px 10px;border:1px solid rgba(255,255,255,.12);border-radius:var(--radius-md);background:var(--brand-700);color:#fff;display:flex;align-items:center;gap:10px;text-align:left;box-shadow:var(--shadow-sm);transition:background var(--motion-fast) var(--ease),transform var(--motion-fast) var(--ease)}
+.sidebar-create:hover{background:var(--brand-600);transform:translateY(-1px)}
+.sidebar-create:active{transform:translateY(0)}
+.sidebar-create-icon{width:30px;height:30px;display:grid;place-items:center;flex:0 0 auto;border-radius:8px;background:rgba(255,255,255,.13)}
+.sidebar-create-icon svg{width:17px;height:17px}
+.sidebar-create strong,.sidebar-create small{display:block}
+.sidebar-create strong{font-size:13px;font-weight:700}
+.sidebar-create small{margin-top:1px;color:#c9d9f3;font-size:10px}
+.nav-label{margin:0 10px 8px;color:#697e98;font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+.nav{display:grid;gap:3px}
+.nav button{width:100%;min-height:44px;padding:8px 10px;border:0;border-radius:10px;background:transparent;color:#9fb0c4;display:flex;align-items:center;gap:11px;text-align:left;font-size:13px;font-weight:570;transition:background var(--motion-fast) var(--ease),color var(--motion-fast) var(--ease)}
+.nav button:hover{background:rgba(255,255,255,.055);color:#e7eef7}
+.nav button[aria-current="page"]{background:rgba(69,133,231,.15);color:#fff}
+.nav-icon{width:24px;height:24px;display:grid;place-items:center;flex:0 0 auto;color:#7188a4}
+.nav-icon svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.nav button[aria-current="page"] .nav-icon{color:#76a7f3}
+.sidebar-bottom{margin-top:auto;padding-top:24px;display:grid;gap:10px}
+.sync-card{padding:10px 11px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(255,255,255,.025);display:flex;align-items:center;gap:9px}
+.sync-dot{width:7px;height:7px;flex:0 0 auto;border-radius:999px;background:#5bc699;box-shadow:0 0 0 3px rgba(91,198,153,.11)}
+.sync-card strong,.sync-card span{display:block}
+.sync-card strong{font-size:11px;font-weight:650;color:#d7e1ed}
+.sync-card span{margin-top:1px;font-size:9px;color:#768ca5}
+.profile-card{padding:10px;border-radius:11px;background:rgba(255,255,255,.04);display:flex;align-items:center;gap:10px}
+.profile-avatar{width:34px;height:34px;display:grid;place-items:center;flex:0 0 auto;border-radius:9px;background:#183657;color:#b9d4f6;font-size:11px;font-weight:750}
+.profile-copy{min-width:0;flex:1}
+.profile-copy strong,.profile-copy span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.profile-copy strong{font-size:11px;font-weight:650}
+.profile-copy span{margin-top:2px;color:#7f93aa;font-size:9px}
+.sidebar .profile-card .icon-btn{width:44px;height:44px;border-color:transparent;background:transparent;color:#9db0c5}
+.sidebar .profile-card .icon-btn:hover{background:rgba(255,255,255,.06);color:#fff}
+
+/* Topbar */
+.topbar{height:var(--topbar);position:sticky;top:0;z-index:30;padding:0 clamp(20px,3vw,44px);display:flex;align-items:center;justify-content:space-between;gap:20px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.topbar-left,.top-actions{display:flex;align-items:center;gap:12px}
+.menu{display:none}
+.crumb{color:var(--text-muted);font-size:12px}
+.crumb strong{color:var(--text-secondary);font-weight:600}
+.topbar-state{display:inline-flex;align-items:center;gap:6px;padding-left:12px;border-left:1px solid var(--border);color:var(--text-muted);font-size:11px}
+.topbar-state:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--success)}
+
+/* Components */
+.icon{width:18px;height:18px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.btn{min-height:44px;padding:9px 14px;border:1px solid transparent;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:650;line-height:1.2;text-decoration:none;white-space:nowrap;transition:background var(--motion-fast) var(--ease),border-color var(--motion-fast) var(--ease),color var(--motion-fast) var(--ease),transform var(--motion-fast) var(--ease),box-shadow var(--motion-fast) var(--ease)}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-primary{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 4px 10px rgba(31,95,209,.15)}
+.btn-primary:hover{background:var(--brand-hover);border-color:var(--brand-hover)}
+.btn-secondary{background:var(--surface);border-color:var(--border-strong);color:var(--text-secondary);box-shadow:var(--shadow-xs)}
+.btn-secondary:hover{border-color:#aebac8;background:var(--surface-secondary)}
+.btn-ghost{background:transparent;color:var(--text-muted)}
+.btn-ghost:hover{background:var(--surface-tertiary);color:var(--text-secondary)}
+.btn-danger{background:var(--danger-soft);border-color:#f1cece;color:var(--danger)}
+.btn-whatsapp{background:var(--whatsapp);border-color:var(--whatsapp);color:#fff}
+.btn-whatsapp:hover{background:#126a40;border-color:#126a40}
+.btn-sm{min-height:44px;padding:8px 10px;font-size:12px}
+.icon-btn{width:44px;height:44px;padding:0;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text-muted);display:inline-grid;place-items:center;transition:background var(--motion-fast),color var(--motion-fast),border-color var(--motion-fast)}
+.icon-btn:hover{background:var(--surface-secondary);border-color:var(--border-strong);color:var(--text-primary)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);overflow:hidden}
+.card-pad{padding:var(--space-6)}
+.card-head{min-height:64px;padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:14px}
+.card-head h2,.card-head h3{margin:0;font-size:15px;font-weight:680;letter-spacing:-.01em}
+.card-head p{margin:3px 0 0;color:var(--text-muted);font-size:11px}
+.eyebrow{display:block;color:var(--brand-700);font-size:10px;font-weight:720;letter-spacing:.11em;text-transform:uppercase}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:26px}
+.page-head h1{margin:5px 0 5px;font-size:clamp(28px,3vw,38px);line-height:1.12;font-weight:720;letter-spacing:-.045em}
+.page-head p{margin:0;color:var(--text-muted);font-size:14px;max-width:650px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;background:var(--surface-tertiary);color:var(--text-secondary);font-size:10px;font-weight:680;white-space:nowrap}
+.badge:before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+.badge.success{background:var(--success-soft);color:var(--success)}
+.badge.warning{background:var(--warning-soft);color:var(--warning)}
+.badge.danger{background:var(--danger-soft);color:var(--danger)}
+.badge.info{background:var(--info-soft);color:var(--info)}
+.notice{margin-bottom:20px;padding:13px 14px;border:1px solid #cbdcf5;border-radius:10px;background:var(--info-soft);color:#234f8d;font-size:12px;display:flex;align-items:flex-start;gap:10px}
+.notice.warning{border-color:#efd8ad;background:var(--warning-soft);color:#825018}
+.notice svg{margin-top:1px}
+.help{color:var(--text-muted);font-size:11px}
+.money{font-variant-numeric:tabular-nums}
+.empty{padding:54px 24px;text-align:center}
+.empty-icon{width:52px;height:52px;margin:0 auto 15px;display:grid;place-items:center;border:1px solid #d9e5f4;border-radius:15px;background:var(--brand-soft);color:var(--brand)}
+.empty-icon svg{width:22px;height:22px}
+.empty h3{margin:0 0 6px;font-size:16px}
+.empty p{margin:0 auto 18px;color:var(--text-muted);font-size:13px;max-width:430px}
+
+/* Forms */
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.field{display:grid;gap:6px}
+.field.full{grid-column:1/-1}
+.field label,.field-label{font-size:11px;font-weight:650;color:var(--text-secondary)}
+input,select,textarea{width:100%;min-height:44px;padding:9px 11px;border:1px solid var(--border-strong);border-radius:9px;background:#fff;color:var(--text-primary);font-size:13px;transition:border-color var(--motion-fast),box-shadow var(--motion-fast),background var(--motion-fast)}
+input::placeholder,textarea::placeholder{color:#98a3b2}
+textarea{min-height:96px;resize:vertical}
+input:hover,select:hover,textarea:hover{border-color:#aeb9c7}
+input:focus,select:focus,textarea:focus{outline:0;border-color:#6f9be4;box-shadow:0 0 0 3px rgba(45,108,223,.1)}
+input:disabled{background:var(--surface-secondary);color:var(--text-muted)}
+.form-section-title{grid-column:1/-1;margin:4px 0 0;padding-bottom:9px;border-bottom:1px solid var(--border);font-size:12px;font-weight:680;color:var(--text-secondary)}
+.form-actions{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-end;gap:9px;padding-top:4px}
+.auth-actions{flex-direction:column;align-items:stretch;margin-top:6px}
+.auth-switch{text-align:center;color:var(--text-muted);font-size:12px}
+.auth-switch a{color:var(--brand);font-weight:650;text-decoration:none}
+.modal-field{margin-bottom:20px}
+.message-field{min-height:126px}
+
+/* Tables */
+.toolbar{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:14px}
+.search{position:relative;flex:1;max-width:420px}
+.search .search-icon{position:absolute;left:12px;bottom:12px;width:16px;height:16px;color:var(--text-subtle);pointer-events:none}
+.search input{padding-left:38px}
+.toolbar-meta{color:var(--text-muted);font-size:12px}
+.table-wrap{overflow-x:auto}
+.table{width:100%;border-collapse:collapse}
+.table th{padding:11px 16px;background:var(--surface-secondary);color:var(--text-muted);font-size:9px;font-weight:700;text-align:left;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
+.table td{padding:14px 16px;border-top:1px solid var(--border);color:var(--text-secondary);font-size:12px;vertical-align:middle}
+.table tbody tr{transition:background var(--motion-fast)}
+.table tbody tr:hover{background:#fbfcfe}
+.table .strong{font-weight:670;color:var(--text-primary)}
+.entity-cell{display:flex;align-items:center;gap:11px;min-width:180px}
+.avatar{width:34px;height:34px;display:grid;place-items:center;flex:0 0 auto;border-radius:10px;background:var(--brand-soft);color:var(--brand-700);font-size:10px;font-weight:750;letter-spacing:.02em}
+.entity-copy strong,.entity-copy span{display:block}
+.entity-copy span{margin-top:2px;color:var(--text-muted);font-size:10px}
+.plate{display:inline-flex;padding:4px 7px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-secondary);color:var(--text-secondary);font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;font-size:11px;font-weight:700;letter-spacing:.04em}
+
+/* Dashboard */
+.dashboard-intro{margin-bottom:24px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px}
+.dashboard-intro h1{margin:5px 0 6px;font-size:clamp(30px,3.3vw,43px);line-height:1.05;font-weight:720;letter-spacing:-.05em}
+.dashboard-intro h1 span{color:var(--brand)}
+.dashboard-intro p{margin:0;color:var(--text-muted);font-size:14px}
+.dashboard-actions{display:flex;gap:9px}
+.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:20px}
+.metric{min-height:150px;padding:19px;display:flex;flex-direction:column;justify-content:space-between}
+.metric-top{display:flex;align-items:center;justify-content:space-between}
+.metric-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--surface-secondary);color:var(--text-muted)}
+.metric-icon svg{width:17px;height:17px}
+.metric-context{color:var(--text-subtle);font-size:9px;font-weight:680;text-transform:uppercase;letter-spacing:.08em}
+.metric-label{display:block;color:var(--text-muted);font-size:11px}
+.metric-value{display:block;margin-top:5px;font-size:27px;line-height:1;font-weight:720;letter-spacing:-.04em}
+.metric-note{display:block;margin-top:6px;color:var(--text-subtle);font-size:10px}
+.metric.attention .metric-icon{background:var(--warning-soft);color:var(--warning)}
+.metric.ready .metric-icon{background:var(--success-soft);color:var(--success)}
+.metric.revenue .metric-icon{background:var(--info-soft);color:var(--info)}
+.dashboard-grid{grid-template-columns:minmax(0,1.65fr) minmax(270px,.72fr)}
+.operations-card{padding:20px;margin-bottom:20px}
+.operations-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.operations-head h2{margin:0;font-size:15px}
+.operations-head p{margin:3px 0 0;color:var(--text-muted);font-size:11px}
+.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.pipeline-stage{padding:13px 10px;border:1px solid var(--border);border-radius:10px;background:var(--surface-secondary)}
+.pipeline-stage strong,.pipeline-stage span{display:block}
+.pipeline-stage strong{font-size:20px;font-weight:700}
+.pipeline-stage span{margin-top:4px;color:var(--text-muted);font-size:9px}
+.pipeline-stage.active{border-color:#c8d9f2;background:var(--brand-soft)}
+.pipeline-stage.active strong{color:var(--brand)}
+.quick-actions{padding:10px}
+.quick-action{width:100%;padding:10px;border:0;border-radius:10px;background:transparent;display:flex;align-items:center;gap:10px;text-align:left;color:var(--text-secondary)}
+.quick-action:hover{background:var(--surface-secondary)}
+.quick-action-icon{width:30px;height:30px;display:grid;place-items:center;flex:0 0 auto;border-radius:9px;background:var(--brand-soft);color:var(--brand)}
+.quick-action-icon svg{width:15px;height:15px}
+.quick-action strong,.quick-action span{display:block}
+.quick-action strong{font-size:11px;font-weight:650}
+.quick-action span span{margin-top:1px;color:var(--text-muted);font-size:9px}
+.quick-action-arrow{margin-left:auto;color:var(--text-subtle)}
+
+/* Orders */
+.order-summary{margin-bottom:20px;padding:24px;border:1px solid #d7e2f2;border-radius:var(--radius-xl);background:linear-gradient(140deg,#fff,var(--brand-soft));box-shadow:var(--shadow-xs)}
+.order-summary-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.order-number{color:var(--brand);font-size:11px;font-weight:720;letter-spacing:.09em;text-transform:uppercase}
+.order-summary h1{margin:7px 0 3px;font-size:30px;line-height:1.08;font-weight:720;letter-spacing:-.04em}
+.order-summary-subtitle{margin:0;color:var(--text-muted);font-size:13px}
+.order-summary-grid{margin-top:22px;padding-top:18px;border-top:1px solid #dce5f0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.order-summary-grid span{display:block;color:var(--text-muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em}
+.order-summary-grid strong{display:block;margin-top:4px;font-size:12px;font-weight:650;color:var(--text-secondary)}
+.detail-grid{grid-template-columns:minmax(0,1.5fr) minmax(290px,.65fr);align-items:start}
+.section-card{border-radius:var(--radius-lg)}
+.section-card .card-head{background:var(--surface-secondary)}
+.communication-card{padding:20px;border:1px solid #cbdcf4;border-radius:var(--radius-lg);background:var(--brand-soft)}
+.communication-card h2{margin:0;font-size:14px}
+.communication-card p{margin:5px 0 14px;color:var(--text-muted);font-size:11px}
+.communication-link{margin-bottom:12px;padding:9px 10px;border:1px solid #ccd9ea;border-radius:8px;background:rgba(255,255,255,.72);color:var(--text-muted);font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.communication-actions{display:flex;gap:8px;flex-wrap:wrap}
+.item-row{padding:14px 0;border-bottom:1px solid var(--border)}
+.item-row:last-child{border-bottom:0}
+.item-row p{margin:3px 0 0;color:var(--text-muted);font-size:10px}
+.item-price{text-align:right}
+.item-price>strong{font-size:12px}
+.decision-control{width:auto;min-height:30px;margin-top:6px;padding:4px 26px 4px 8px;font-size:10px}
+.total-box{margin-top:8px;padding:16px;border-radius:10px;background:var(--surface-secondary)}
+.total-box span{color:var(--text-muted);font-size:11px}
+.total-box strong{font-size:20px;font-weight:720}
+.finance-grid{display:grid;gap:12px}
+.finance-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.finance-row span{color:var(--text-muted);font-size:11px}
+.finance-row strong{font-size:13px}
+.finance-row.balance{padding-top:12px;border-top:1px solid var(--border)}
+.finance-row.balance strong{font-size:18px}
+.paid-state{padding:8px 10px;border-radius:8px;background:var(--success-soft);color:var(--success);font-size:10px;font-weight:650;text-align:center}
+.timeline{list-style:none;margin:0;padding:0}
+.timeline li{position:relative;padding:0 0 21px 28px}
+.timeline li:before{content:"";position:absolute;left:4px;top:5px;width:8px;height:8px;border:2px solid #fff;border-radius:50%;background:var(--brand);box-shadow:0 0 0 2px #cfe0f7}
+.timeline li:not(:last-child):after{content:"";position:absolute;left:8px;top:16px;bottom:3px;width:1px;background:var(--border-strong)}
+.timeline li:first-child strong{color:var(--brand)}
+.timeline strong,.timeline time{display:block}
+.timeline strong{font-size:11px;font-weight:650;color:var(--text-secondary)}
+.timeline time{margin-top:3px;color:var(--text-subtle);font-size:9px}
+.back-link{justify-content:flex-start;width:100%}
+
+/* Smart Intake */
+.smart-panel{padding:18px;margin-bottom:20px;border:1px solid #cedcf0;border-radius:12px;background:var(--brand-soft)}
+.smart-panel-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.smart-panel-icon{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:#fff;color:var(--brand);box-shadow:var(--shadow-xs)}
+.smart-panel h3{margin:0;color:var(--brand-900);font-size:13px}
+.smart-panel p{margin:0 0 12px;color:var(--text-muted);font-size:11px}
+.smart-panel textarea{min-height:92px;margin-bottom:10px;background:#fff}
+
+/* Authentication and Onboarding */
+.setup{min-height:100vh;display:grid;grid-template-columns:minmax(420px,.82fr) minmax(520px,1.18fr);background:#fff}
+.setup-form{padding:clamp(36px,7vw,92px);display:flex;flex-direction:column;justify-content:center}
+.setup-form>.brand{margin-bottom:52px}
+.setup-form h1{margin:0 0 9px;font-size:clamp(34px,4vw,48px);line-height:1.05;font-weight:720;letter-spacing:-.05em}
+.setup-form>p{margin:0 0 27px;color:var(--text-muted);font-size:14px;max-width:430px}
+.setup-form form{max-width:440px}
+.setup-aside{position:relative;overflow:hidden;padding:clamp(50px,7vw,96px);display:flex;flex-direction:column;justify-content:flex-end;color:#fff;background:var(--brand-950)}
+.setup-aside:before{content:"";position:absolute;inset:9% 9% auto auto;width:min(38vw,470px);aspect-ratio:1;border:1px solid rgba(255,255,255,.07);border-radius:50%;box-shadow:0 0 0 70px rgba(255,255,255,.018),0 0 0 140px rgba(255,255,255,.012)}
+.setup-aside-content{position:relative;z-index:1;max-width:620px}
+.setup-aside .eyebrow{color:#80a9e7}
+.setup-aside h2{margin:14px 0;font-size:clamp(40px,5vw,66px);line-height:.98;font-weight:680;letter-spacing:-.055em}
+.setup-aside p{margin:0;color:#9fb2c9;font-size:16px;max-width:560px}
+.setup-points{margin-top:32px;display:flex;gap:28px;flex-wrap:wrap}
+.setup-point strong,.setup-point span{display:block}
+.setup-point strong{font-size:12px}
+.setup-point span{margin-top:3px;color:#788ea8;font-size:9px}
+.onboarding-step{display:inline-flex;align-items:center;gap:8px;margin-bottom:14px;color:var(--brand);font-size:11px;font-weight:680}
+.onboarding-step:before{content:"";width:26px;height:4px;border-radius:999px;background:var(--brand)}
+
+/* Modals */
+dialog{width:min(680px,calc(100vw - 28px));max-height:min(88vh,820px);padding:0;border:0;border-radius:var(--radius-lg);background:var(--surface);box-shadow:var(--shadow-lg);overflow:auto;animation:modal-in var(--motion-base) var(--ease)}
+dialog.dialog-wide{width:min(980px,calc(100vw - 28px))}
+dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
+.dialog-head{position:sticky;top:0;z-index:3;min-height:64px;padding:16px 20px;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.dialog-head h2{margin:0;font-size:17px;font-weight:680;letter-spacing:-.02em}
+.dialog-body{padding:20px}
+.dialog-actions{margin:20px -20px -20px;padding:14px 20px;border-top:1px solid var(--border);background:var(--surface-secondary);display:flex;justify-content:flex-end;gap:9px}
+@keyframes modal-in{from{opacity:0;transform:translateY(10px) scale(.985)}}
+.toast-region{position:fixed;right:20px;bottom:20px;z-index:200;display:grid;gap:8px}
+.toast{min-width:260px;max-width:390px;padding:12px 14px;border:1px solid var(--border);border-left:3px solid var(--brand);border-radius:10px;background:#fff;color:var(--text-secondary);box-shadow:var(--shadow-md);font-size:12px;animation:toast-in var(--motion-base) var(--ease)}
+.toast.success{border-left-color:var(--success)}
+.toast.error{border-left-color:var(--danger)}
+.toast.warning{border-left-color:var(--warning)}
+@keyframes toast-in{from{opacity:0;transform:translateY(8px)}}
+
+/* Public Tracking */
+.public-view{min-height:100vh;padding:clamp(18px,4vw,52px) 18px;background:#eef2f7;color:var(--text-primary)}
+.public-shell{width:min(100%,720px);margin:0 auto}
+.public-brand{margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;color:var(--brand-900)}
+.public-brand .logo-mark{width:34px;height:34px}
+.powered-by{color:var(--text-muted);font-size:10px}
+.public-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow-md);overflow:hidden}
+.public-header{padding:30px 30px 26px;background:var(--brand-950);color:#fff}
+.public-workshop{margin:0 0 22px;color:#8fa6c1;font-size:10px;font-weight:650;letter-spacing:.1em;text-transform:uppercase}
+.public-header h1{margin:0;font-size:clamp(28px,5vw,38px);line-height:1.08;font-weight:680;letter-spacing:-.045em}
+.public-header p{margin:8px 0 0;color:#a9b9cb;font-size:14px}
+.public-status{padding:28px 30px;border-bottom:1px solid var(--border);background:var(--brand-soft)}
+.public-status-label{display:block;margin-bottom:6px;color:var(--brand);font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+.public-status-value{margin:0;font-size:clamp(25px,5vw,34px);line-height:1.1;font-weight:720;letter-spacing:-.035em}
+.public-status-meta{margin:8px 0 0;color:var(--text-muted);font-size:12px}
+.progress-track{margin-top:22px;display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.progress-segment{height:5px;border-radius:999px;background:#dce4ee}
+.progress-segment.complete{background:var(--brand)}
+.progress-caption{margin-top:7px;display:flex;justify-content:space-between;color:var(--text-subtle);font-size:9px}
+.public-body{padding:28px 30px}
+.public-section{padding:0 0 26px;margin-bottom:26px;border-bottom:1px solid var(--border)}
+.public-section:last-child{padding-bottom:0;margin-bottom:0;border-bottom:0}
+.public-section h2{margin:0 0 13px;font-size:15px;font-weight:680}
+.public-text{margin:0;color:var(--text-secondary);font-size:16px;line-height:1.65}
+.public-note{padding:15px;border-radius:10px;background:var(--surface-secondary)}
+.public-list{list-style:none;padding:0;margin:0}
+.public-list li{display:flex;justify-content:space-between;gap:18px;padding:12px 0;border-bottom:1px solid var(--border);color:var(--text-secondary);font-size:14px}
+.public-list li:last-child{border-bottom:0}
+.public-list strong{flex:0 0 auto;color:var(--text-primary);font-size:13px}
+.public-total{margin-top:12px;padding-top:16px;border-top:2px solid var(--text-primary);display:flex;align-items:center;justify-content:space-between;font-size:18px;font-weight:700}
+.public-timeline li{align-items:flex-start}
+.public-timeline time{color:var(--text-muted);font-size:11px;text-align:right}
+.public-actions{padding:20px 30px 28px;border-top:1px solid var(--border);background:var(--surface-secondary);display:grid;gap:10px}
+.public-btn{width:100%;min-height:52px;padding:12px 16px;border:1px solid transparent;border-radius:11px;display:flex;align-items:center;justify-content:center;gap:9px;font-size:15px;font-weight:680;text-decoration:none;transition:background var(--motion-fast),transform var(--motion-fast)}
+.public-btn:hover{transform:translateY(-1px)}
+.public-btn-whatsapp{background:var(--whatsapp);color:#fff}
+.public-btn-secondary{background:#fff;border-color:var(--border-strong);color:var(--text-secondary)}
+.public-error{padding:56px 30px;text-align:center}
+.public-error-icon{width:48px;height:48px;margin:0 auto 15px;display:grid;place-items:center;border-radius:14px;background:var(--danger-soft);color:var(--danger)}
+.public-error h2{margin:0 0 8px;font-size:21px}
+.public-error p{margin:0;color:var(--text-muted);font-size:15px}
+
+/* Responsive */
+@media(max-width:1120px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .dashboard-grid,.detail-grid{grid-template-columns:1fr}
+  .order-summary-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:900px){
+  .setup{grid-template-columns:1fr}
+  .setup-aside{display:none}
+  .setup-form{min-height:100vh}
+}
+@media(max-width:760px){
+  :root{--sidebar:278px}
+  .app{display:block}
+  .sidebar{position:fixed;left:0;top:0;transform:translateX(-102%);transition:transform var(--motion-base) var(--ease);box-shadow:var(--shadow-lg)}
+  body.menu-open .sidebar{transform:none}
+  .menu-scrim{position:fixed;inset:0;z-index:35;border:0;background:rgba(7,20,38,.42)}
+  body.menu-open .menu-scrim{display:block}
+  .menu{display:grid}
+  .mobile-brand{display:block;color:var(--brand-900);font-size:14px;font-weight:700;letter-spacing:-.02em}
+  .crumb,.topbar-state{display:none}
+  .topbar{height:62px;padding:0 14px}
+  .topbar .top-actions .btn{min-height:44px;padding:8px 10px;font-size:11px}
+  .main{padding:22px 14px 80px}
+  .page-head,.dashboard-intro{align-items:flex-start;flex-direction:column}
+  .page-head .btn,.dashboard-actions{width:100%}
+  .dashboard-actions .btn{flex:1}
+  .stats{grid-template-columns:1fr 1fr;gap:10px}
+  .metric{min-height:135px;padding:15px}
+  .metric-value{font-size:24px}
+  .pipeline{grid-template-columns:repeat(2,1fr)}
+  .toolbar{align-items:stretch;flex-direction:column}
+  .search{max-width:none}
+  .form-grid{grid-template-columns:1fr}
+  .field.full,.form-actions,.form-section-title{grid-column:auto}
+  .form-actions{flex-direction:column-reverse}
+  .auth-actions{flex-direction:column}
+  .form-actions .btn{width:100%}
+  .dialog-actions{flex-direction:column-reverse}
+  .dialog-actions .btn{width:100%}
+  dialog{width:calc(100vw - 20px);max-height:calc(100vh - 20px);border-radius:14px}
+  .toast-region{left:12px;right:12px;bottom:12px}
+  .toast{min-width:0;max-width:none}
+  .responsive-table thead{display:none}
+  .responsive-table,.responsive-table tbody,.responsive-table tr,.responsive-table td{display:block;width:100%}
+  .responsive-table tbody{padding:10px}
+  .responsive-table tr{margin-bottom:10px;padding:12px;border:1px solid var(--border);border-radius:12px;background:#fff}
+  .responsive-table tr:last-child{margin-bottom:0}
+  .responsive-table td{padding:7px 0;border:0;display:flex;align-items:center;justify-content:space-between;gap:16px;text-align:right}
+  .responsive-table td:before{content:attr(data-label);color:var(--text-muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;text-align:left}
+  .responsive-table td:first-child{padding-top:0}
+  .responsive-table td:first-child:before{display:none}
+  .responsive-table .entity-cell{margin-left:auto;text-align:left}
+  .responsive-table td:last-child{padding-bottom:0}
+  .responsive-table td:last-child .btn{width:100%}
+  .order-summary{padding:20px}
+  .order-summary-top{flex-direction:column}
+  .order-summary-grid{grid-template-columns:repeat(2,1fr)}
+  .communication-actions .btn{flex:1}
+  .public-view{padding:0;background:#fff}
+  .public-brand{padding:14px 16px;margin:0}
+  .public-card{border:0;border-top:1px solid var(--border);border-radius:0;box-shadow:none}
+  .public-header,.public-status,.public-body,.public-actions{padding-left:20px;padding-right:20px}
+}
+@media(max-width:430px){
+  .stats{grid-template-columns:1fr}
+  .dashboard-actions{display:grid}
+  .pipeline{grid-template-columns:1fr 1fr}
+  .order-summary-grid{grid-template-columns:1fr 1fr}
+  .split.mobile-stack,.item-row{align-items:flex-start;flex-direction:column}
+  .item-price{width:100%;display:flex;align-items:center;justify-content:space-between;text-align:left}
+  .public-list li{flex-direction:column;gap:4px}
+  .public-timeline time{text-align:left}
+}
+@media(max-width:370px){
+  .topbar .top-actions .btn span{display:none}
+  .main{padding-left:10px;padding-right:10px}
+  .order-summary-grid{grid-template-columns:1fr}
+}
+
+/* Print */
+@media print{
+  @page{size:A4;margin:14mm}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#fff;color:#000}
+  body>*:not(#public-view){display:none!important}
+  #public-view{display:block!important;padding:0;background:#fff}
+  .public-brand{margin-bottom:10px}
+  .public-card{max-width:100%;border:0;border-radius:0;box-shadow:none}
+  .public-header{padding:16px 0;background:#fff;color:#000;border-bottom:2px solid #111}
+  .public-workshop,.public-header p{color:#444}
+  .public-status{margin:18px 0;padding:16px;border:1px solid #777;background:#fff}
+  .progress-track,.progress-caption,.public-actions{display:none}
+  .public-body{padding:0}
+  .public-section{break-inside:avoid;padding-bottom:16px;margin-bottom:16px}
+}
+
   </style>
 </head>
 <body>
@@ -72,73 +504,85 @@
   <!-- TELA DE AUTENTICAÇÃO -->
   <section id="auth-view" class="setup hidden">
     <div class="setup-form">
-      <div class="brand" style="color:var(--brand-900);padding-left:0"><span class="brand-mark" style="color:#fff">OC</span><span>Oficlaro<small style="color:var(--brand-700)">Acesso Seguro</small></span></div>
-      <h1 id="auth-title">Entrar</h1><p id="auth-desc">Acesse sua oficina ou crie uma conta gratuita.</p>
+      <a class="brand brand-dark" href="." aria-label="Oficlaro — página inicial">
+        <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M22.5 7.5a10.5 10.5 0 1 0 0 17" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M23 12.5h-5.2a4.5 4.5 0 1 0 0 9H23" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" opacity=".55"/></svg></span>
+        <span class="brand-copy"><span class="brand-name">Oficlaro</span><span class="brand-tagline">Gestão para oficinas</span></span>
+      </a>
+      <h1 id="auth-title">Bem-vindo de volta</h1><p id="auth-desc">Acesse sua operação com segurança.</p>
       <form id="auth-form" class="form-grid">
-        <div class="field full"><label>E-mail</label><input type="email" name="email" required></div>
-        <div class="field full"><label>Senha</label><input type="password" name="password" required minlength="6"></div>
-        <div class="form-actions" style="flex-direction:column;gap:15px;align-items:stretch;width:100%;margin-top:10px">
-          <button class="btn btn-primary" type="submit" id="auth-submit">Entrar na Oficina</button>
-          <div style="text-align:center;font-size:13px;color:var(--ink-500)">
-            <span id="auth-toggle-text">Não tem uma conta?</span> <a href="#" id="auth-toggle-link" style="color:var(--brand-700);font-weight:700;text-decoration:none">Criar conta gratuita</a>
+        <div class="field full"><label for="auth-email">E-mail</label><input id="auth-email" type="email" name="email" required autocomplete="email" placeholder="voce@oficina.com.br"></div>
+        <div class="field full"><label for="auth-password">Senha</label><input id="auth-password" type="password" name="password" required minlength="6" autocomplete="current-password" placeholder="Sua senha"></div>
+        <div class="form-actions auth-actions">
+          <button class="btn btn-primary" type="submit" id="auth-submit">Entrar no Oficlaro</button>
+          <div class="auth-switch">
+            <span id="auth-toggle-text">Ainda não tem uma conta?</span> <a href="#" id="auth-toggle-link">Criar conta</a>
           </div>
         </div>
       </form>
     </div>
     <aside class="setup-aside">
-      <span class="eyebrow" style="color:#79a7ff">Oficlaro Nuvem</span><h2>Seus dados seguros e separados.</h2>
-      <p>Com o login seguro, os dados da sua oficina ficam isolados. Os clientes têm um link exclusivo para acompanhar os serviços de forma transparente.</p>
+      <div class="setup-aside-content"><span class="eyebrow">Operação sob controle</span><h2>Clareza para sua oficina. Confiança para seus clientes.</h2>
+      <p>Centralize atendimentos, acompanhe cada etapa e mantenha seus clientes informados em uma experiência profissional.</p>
+      <div class="setup-points"><div class="setup-point"><strong>Uma visão</strong><span>Toda a operação</span></div><div class="setup-point"><strong>Em tempo real</strong><span>Dados sincronizados</span></div><div class="setup-point"><strong>Mais confiança</strong><span>Acompanhamento público</span></div></div></div>
     </aside>
   </section>
 
   <!-- TELA DE CONFIGURAÇÃO (PRIMEIRO ACESSO DA OFICINA) -->
   <section id="setup" class="setup hidden">
     <div class="setup-form">
-      <div class="brand" style="color:var(--brand-900);padding-left:0"><span class="brand-mark" style="color:#fff">OC</span><span>Oficlaro<small style="color:var(--brand-700)">Configuração inicial</small></span></div>
-      <h1>Dados da sua Oficina</h1><p>Configure o nome e contato para gerar os links de acompanhamento.</p>
+      <a class="brand brand-dark" href="." aria-label="Oficlaro — página inicial">
+        <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M22.5 7.5a10.5 10.5 0 1 0 0 17" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M23 12.5h-5.2a4.5 4.5 0 1 0 0 9H23" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" opacity=".55"/></svg></span>
+        <span class="brand-copy"><span class="brand-name">Oficlaro</span><span class="brand-tagline">Configuração inicial</span></span>
+      </a>
+      <span class="onboarding-step">Etapa 1 de 1</span><h1>Configure sua oficina</h1><p>Esses dados identificam sua operação e aparecem no acompanhamento enviado ao cliente.</p>
       <form id="setup-form" class="form-grid">
-        <div class="field full"><label>Seu nome (Responsável)</label><input name="ownerName" required maxlength="100"></div>
-        <div class="field full"><label>Nome da oficina</label><input name="workshopName" required maxlength="100"></div>
-        <div class="field full"><label>Telefone Comercial / WhatsApp</label><input name="phone" required maxlength="20" inputmode="tel"></div>
-        <div class="form-actions"><button class="btn btn-primary" type="submit">Salvar e Iniciar</button></div>
+        <div class="field full"><label for="setup-owner">Seu nome</label><input id="setup-owner" name="ownerName" required maxlength="100" autocomplete="name" placeholder="Nome do responsável"></div>
+        <div class="field full"><label for="setup-workshop">Nome da oficina</label><input id="setup-workshop" name="workshopName" required maxlength="100" autocomplete="organization" placeholder="Como seus clientes conhecem a oficina"></div>
+        <div class="field full"><label for="setup-phone">WhatsApp comercial</label><input id="setup-phone" name="phone" required maxlength="20" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999"></div>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">Concluir configuração</button></div>
       </form>
     </div>
-    <aside class="setup-aside"><span class="eyebrow" style="color:#79a7ff">Quase lá</span><h2>Tudo pronto para organizar.</h2><p>Um cadastro rápido para que os relatórios e links públicos saiam com a sua marca.</p></aside>
+    <aside class="setup-aside"><div class="setup-aside-content"><span class="eyebrow">Primeiro acesso</span><h2>Sua operação começa organizada.</h2><p>Uma configuração rápida para criar ordens, acompanhar serviços e informar clientes com a sua marca.</p></div></aside>
   </section>
 
   <!-- TELA DO CLIENTE (ACOMPANHAMENTO PÚBLICO) -->
   <main id="public-view" class="public-view hidden">
-    <article class="public-card" id="public-content">
+    <div id="public-content" aria-live="polite">
       <!-- Injetado por JS -->
-    </article>
+    </div>
   </main>
 
   <!-- APLICAÇÃO PRINCIPAL (OFICINA) -->
   <div id="app" class="app hidden">
+    <a class="skip" href="#main">Ir para o conteúdo principal</a>
     <button class="menu-scrim" data-action="close-menu" aria-label="Fechar menu"></button>
-    <aside class="sidebar" aria-label="Menu principal">
-      <div class="brand"><span class="brand-mark">OC</span><span>Oficlaro<small>Gestão na nuvem</small></span></div>
-      <button class="sidebar-create" data-action="smart-order"><span class="sidebar-create-icon">+</span><span><strong>Nova ordem</strong><small>Assistente Rápido</small></span></button>
+    <aside class="sidebar" id="sidebar" aria-label="Menu principal">
+      <a class="brand" href="#" data-view="dashboard" aria-label="Oficlaro — visão geral">
+        <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M22.5 7.5a10.5 10.5 0 1 0 0 17" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M23 12.5h-5.2a4.5 4.5 0 1 0 0 9H23" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" opacity=".55"/></svg></span>
+        <span class="brand-copy"><span class="brand-name">Oficlaro</span><span class="brand-tagline">Gestão para oficinas</span></span>
+      </a>
+      <button class="sidebar-create" data-action="smart-order"><span class="sidebar-create-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span><strong>Nova ordem</strong><small>Cadastro assistido</small></span></button>
       <span class="nav-label">Menu principal</span>
       <nav class="nav">
-        <button data-view="dashboard"><span class="nav-icon">📊</span>Visão geral</button>
-        <button data-view="clients"><span class="nav-icon">👥</span>Clientes</button>
-        <button data-view="vehicles"><span class="nav-icon">🚗</span>Veículos</button>
-        <button data-view="orders"><span class="nav-icon">📋</span>Ordens de serviço</button>
-        <button data-view="backup"><span class="nav-icon">⚙️</span>Configurações</button>
+        <button data-view="dashboard"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 13h6V4H4v9Zm0 7h6v-3H4v3Zm10 0h6v-9h-6v9Zm0-13h6V4h-6v3Z"/></svg></span>Visão geral</button>
+        <button data-view="clients"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 20v-1.5a4.5 4.5 0 0 0-4.5-4.5h-3A4.5 4.5 0 0 0 4 18.5V20M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7-1a3 3 0 0 1 0 6m2.5 5v-1a4 4 0 0 0-2.7-3.8"/></svg></span>Clientes</button>
+        <button data-view="vehicles"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 11 1.6-4.2A2 2 0 0 1 8.5 5h7a2 2 0 0 1 1.9 1.4L19 11m-15 0h16a1 1 0 0 1 1 1v5H3v-5a1 1 0 0 1 1-1Zm2 6v2m12-2v2M7 14h.01M17 14h.01"/></svg></span>Veículos</button>
+        <button data-view="orders"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5h10v16H5V5h4Zm0 0V3h6v2M8 10h8M8 14h8M8 18h5"/></svg></span>Ordens de serviço</button>
+        <button data-view="backup"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg></span>Configurações</button>
       </nav>
       <div class="sidebar-bottom">
-        <div class="local-badge"><strong>Sincronizado na Nuvem</strong><p>Salvo em tempo real.</p></div>
-        <div class="workshop-mini">
-          <div><strong id="side-workshop"></strong><span id="side-owner"></span></div>
-          <button class="icon-btn" style="width:32px;height:32px;font-size:14px" data-action="logout" aria-label="Sair" title="Sair da conta">🚪</button>
+        <div class="sync-card"><span class="sync-dot" aria-hidden="true"></span><span><strong>Dados sincronizados</strong><span>Firebase Realtime Database</span></span></div>
+        <div class="profile-card">
+          <span class="profile-avatar" id="side-avatar" aria-hidden="true">OF</span>
+          <div class="profile-copy"><strong id="side-workshop"></strong><span id="side-owner"></span></div>
+          <button class="icon-btn" data-action="logout" aria-label="Sair da conta" title="Sair da conta"><svg class="icon" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M14 4h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-5"/></svg></button>
         </div>
       </div>
     </aside>
     <section class="shell">
       <header class="topbar">
-        <div class="topbar-left"><button class="icon-btn menu" id="menu" aria-label="Abrir menu">☰</button><span class="mobile-brand">Oficlaro</span><div class="crumb">Oficlaro / <strong id="crumb">Visão geral</strong></div><span class="topbar-state">Sincronizado</span></div>
-        <div class="top-actions"><button class="btn btn-primary btn-sm" data-action="smart-order"><span class="btn-icon">+</span> Nova ordem</button></div>
+        <div class="topbar-left"><button class="icon-btn menu" id="menu" aria-label="Abrir menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><span class="mobile-brand">Oficlaro</span><div class="crumb">Oficlaro / <strong id="crumb">Visão geral</strong></div><span class="topbar-state">Sincronizado</span></div>
+        <div class="top-actions"><button class="btn btn-primary btn-sm" data-action="smart-order"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Nova ordem</span></button></div>
       </header>
       <main id="main" class="main" tabindex="-1"></main>
     </section>
@@ -181,15 +625,46 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
     const uid=()=>currentUser?.uid;
 
-    function generateToken(){ return typeof crypto!=='undefined'&&crypto.randomUUID ? crypto.randomUUID() : 'pub_'+Math.random().toString(36).substring(2,15)+Date.now().toString(36); }
-    function id(prefix){ return prefix+"_"+Math.random().toString(36).substring(2,10); }
+    const ICONS={
+      plus:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+      orders:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h10v16H5V5h4Zm0 0V3h6v2M8 10h8M8 14h8M8 18h5"/></svg>',
+      clock:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+      check:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>',
+      wallet:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h15a2 2 0 0 1 2 2v9H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h12v3M16 12h5"/></svg>',
+      users:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20v-1.5a4.5 4.5 0 0 0-4.5-4.5h-3A4.5 4.5 0 0 0 4 18.5V20M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7-1a3 3 0 0 1 0 6m2.5 5v-1a4 4 0 0 0-2.7-3.8"/></svg>',
+      car:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 11 1.6-4.2A2 2 0 0 1 8.5 5h7a2 2 0 0 1 1.9 1.4L19 11m-15 0h16a1 1 0 0 1 1 1v5H3v-5a1 1 0 0 1 1-1Zm2 6v2m12-2v2M7 14h.01M17 14h.01"/></svg>',
+      search:'<svg class="icon search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>',
+      arrow:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>',
+      back:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>',
+      external:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5h5v5M19 5l-8 8"/><path d="M18 13v6H5V6h6"/></svg>',
+      copy:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V5H5v11h3"/></svg>',
+      whatsapp:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.6a8 8 0 0 1-11.8 7L4 20l1.4-4A8 8 0 1 1 20 11.6Z"/><path d="M9 8.5c.5 2.5 2 4 4.5 5l1-1.2 2 .8-.2 1.7c-3.8 1.2-8.7-3.7-7.5-7.5l1.7-.2.8 2L10 10"/></svg>',
+      info:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+      file:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6V3Z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
+      alert:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5M12 17h.01M4 20h16L12 4 4 20Z"/></svg>',
+      edit:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16-.5 4.5L8 20l11-11-4-4L4 16ZM13.5 6.5l4 4"/></svg>',
+      close:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>'
+    };
+    const icon=name=>ICONS[name]||"";
+    function brandLogo(dark=false){return `<span class="brand ${dark?"brand-dark":""}"><span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M22.5 7.5a10.5 10.5 0 1 0 0 17" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M23 12.5h-5.2a4.5 4.5 0 1 0 0 9H23" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" opacity=".55"/></svg></span><span class="brand-copy"><span class="brand-name">Oficlaro</span></span></span>`}
+
+    function generateToken(){
+      if(typeof crypto!=="undefined"&&crypto.randomUUID) return crypto.randomUUID();
+      if(typeof crypto!=="undefined"&&crypto.getRandomValues){const bytes=new Uint8Array(24);crypto.getRandomValues(bytes);return "pub_"+[...bytes].map(b=>b.toString(16).padStart(2,"0")).join("");}
+      return "pub_"+Math.random().toString(36).substring(2,15)+Date.now().toString(36);
+    }
+    function id(prefix){ return prefix+"_"+(typeof crypto!=="undefined"&&crypto.randomUUID?crypto.randomUUID().replaceAll("-","").slice(0,12):Math.random().toString(36).substring(2,14)); }
     function esc(v){ return String(v??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c])); }
     function money(c=0){ return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(c||0)/100); }
-    function date(v,t=false){ if(!v)return"—";return new Intl.DateTimeFormat("pt-BR",t?{dateStyle:"short",timeStyle:"short"}:{dateStyle:"short"}).format(new Date(v)); }
+    function date(v,t=false){ if(!v)return"—";return new Intl.DateTimeFormat("pt-BR",t?{dateStyle:"medium",timeStyle:"short"}:{dateStyle:"medium"}).format(new Date(v)); }
     function cents(v){ const clean=String(v||"").replace(/\./g,"").replace(",",".");return Math.max(0,Math.round((Number(clean)||0)*100)); }
     function phone(v){ return String(v||"").replace(/\D/g,""); }
     function toast(m,t="success"){ const n=document.createElement("div");n.className=`toast ${t}`;n.textContent=m;$("#toasts").append(n);setTimeout(()=>n.remove(),4200); }
-    function getPublicLink(token){ return window.location.origin + window.location.pathname + "?acompanhar=" + token; }
+    function getPublicLink(token){const url=new URL(window.location.href);url.search="";url.hash="";url.searchParams.set("acompanhar",token);return url.toString();}
+    function initials(name=""){return name.trim().split(/\s+/).slice(0,2).map(part=>part[0]).join("").toUpperCase()||"OF";}
+    function vehicleName(v){return v?[v.brand,v.model].filter(Boolean).join(" ")||"Veículo":"Veículo removido";}
+    function statusStep(status){const groups=[['RECEIVED'],['DIAGNOSING','DIAGNOSED'],['AWAITING_APPROVAL','WAITING_PARTS'],['IN_PROGRESS','FINAL_TESTS'],['READY','DELIVERED']];const found=groups.findIndex(group=>group.includes(status));return status==='CANCELLED'?0:Math.max(0,found);}
+    function badge(status){return `<span class="badge ${STATUS_TONE[status]||""}">${esc(STATUS[status]||status)}</span>`;}
     
     function clientOf(id){return state.clients.find(x=>x.id===id)} 
     function vehicleOf(id){return state.vehicles.find(x=>x.id===id)} 
@@ -204,13 +679,14 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const snap = await db.ref(`workshops/${uid()}`).once('value');
         const val = snap.val();
         if(val && val.version >= 1){
-          val.clients = val.clients || [];
-          val.vehicles = val.vehicles || [];
-          val.orders = val.orders || [];
+          val.clients = (val.clients || []).filter(Boolean);
+          val.vehicles = (val.vehicles || []).filter(Boolean).map(v=>({...v,brand:v.brand||"",model:v.model||"",year:v.year||"",mileage:Number(v.mileage||0)}));
+          val.orders = (val.orders || []).filter(Boolean);
           val.orders.forEach(o => {
             o.payments = o.payments || [];
             o.timeline = o.timeline || [];
-            if(o.estimate) o.estimate.items = o.estimate.items || [];
+            o.estimate = o.estimate || {items:[]};
+            o.estimate.items = o.estimate.items || [];
             if(!o.publicToken) o.publicToken = generateToken(); // Retrocompatibilidade
           });
           return val;
@@ -235,12 +711,13 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       const c = clientOf(o.clientId);
       const v = vehicleOf(o.vehicleId);
       const publicData = {
+        ownerUid: uid(),
         workshopName: state.workshop.name,
         workshopPhone: state.workshop.phone,
         customerFirstName: c ? c.name.split(' ')[0] : 'Cliente',
         orderNumber: o.number,
-        vehicleStr: v ? `${v.brand} ${v.model}` : 'Veículo',
-        plateMasked: v && v.plate ? v.plate.substring(0,3) + '***' + v.plate.substring(6) : '***',
+        vehicleStr: v ? vehicleName(v) : 'Veículo',
+        plateMasked: v && v.plate ? `${v.plate.slice(0,3)}${"•".repeat(Math.max(2,v.plate.length-5))}${v.plate.slice(-2)}` : '•••••••',
         status: o.status,
         expectedAt: o.expectedAt || null,
         complaint: o.complaint,
@@ -260,11 +737,12 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     function toggleAuthMode(e){
       e.preventDefault();
       isLoginMode = !isLoginMode;
-      $("#auth-title").textContent = isLoginMode ? "Entrar" : "Criar Conta";
-      $("#auth-desc").textContent = isLoginMode ? "Acesse sua oficina ou crie uma conta." : "Cadastre-se para gerenciar sua oficina gratuitamente.";
-      $("#auth-submit").textContent = isLoginMode ? "Entrar na Oficina" : "Cadastrar Oficina";
-      $("#auth-toggle-text").textContent = isLoginMode ? "Não tem uma conta?" : "Já possui conta?";
-      $("#auth-toggle-link").textContent = isLoginMode ? "Criar conta gratuita" : "Fazer login";
+      $("#auth-title").textContent = isLoginMode ? "Bem-vindo de volta" : "Crie sua conta";
+      $("#auth-desc").textContent = isLoginMode ? "Acesse sua operação com segurança." : "Comece a organizar sua oficina em poucos minutos.";
+      $("#auth-submit").textContent = isLoginMode ? "Entrar no Oficlaro" : "Criar minha conta";
+      $("#auth-toggle-text").textContent = isLoginMode ? "Ainda não tem uma conta?" : "Já possui uma conta?";
+      $("#auth-toggle-link").textContent = isLoginMode ? "Criar conta" : "Fazer login";
+      $("#auth-password").setAttribute("autocomplete",isLoginMode?"current-password":"new-password");
     }
     $("#auth-toggle-link").addEventListener("click", toggleAuthMode);
 
@@ -285,6 +763,7 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
           $("#app").classList.remove("hidden");
           $("#side-workshop").textContent = state.workshop.name;
           $("#side-owner").textContent = state.workshop.ownerName;
+          $("#side-avatar").textContent = initials(state.workshop.name);
           render();
         }
       } else {
@@ -303,9 +782,10 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       $("#auth-view").classList.add("hidden");
       $("#app").classList.add("hidden");
       $("#public-view").classList.remove("hidden");
+      document.title = "Acompanhamento da ordem — Oficlaro";
       
       const content = $("#public-content");
-      content.innerHTML = `<div style="padding:40px;text-align:center">Carregando informações...</div>`;
+      content.innerHTML = `<div class="public-error" role="status">${brandLogo(true)}<h2>Carregando acompanhamento</h2><p>Estamos buscando as informações mais recentes.</p></div>`;
       
       try {
         const snap = await db.ref(`publicOrders/${token}`).once('value');
@@ -313,56 +793,66 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         if(!pub) throw new Error("not_found");
         
         const total = (pub.items||[]).reduce((acc, i) => acc + (i.qty * i.price), 0);
+        const step = statusStep(pub.status);
         let phoneLink = phone(pub.workshopPhone);
         if(phoneLink.length <= 11) phoneLink = "55" + phoneLink;
+        const whatsappText = encodeURIComponent(`Olá! Estou acompanhando a ${pub.orderNumber} pelo Oficlaro e gostaria de falar com a oficina.`);
+        const progress = Array.from({length:5},(_,index)=>`<span class="progress-segment ${index<=step?'complete':''}"></span>`).join('');
+        const headline={RECEIVED:"Seu veículo foi recebido",DIAGNOSING:"Seu veículo está em diagnóstico",DIAGNOSED:"O diagnóstico foi concluído",AWAITING_APPROVAL:"Seu orçamento aguarda aprovação",WAITING_PARTS:"A oficina aguarda as peças",IN_PROGRESS:"Seu veículo está em serviço",FINAL_TESTS:"Seu veículo está nos testes finais",READY:"Seu veículo está pronto",DELIVERED:"Seu veículo foi entregue",CANCELLED:"Atendimento cancelado"}[pub.status]||"Acompanhe seu veículo";
         
         content.innerHTML = `
-          <div class="public-header">
-            <p style="margin-bottom:8px;font-size:14px;letter-spacing:.1em;text-transform:uppercase">${esc(pub.workshopName)}</p>
-            <h1>${esc(pub.vehicleStr)}</h1>
-            <p>OS: ${esc(pub.orderNumber)} · Placa: ${esc(pub.plateMasked)}</p>
-          </div>
-          <div class="public-status">
-            <span class="public-status-label">Status do Veículo</span>
-            <h2 class="public-status-value">${esc(STATUS[pub.status] || pub.status)}</h2>
-            ${pub.expectedAt ? `<p style="margin:10px 0 0;color:var(--ink-500);font-size:14px">Previsão: ${date(pub.expectedAt)}</p>` : ''}
-          </div>
-          <div class="public-body">
-            <div class="public-section">
+          <div class="public-shell">
+            <div class="public-brand">${brandLogo(true)}<span class="powered-by">Acompanhamento seguro</span></div>
+            <article class="public-card">
+            <header class="public-header">
+              <p class="public-workshop">${esc(pub.workshopName)}</p>
+              <h1>${esc(pub.vehicleStr)}</h1>
+              <p>${esc(pub.orderNumber)} · Placa ${esc(pub.plateMasked)}</p>
+            </header>
+            <section class="public-status" aria-labelledby="public-status-title">
+              <span class="public-status-label">Olá, ${esc(pub.customerFirstName||"cliente")}</span>
+              <h2 class="public-status-value" id="public-status-title">${esc(headline)}</h2>
+              <p class="public-status-meta">${esc(STATUS[pub.status] || pub.status)} · Atualizado em ${date(pub.updatedAt,true)}</p>
+              ${pub.expectedAt ? `<p class="public-status-meta">Previsão informada: ${date(pub.expectedAt)}</p>` : ''}
+              <div class="progress-track" aria-label="Progresso do atendimento">${progress}</div>
+              <div class="progress-caption"><span>Recebido</span><span>Pronto</span></div>
+            </section>
+            <div class="public-body">
+            <section class="public-section">
               <h2>Relato inicial</h2>
-              <p class="public-text">"${esc(pub.complaint)}"</p>
-            </div>
+              <p class="public-text">${esc(pub.complaint)}</p>
+            </section>
             ${pub.diagnosis ? `
-            <div class="public-section">
+            <section class="public-section">
               <h2>${esc(pub.diagnosis.title)}</h2>
-              <p class="public-text" style="background:#f9fafc;padding:16px;border-radius:12px">${esc(pub.diagnosis.description)}</p>
-            </div>` : ''}
-            <div class="public-section">
-              <h2>Orçamento e Serviços</h2>
+              <p class="public-text public-note">${esc(pub.diagnosis.description)}</p>
+            </section>` : ''}
+            <section class="public-section">
+              <h2>Orçamento e serviços</h2>
               ${(pub.items||[]).length > 0 ? `
               <ul class="public-list">
-                ${pub.items.map(i => `<li><span>${i.qty}x ${esc(i.desc)} <small style="color:var(--ink-500)">(${esc(DECISION[i.decision])})</small></span> <strong>${money(i.qty * i.price)}</strong></li>`).join('')}
+                ${pub.items.map(i => `<li><span>${i.qty} × ${esc(i.desc)} · ${esc(DECISION[i.decision]||"Pendente")}</span><strong>${money(i.qty * i.price)}</strong></li>`).join('')}
               </ul>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:20px;border-top:2px solid var(--ink-800);font-size:22px;font-weight:800">
-                <span>Total</span>
-                <span>${money(total)}</span>
-              </div>
-              ` : '<p class="public-text" style="color:var(--ink-500)">Orçamento em elaboração.</p>'}
-            </div>
-            <div class="public-section">
+              <div class="public-total"><span>Total</span><span>${money(total)}</span></div>
+              ` : '<p class="public-text">O orçamento ainda está em elaboração.</p>'}
+            </section>
+            <section class="public-section">
               <h2>Histórico</h2>
-              <ul class="public-list" style="font-size:15px">
-                ${(pub.timeline||[]).sort((a,b)=>b.at-a.at).map(t => `<li><span style="color:var(--ink-700)">${esc(t.text)}</span> <strong style="font-size:13px">${date(t.at,true)}</strong></li>`).join('')}
+              <ul class="public-list public-timeline">
+                ${[...(pub.timeline||[])].sort((a,b)=>b.at-a.at).map(t => `<li><span>${esc(t.text)}</span><time datetime="${new Date(t.at).toISOString()}">${date(t.at,true)}</time></li>`).join('')}
               </ul>
-            </div>
+            </section>
           </div>
           <div class="public-actions">
-            <a href="https://wa.me/${phoneLink}?text=Olá, vim pelo acompanhamento da OS ${esc(pub.orderNumber)}." target="_blank" class="public-btn public-btn-whatsapp">Falar com a oficina no WhatsApp</a>
-            <button class="public-btn public-btn-secondary" onclick="window.print()">Salvar Comprovante (PDF)</button>
+            <a href="https://wa.me/${phoneLink}?text=${whatsappText}" target="_blank" rel="noopener" class="public-btn public-btn-whatsapp">${icon("whatsapp")} Falar com a oficina</a>
+            <button class="public-btn public-btn-secondary" type="button" data-public-print>${icon("file")} Baixar ou salvar comprovante em PDF</button>
+          </div>
+          </article>
           </div>
         `;
+        $("[data-public-print]")?.addEventListener("click",()=>window.print());
       } catch(e) {
-        content.innerHTML = `<div style="padding:50px 30px;text-align:center"><h2>Atendimento indisponível</h2><p style="color:var(--ink-500);font-size:18px">O link acessado é inválido ou a ordem de serviço foi removida. Entre em contato com a oficina.</p></div>`;
+        content.innerHTML = `<div class="public-shell"><div class="public-brand">${brandLogo(true)}<span class="powered-by">Acompanhamento seguro</span></div><article class="public-card"><div class="public-error"><span class="public-error-icon">${icon("alert")}</span><h2>Atendimento indisponível</h2><p>Este link é inválido ou a ordem de serviço não está mais disponível. Entre em contato com a oficina.</p></div></article></div>`;
       }
     }
 
@@ -372,44 +862,63 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     function extractSmartData(text) {
       const data = { phone:"", name:"", plate:"", mileage:"", brand:"", model:"", year:"", color:"", complaint: text };
       if(!text) return data;
+      const cleanText=text.replace(/\s+/g," ").trim();
       
-      const phoneMatch = text.match(/(?:\+?55\s*)?(?:\(?\d{2}\)?\s*)?9?\d{4}[-\s]?\d{4}/);
+      const phoneMatch = cleanText.match(/(?:\+?55[\s.-]?)?(?:\(?\d{2}\)?[\s.-]?)?(?:9[\s.-]?)?\d{4}[\s.-]?\d{4}/);
       if(phoneMatch) data.phone = phoneMatch[0].trim();
       
-      const plateMatch = text.match(/[A-Za-z]{3}[-\s]?[0-9][A-Za-z0-9][0-9]{2}/);
+      const plateMatch = cleanText.match(/\b[A-Za-z]{3}[-\s]?[0-9][A-Za-z0-9][0-9]{2}\b/);
       if(plateMatch) data.plate = plateMatch[0].replace(/[-\s]/g, '').toUpperCase();
       
-      const kmMatch = text.match(/(\d{1,3}(?:\.\d{3})*|\d+)\s*(?:km|mil km)/i);
-      if(kmMatch) data.mileage = kmMatch[1].replace(/\./g, '');
+      const thousandKm = cleanText.match(/(\d+(?:[,.]\d+)?)\s*mil\s*(?:km|quil[oô]metros)?/i);
+      const kmMatch = cleanText.match(/(\d{1,3}(?:\.\d{3})+|\d+)\s*(?:km|quil[oô]metros)/i);
+      if(thousandKm) data.mileage = String(Math.round(Number(thousandKm[1].replace(',','.'))*1000));
+      else if(kmMatch) data.mileage = kmMatch[1].replace(/\./g, '');
       
-      const yearMatch = text.match(/\b(19\d{2}|20\d{2})\b/);
+      const yearMatch = cleanText.match(/\b(19\d{2}|20\d{2})\b/);
       if(yearMatch) data.year = yearMatch[1];
       
-      const nameMatch = text.match(/(?:sou o|sou a|me chamo|aqui é o|aqui é a|nome é)\s+([A-Za-zÀ-ÖØ-öø-ÿ]+(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ]+){0,3})/i);
+      const nameMatch = cleanText.match(/(?:sou(?: o| a)?|me chamo|aqui [ée] o|aqui [ée] a|meu nome [ée]|nome [ée])\s+([A-Za-zÀ-ÖØ-öø-ÿ]+(?:\s+(?!meu|tenho|whatsapp|telefone|celular)[A-Za-zÀ-ÖØ-öø-ÿ]+){0,3})/i);
       if(nameMatch) data.name = nameMatch[1].trim();
+
+      const brands=["Chevrolet","Volkswagen","Mercedes-Benz","Mitsubishi","Citroën","Renault","Peugeot","Hyundai","Toyota","Honda","Fiat","Ford","Nissan","Jeep","Kia","BMW","Audi","Volvo","Subaru","Suzuki","Chery","Caoa","BYD","GWM"];
+      const colors=["branco","branca","preto","preta","prata","cinza","vermelho","vermelha","azul","verde","bege","marrom","amarelo","amarela","dourado","dourada"];
+      const brand=data.brand=brands.find(item=>new RegExp(`\\b${item.replace("-","[-\\s]?")}\\b`,"i").test(cleanText))||"";
+      const colorFound=colors.find(item=>new RegExp(`\\b${item}\\b`,"i").test(cleanText));
+      if(colorFound) data.color=colorFound.charAt(0).toUpperCase()+colorFound.slice(1);
+      if(brand){
+        const index=cleanText.toLowerCase().indexOf(brand.toLowerCase());
+        const after=cleanText.slice(index+brand.length).trim().split(/\s+/);
+        const stopWords=new Set([...colors,"placa","ano","com","de","do","da","e","meu","minha","que","está","esta"]);
+        const model=[];
+        for(const part of after){const normalized=part.toLowerCase().replace(/[^a-zà-ÿ0-9-]/gi,"");if(!normalized||stopWords.has(normalized)||/^(19|20)\d{2}$/.test(normalized)||model.length===3)break;model.push(part.replace(/[,.]$/, ""));}
+        data.model=model.join(" ");
+      }
 
       return data;
     }
 
     function smartOrderForm() {
-      modal("Assistente de Nova Ordem", `
+      modal("Nova ordem com cadastro assistido", `
         <div class="smart-panel">
-          <h3>⚡ Cadastro Rápido de OS</h3>
-          <p style="font-size:13px;color:var(--ink-500);margin-bottom:10px">Cole a mensagem do cliente. O sistema tentará extrair os dados e criar cliente e veículo automaticamente se não existirem.</p>
+          <div class="smart-panel-head"><span class="smart-panel-icon">${icon("orders")}</span><h3>Comece pela mensagem do cliente</h3></div>
+          <p>Cole a conversa ou digite os dados. O sistema identifica as informações disponíveis para você revisar.</p>
           <textarea id="smart-text" placeholder="Ex: Oi, sou João da Silva, meu WhatsApp é (11) 99999-8888. Tenho um Honda Civic prata 2018, placa ABC1D23, com 87.500 km. O carro faz barulho ao frear."></textarea>
-          <button type="button" class="btn btn-secondary btn-sm" id="btn-extract">Extrair dados da mensagem</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-extract">${icon("search")} Analisar mensagem</button>
         </div>
         <form id="smart-order-form" class="form-grid hidden">
-          <div class="field full"><strong style="border-bottom:1px solid var(--line);padding-bottom:5px;display:block">Revisão dos Dados</strong></div>
-          <div class="field full"><label>Nome do Cliente</label><input name="name" required></div>
-          <div class="field"><label>Telefone / WhatsApp</label><input name="phone" required></div>
-          <div class="field"><label>Placa</label><input name="plate" required maxlength="8"></div>
-          <div class="field"><label>Marca</label><input name="brand" required></div>
-          <div class="field"><label>Modelo</label><input name="model" required></div>
-          <div class="field"><label>Ano</label><input name="year" type="number"></div>
-          <div class="field"><label>Quilometragem atual</label><input name="mileage" type="number" required></div>
-          <div class="field full"><label>Relato do problema</label><textarea name="complaint" required></textarea></div>
-          <div class="form-actions"><button class="btn btn-primary" type="submit">Salvar e Criar OS</button></div>
+          <div class="form-section-title">Revise os dados encontrados</div>
+          <div class="field full"><label for="smart-name">Nome do cliente</label><input id="smart-name" name="name" required maxlength="100"></div>
+          <div class="field"><label for="smart-phone">Telefone / WhatsApp</label><input id="smart-phone" name="phone" required maxlength="20" inputmode="tel"></div>
+          <div class="field"><label for="smart-plate">Placa</label><input id="smart-plate" name="plate" required maxlength="8"></div>
+          <div class="field"><label for="smart-brand">Marca</label><input id="smart-brand" name="brand" required maxlength="60"></div>
+          <div class="field"><label for="smart-model">Modelo</label><input id="smart-model" name="model" required maxlength="60"></div>
+          <div class="field"><label for="smart-year">Ano</label><input id="smart-year" name="year" type="number" min="1900" max="2100"></div>
+          <div class="field"><label for="smart-color">Cor</label><input id="smart-color" name="color" maxlength="40"></div>
+          <div class="field"><label for="smart-mileage">Quilometragem atual</label><input id="smart-mileage" name="mileage" type="number" min="0" required></div>
+          <div class="field full"><label for="smart-expected">Previsão de conclusão <span class="help">(opcional)</span></label><input id="smart-expected" name="expectedAt" type="date"></div>
+          <div class="field full"><label for="smart-complaint">Relato do problema</label><textarea id="smart-complaint" name="complaint" required maxlength="1200"></textarea></div>
+          <div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">${icon("check")} Criar ordem</button></div>
         </form>
       `);
 
@@ -421,7 +930,10 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         form.elements.name.value = data.name;
         form.elements.phone.value = data.phone;
         form.elements.plate.value = data.plate;
+        form.elements.brand.value = data.brand;
+        form.elements.model.value = data.model;
         form.elements.year.value = data.year;
+        form.elements.color.value = data.color;
         form.elements.mileage.value = data.mileage;
         form.elements.complaint.value = data.complaint;
         form.classList.remove("hidden");
@@ -438,32 +950,33 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       
       let cleanPhone = phone(c.phone);
       if (cleanPhone.length <= 11) cleanPhone = "55" + cleanPhone;
+      if(cleanPhone.length<12||cleanPhone.length>13) return toast("Revise o telefone do cliente antes de abrir o WhatsApp.","error");
       
       const link = getPublicLink(order.publicToken);
       const defaultMsg = `Olá, ${c.name.split(' ')[0]}! O status do seu serviço na ${state.workshop.name} mudou para: *${STATUS[order.status]}*.\n\nAcompanhe seu atendimento e orçamento aqui: ${link}`;
       const msg = customMsg || defaultMsg;
 
-      modal("Enviar Aviso pelo WhatsApp", `
-        <div class="notice">O navegador não envia mensagens em segundo plano automaticamente por segurança. Você precisa confirmar o envio no seu app.</div>
-        <div class="field full" style="margin-bottom:20px">
-          <label>Mensagem</label>
-          <textarea id="wa-msg-text" style="min-height:120px">${esc(msg)}</textarea>
+      modal("Compartilhar atualização", `
+        <div class="notice">${icon("info")}<span>A mensagem será aberta no WhatsApp para sua confirmação. O Oficlaro não afirma que ela foi entregue ou lida.</span></div>
+        <div class="field modal-field">
+          <label for="wa-msg-text">Mensagem para o cliente</label>
+          <textarea id="wa-msg-text" class="message-field">${esc(msg)}</textarea>
         </div>
-        <div class="form-actions">
-          <button class="btn btn-secondary" onclick="closeModal()">Agora não</button>
-          <button class="btn btn-secondary" id="wa-copy">Copiar Texto</button>
-          <button class="btn btn-primary" id="wa-send" style="background:#25D366;border-color:#25D366">Abrir WhatsApp</button>
+        <div class="dialog-actions">
+          <button class="btn btn-ghost" type="button" data-action="close">Agora não</button>
+          <button class="btn btn-secondary" type="button" id="wa-copy">${icon("copy")} Copiar mensagem</button>
+          <button class="btn btn-whatsapp" type="button" id="wa-send">${icon("whatsapp")} Abrir WhatsApp</button>
         </div>
       `);
 
-      $("#wa-copy").addEventListener("click", () => {
-        navigator.clipboard.writeText($("#wa-msg-text").value);
-        toast("Texto copiado!");
+      $("#wa-copy").addEventListener("click", async () => {
+        try{await navigator.clipboard.writeText($("#wa-msg-text").value);toast("Mensagem copiada.");}
+        catch{toast("Não foi possível copiar automaticamente. Selecione o texto e copie manualmente.","error");}
       });
       
       $("#wa-send").addEventListener("click", () => {
         const finalMsg = encodeURIComponent($("#wa-msg-text").value);
-        window.open(`https://wa.me/${cleanPhone}?text=${finalMsg}`, '_blank');
+        window.open(`https://wa.me/${cleanPhone}?text=${finalMsg}`, '_blank', 'noopener');
         closeModal();
       });
     }
@@ -471,18 +984,20 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     // ---------------------------------------------------------
     // RENDERIZAÇÃO E NAVEGAÇÃO DA OFICINA
     // ---------------------------------------------------------
-    function modal(title,body,wide=false){const d=$("#modal");d.style.width=wide?"min(980px,calc(100vw - 28px))":"";d.innerHTML=`<div class="dialog-head"><h2>${esc(title)}</h2><button class="icon-btn" data-action="close" aria-label="Fechar">×</button></div><div class="dialog-body">${body}</div>`;wireLabels(d);d.showModal()}
-    function closeModal(){const d=$("#modal");if(d.open)d.close()}
+    function modal(title,body,wide=false){const d=$("#modal");d.classList.toggle("dialog-wide",wide);d.innerHTML=`<div class="dialog-head"><h2>${esc(title)}</h2><button class="icon-btn" data-action="close" aria-label="Fechar modal">${icon("close")}</button></div><div class="dialog-body">${body}</div>`;wireLabels(d);d.showModal()}
+    function closeModal(){const d=$("#modal");if(d.open)d.close();d.classList.remove("dialog-wide")}
     function wireLabels(root){$$('.field',root).forEach(f=>{const l=$('label',f),c=$('input,select,textarea',f);if(l&&c&&!c.getAttribute('aria-label'))c.setAttribute('aria-label',l.textContent.replace(/\s+/g,' ').trim())})}
-    function pageHead(eyebrow,title,description,action="",label=""){return `<header class="page-head"><div><span class="eyebrow">${eyebrow}</span><h1>${title}</h1><p>${description}</p></div>${action?`<button class="btn btn-primary" data-action="${action}">${label}</button>`:""}</header>`}
-    function empty(title,desc,action,label){return `<div class="empty"><div class="empty-icon">+</div><h3>${esc(title)}</h3><p>${esc(desc)}</p>${action?`<button class="btn btn-primary" data-action="${action}">${esc(label)}</button>`:""}</div>`}
+    function pageHead(eyebrow,title,description,action="",label=""){return `<header class="page-head"><div><span class="eyebrow">${esc(eyebrow)}</span><h1>${title}</h1><p>${esc(description)}</p></div>${action?`<button class="btn btn-primary" data-action="${action}">${icon("plus")}${esc(label)}</button>`:""}</header>`}
+    function empty(title,desc,action,label){return `<div class="empty"><div class="empty-icon">${icon("file")}</div><h3>${esc(title)}</h3><p>${esc(desc)}</p>${action?`<button class="btn btn-primary" data-action="${action}">${icon("plus")}${esc(label)}</button>`:""}</div>`}
     
-    function navigate(next,idValue=null){view=next;selectedOrder=idValue;search="";document.body.classList.remove("menu-open");render();$("#main").focus()}
+    function setMenuOpen(open){const mobile=window.matchMedia?.("(max-width: 760px)").matches;document.body.classList.toggle("menu-open",Boolean(open&&mobile));$("#menu").setAttribute("aria-expanded",String(Boolean(open&&mobile)));$("#sidebar").toggleAttribute?.("inert",Boolean(mobile&&!open));}
+    function navigate(next,idValue=null){view=next;selectedOrder=idValue;search="";setMenuOpen(false);render();$("#main").focus()}
     
     function render(){
       const active=view==="order-detail"?"orders":view;
       $$('[data-view]').forEach(b=>b.setAttribute("aria-current",b.dataset.view===active?"page":"false"));
       $("#crumb").textContent=TITLES[view]||"Oficlaro";
+      document.title=`${TITLES[view]||"Oficlaro"} — Oficlaro`;
       const renderers={dashboard:renderDashboard,clients:renderClients,vehicles:renderVehicles,orders:renderOrders,backup:renderBackup,"order-detail":renderOrderDetail};
       renderers[view]?.();
       wireLabels($("#main"));
@@ -498,88 +1013,93 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       const firstName=esc(state.workshop.ownerName.trim().split(/\s+/)[0]||"equipe");
       const recent=[...state.orders].sort((a,b)=>b.updatedAt-a.updatedAt).slice(0,6);
       const stages=[["Recebidos",["RECEIVED"]],["Diagnóstico",["DIAGNOSING","DIAGNOSED"]],["Aprovação",["AWAITING_APPROVAL"]],["Em execução",["WAITING_PARTS","IN_PROGRESS","FINAL_TESTS"]],["Prontos",["READY"]]];
+      const hour=new Date().getHours(),greeting=hour<12?"Bom dia":hour<18?"Boa tarde":"Boa noite";
       
       $("#main").innerHTML=`
-        <section class="dashboard-hero">
-          <div class="hero-copy">
-            <span class="hero-kicker">Central da oficina</span>
-            <h1>Olá, <span>${firstName}.</span><br>Vamos cuidar da operação?</h1>
-            <div class="hero-actions"><button class="btn btn-primary" data-action="smart-order">Nova OS (Assistente)</button><button class="btn btn-secondary" data-view="orders">Ver ordens</button></div>
-          </div>
-          <aside class="hero-panel">
-            <div class="hero-panel-label"><span>Operação</span><strong>Agora</strong></div>
-            <div class="hero-panel-grid">
-              <div class="hero-mini"><strong>${open}</strong><span>Abertas</span></div>
-              <div class="hero-mini"><strong>${delivered}</strong><span>Entregues</span></div>
-              <div class="hero-mini"><strong>${state.clients.length}</strong><span>Clientes</span></div>
-            </div>
-          </aside>
+        <section class="dashboard-intro" aria-labelledby="dashboard-title">
+          <div><span class="eyebrow">Central da oficina</span><h1 id="dashboard-title">${greeting}, <span>${firstName}.</span></h1><p>Veja o que precisa da sua atenção e mantenha cada atendimento em movimento.</p></div>
+          <div class="dashboard-actions"><button class="btn btn-primary" data-action="smart-order">${icon("plus")} Nova ordem</button><button class="btn btn-secondary" data-view="orders">Ver todas as ordens</button></div>
         </section>
-        <section class="grid stats">
-          <article class="card stat orders"><div class="stat-top"><span class="stat-chip">Agora</span></div><span class="stat-label">Ordens em aberto</span><strong class="stat-value">${open}</strong></article>
-          <article class="card stat approval"><div class="stat-top"><span class="stat-chip">Atenção</span></div><span class="stat-label">Aguardando aprovação</span><strong class="stat-value">${pending}</strong></article>
-          <article class="card stat ready"><div class="stat-top"><span class="stat-chip">Entrega</span></div><span class="stat-label">Veículos prontos</span><strong class="stat-value">${ready}</strong></article>
-          <article class="card stat revenue"><div class="stat-top"><span class="stat-chip">Total</span></div><span class="stat-label">Recebimentos</span><strong class="stat-value money">${money(revenue)}</strong></article>
+        <section class="grid stats" aria-label="Indicadores da oficina">
+          <article class="card metric"><div class="metric-top"><span class="metric-icon">${icon("orders")}</span><span class="metric-context">Agora</span></div><div><span class="metric-label">Ordens em aberto</span><strong class="metric-value">${open}</strong><span class="metric-note">Atendimentos ativos</span></div></article>
+          <article class="card metric attention"><div class="metric-top"><span class="metric-icon">${icon("clock")}</span><span class="metric-context">Atenção</span></div><div><span class="metric-label">Aguardando aprovação</span><strong class="metric-value">${pending}</strong><span class="metric-note">Orçamentos pendentes</span></div></article>
+          <article class="card metric ready"><div class="metric-top"><span class="metric-icon">${icon("check")}</span><span class="metric-context">Entrega</span></div><div><span class="metric-label">Veículos prontos</span><strong class="metric-value">${ready}</strong><span class="metric-note">Liberados para retirada</span></div></article>
+          <article class="card metric revenue"><div class="metric-top"><span class="metric-icon">${icon("wallet")}</span><span class="metric-context">Acumulado</span></div><div><span class="metric-label">Recebimentos</span><strong class="metric-value money">${money(revenue)}</strong><span class="metric-note">Pagamentos registrados</span></div></article>
+        </section>
+        <section class="card operations-card" aria-labelledby="operations-title">
+          <div class="operations-head"><div><h2 id="operations-title">Fluxo da oficina</h2><p>Distribuição das ordens ativas por etapa</p></div><button class="btn btn-ghost btn-sm" data-view="orders">Gerenciar ordens ${icon("arrow")}</button></div>
+          <div class="pipeline">${stages.map(([label,statuses])=>{const count=state.orders.filter(o=>statuses.includes(o.status)).length;return `<div class="pipeline-stage ${count?"active":""}"><strong>${count}</strong><span>${label}</span></div>`}).join("")}</div>
         </section>
         <section class="grid dashboard-grid">
-          <article class="card"><div class="card-head"><div><h2>Ordens recentes</h2></div></div>${recent.length?ordersTable(recent):empty("Nenhuma ordem ainda","","smart-order","Criar primeira ordem")}</article>
+          <article class="card"><div class="card-head"><div><h2>Ordens recentes</h2><p>Últimas movimentações da operação</p></div><button class="btn btn-ghost btn-sm" data-view="orders">Ver todas ${icon("arrow")}</button></div>${recent.length?ordersTable(recent):empty("Nenhuma ordem ainda","Crie o primeiro atendimento para começar a acompanhar sua operação.","smart-order","Criar primeira ordem")}</article>
+          <aside class="card"><div class="card-head"><div><h2>Ações rápidas</h2><p>Atalhos da rotina</p></div></div><div class="quick-actions">
+            <button class="quick-action" data-action="smart-order"><span class="quick-action-icon">${icon("orders")}</span><span><strong>Nova ordem</strong><span>Iniciar atendimento</span></span><span class="quick-action-arrow">${icon("arrow")}</span></button>
+            <button class="quick-action" data-action="new-client"><span class="quick-action-icon">${icon("users")}</span><span><strong>Novo cliente</strong><span>Adicionar contato</span></span><span class="quick-action-arrow">${icon("arrow")}</span></button>
+            <button class="quick-action" data-action="new-vehicle"><span class="quick-action-icon">${icon("car")}</span><span><strong>Novo veículo</strong><span>Vincular proprietário</span></span><span class="quick-action-arrow">${icon("arrow")}</span></button>
+          </div></aside>
         </section>
       `;
     }
 
     function ordersTable(items){
-      return `<div class="table-wrap"><table class="table"><thead><tr><th>OS</th><th>Cliente</th><th>Veículo</th><th>Status</th><th>Ações</th></tr></thead><tbody>${items.map(o=>{
+      return `<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Ordem</th><th>Cliente</th><th>Veículo</th><th>Placa</th><th>Status</th><th>Atualização</th><th></th></tr></thead><tbody>${items.map(o=>{
         const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId);
-        return `<tr><td class="strong">${esc(o.number)}</td><td>${esc(c?.name||"Removido")}</td><td>${esc(v?`${v.brand} ${v.model} · ${v.plate}`:"Removido")}</td><td>${badge(o.status)}</td><td><button class="btn btn-secondary btn-sm" data-action="open-order" data-id="${o.id}">Abrir</button></td></tr>`
+        return `<tr><td data-label="Ordem" class="strong">${esc(o.number)}</td><td data-label="Cliente">${esc(c?.name||"Cliente removido")}</td><td data-label="Veículo">${esc(vehicleName(v))}</td><td data-label="Placa"><span class="plate">${esc(v?.plate||"—")}</span></td><td data-label="Status">${badge(o.status)}</td><td data-label="Atualização">${date(o.updatedAt,true)}</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="open-order" data-id="${o.id}">Abrir ordem ${icon("arrow")}</button></td></tr>`
       }).join("")}</tbody></table></div>`;
     }
 
     function renderClients(){
       const term=search.toLowerCase(),items=state.clients.filter(c=>!term||`${c.name} ${c.phone} ${c.email}`.toLowerCase().includes(term));
-      $("#main").innerHTML=`${pageHead("Relacionamento","Clientes","Contatos vinculados às ordens.","new-client","+ Novo cliente")}<div class="toolbar"><label class="field search"><input id="search" type="search" value="${esc(search)}" placeholder="Buscar..."></label></div><section class="card">${items.length?`<div class="table-wrap"><table class="table"><thead><tr><th>Cliente</th><th>Telefone</th><th>Cadastro</th><th></th></tr></thead><tbody>${items.map(c=>`<tr><td class="strong">${esc(c.name)}</td><td>${esc(c.phone)}</td><td>${date(c.createdAt)}</td><td><button class="btn btn-secondary btn-sm" data-action="edit-client" data-id="${c.id}">Editar</button></td></tr>`).join("")}</tbody></table></div>`:empty("Nenhum cliente.","","new-client","Cadastrar")}</section>`;
+      $("#main").innerHTML=`${pageHead("Relacionamento","Clientes","Uma visão clara dos contatos, veículos e histórico de atendimento.","new-client","Novo cliente")}<div class="toolbar"><label class="field search"><span class="field-label">Buscar clientes</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Nome, telefone ou e-mail"></label><span class="toolbar-meta">${items.length} cliente${items.length===1?"":"s"}</span></div><section class="card">${items.length?`<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Cliente</th><th>Contato</th><th>Veículos</th><th>Ordens</th><th>Último atendimento</th><th></th></tr></thead><tbody>${items.map(c=>{const vehicles=state.vehicles.filter(v=>v.clientId===c.id);const orders=state.orders.filter(o=>o.clientId===c.id).sort((a,b)=>b.updatedAt-a.updatedAt);return `<tr><td data-label="Cliente"><div class="entity-cell"><span class="avatar">${esc(initials(c.name))}</span><span class="entity-copy"><strong>${esc(c.name)}</strong><span>Desde ${date(c.createdAt)}</span></span></div></td><td data-label="Contato"><span class="entity-copy"><strong>${esc(c.phone)}</strong><span>${esc(c.email||"E-mail não informado")}</span></span></td><td data-label="Veículos">${vehicles.length}</td><td data-label="Ordens">${orders.length}</td><td data-label="Último atendimento">${orders.length?date(orders[0].updatedAt):"—"}</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="edit-client" data-id="${c.id}">${icon("edit")} Editar</button></td></tr>`}).join("")}</tbody></table></div>`:empty("Nenhum cliente cadastrado","Cadastre o primeiro cliente para começar a criar veículos e ordens de serviço.","new-client","Cadastrar cliente")}</section>`;
       bindSearch();
     }
     
     function renderVehicles(){
       const term=search.toLowerCase(),items=state.vehicles.filter(v=>!term||`${v.brand} ${v.model} ${v.plate}`.toLowerCase().includes(term));
-      $("#main").innerHTML=`${pageHead("Prontuário digital","Veículos","Veículos ligados aos proprietários.","new-vehicle","+ Novo veículo")}<div class="toolbar"><label class="field search"><input id="search" type="search" value="${esc(search)}" placeholder="Buscar..."></label></div><section class="card">${items.length?`<div class="table-wrap"><table class="table"><thead><tr><th>Veículo</th><th>Placa</th><th>Proprietário</th><th></th></tr></thead><tbody>${items.map(v=>`<tr><td class="strong">${esc(`${v.brand} ${v.model}`)}</td><td>${esc(v.plate)}</td><td>${esc(clientOf(v.clientId)?.name||"—")}</td><td><button class="btn btn-secondary btn-sm" data-action="edit-vehicle" data-id="${v.id}">Editar</button></td></tr>`).join("")}</tbody></table></div>`:empty("Nenhum veículo.","","new-vehicle","Cadastrar")}</section>`;
+      $("#main").innerHTML=`${pageHead("Prontuário digital","Veículos","Identifique rapidamente cada veículo e mantenha o histórico ligado ao proprietário.","new-vehicle","Novo veículo")}<div class="toolbar"><label class="field search"><span class="field-label">Buscar veículos</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Marca, modelo ou placa"></label><span class="toolbar-meta">${items.length} veículo${items.length===1?"":"s"}</span></div><section class="card">${items.length?`<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Veículo</th><th>Placa</th><th>Ano</th><th>Proprietário</th><th>Quilometragem</th><th></th></tr></thead><tbody>${items.map(v=>`<tr><td data-label="Veículo"><div class="entity-cell"><span class="avatar">${icon("car")}</span><span class="entity-copy"><strong>${esc(vehicleName(v))}</strong><span>${esc(v.color||"Cor não informada")}</span></span></div></td><td data-label="Placa"><span class="plate">${esc(v.plate)}</span></td><td data-label="Ano">${esc(v.year||"—")}</td><td data-label="Proprietário">${esc(clientOf(v.clientId)?.name||"Cliente removido")}</td><td data-label="Quilometragem">${Number(v.mileage||0).toLocaleString("pt-BR")} km</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="edit-vehicle" data-id="${v.id}">${icon("edit")} Editar</button></td></tr>`).join("")}</tbody></table></div>`:empty("Nenhum veículo cadastrado",state.clients.length?"Cadastre o primeiro veículo para vinculá-lo ao prontuário do cliente.":"Cadastre um cliente antes de adicionar o primeiro veículo.",state.clients.length?"new-vehicle":"new-client",state.clients.length?"Cadastrar veículo":"Cadastrar cliente")}</section>`;
       bindSearch();
     }
 
     function renderOrders(){
-      const term=search.toLowerCase(),items=state.orders.filter(o=>{const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId);return !term||`${o.number} ${c?.name} ${v?.plate}`.toLowerCase().includes(term)}).sort((a,b)=>b.updatedAt-a.updatedAt);
-      $("#main").innerHTML=`${pageHead("Acompanhamento","Ordens de serviço","Histórico de atendimento.","smart-order","+ Nova ordem")}<div class="toolbar"><label class="field search"><input id="search" type="search" value="${esc(search)}" placeholder="Buscar..."></label></div><section class="card">${items.length?ordersTable(items):empty("Nenhuma ordem.","","smart-order","Criar ordem")}</section>`;
+      const term=search.toLowerCase(),items=state.orders.filter(o=>{const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId);return !term||`${o.number} ${c?.name} ${vehicleName(v)} ${v?.plate}`.toLowerCase().includes(term)}).sort((a,b)=>b.updatedAt-a.updatedAt);
+      $("#main").innerHTML=`${pageHead("Acompanhamento operacional","Ordens de serviço","Gerencie cada atendimento do recebimento à entrega.","smart-order","Nova ordem")}<div class="toolbar"><label class="field search"><span class="field-label">Buscar ordens</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Número, cliente, veículo ou placa"></label><span class="toolbar-meta">${items.length} ordem${items.length===1?"":"ns"}</span></div><section class="card">${items.length?ordersTable(items):empty("Nenhuma ordem de serviço","Crie o primeiro atendimento para iniciar o acompanhamento da oficina.","smart-order","Criar ordem")}</section>`;
       bindSearch();
     }
 
     function renderOrderDetail(){
       const o=orderOf(selectedOrder);if(!o){navigate("orders");return;}
       const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId),items=o.estimate?.items||[],subtotal=items.reduce((s,i)=>s+i.qty*i.unitCents,0),paid=(o.payments||[]).reduce((s,p)=>s+p.amountCents,0);
+      const balance=subtotal-paid;
       const link = getPublicLink(o.publicToken);
 
-      $("#main").innerHTML=`${pageHead("Ordem de serviço",esc(o.number),"Detalhes e atualizações.")}
+      $("#main").innerHTML=`
+      <section class="order-summary" aria-labelledby="order-title">
+        <div class="order-summary-top"><div><span class="order-number">${esc(o.number)}</span><h1 id="order-title">${esc(vehicleName(v))}</h1><p class="order-summary-subtitle">${esc(v?.year||"Ano não informado")} · ${esc(v?.plate||"Sem placa")} · ${esc(c?.name||"Cliente removido")}</p></div>${badge(o.status)}</div>
+        <div class="order-summary-grid">
+          <div><span>Cliente</span><strong>${esc(c?.name||"—")}</strong></div>
+          <div><span>Quilometragem</span><strong>${Number(o.mileage||v?.mileage||0).toLocaleString("pt-BR")} km</strong></div>
+          <div><span>Aberta em</span><strong>${date(o.createdAt)}</strong></div>
+          <div><span>Previsão</span><strong>${date(o.expectedAt)}</strong></div>
+          <div><span>Última atualização</span><strong>${date(o.updatedAt,true)}</strong></div>
+        </div>
+      </section>
       <section class="grid detail-grid">
         <div class="stack">
-          <article class="card" style="padding:15px;background:#f2f7ff;border-color:#bcd5f8">
-            <h3 style="margin:0 0 10px;font-size:14px;color:var(--brand-800)">Acesso do Cliente</h3>
-            <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <a href="${link}" target="_blank" class="btn btn-secondary btn-sm">Abrir Link Público</a>
-              <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText('${link}');toast('Link copiado')">Copiar Link</button>
-              <button class="btn btn-primary btn-sm" onclick="openWhatsAppModal(orderOf('${o.id}'))" style="background:#25D366;border:0">Enviar WhatsApp</button>
-            </div>
-          </article>
-          
-          <article class="card"><div class="card-head"><h2>Andamento</h2></div><div class="card-pad"><form id="status-form" class="form-grid"><div class="field full"><label>Status atual</label><select name="status">${Object.entries(STATUS).map(([key,label])=>`<option value="${key}" ${o.status===key?"selected":""}>${label}</option>`).join("")}</select></div><div class="field full"><label>Observação (Cliente verá no histórico)</label><input name="note" maxlength="240"></div><div class="form-actions"><button class="btn btn-primary" type="submit">Salvar Status e Sincronizar</button></div></form></div></article>
-          
-          <article class="card"><div class="card-head"><h2>Diagnóstico (Público)</h2></div><div class="card-pad"><form id="diagnosis-form" class="form-grid"><div class="field full"><label>Título</label><input name="title" value="${esc(o.diagnosis?.title||"")}"></div><div class="field full"><label>Descrição para o cliente</label><textarea name="description">${esc(o.diagnosis?.description||"")}</textarea></div><div class="form-actions"><button class="btn btn-primary" type="submit">Salvar Diagnóstico</button></div></form></div></article>
-          
-          <article class="card"><div class="card-head"><div><h2>Orçamento</h2></div><button class="btn btn-secondary btn-sm" data-action="new-item">+ Item</button></div><div class="card-pad">${items.length?items.map(i=>`<div class="item-row split"><div><strong>${esc(i.description)}</strong><p>${i.qty} × ${money(i.unitCents)}</p></div><div style="text-align:right"><strong>${money(i.qty*i.unitCents)}</strong><div><select class="item-decision" data-id="${i.id}"><option value="PENDING" ${i.decision==="PENDING"?"selected":""}>Pendente</option><option value="APPROVED" ${i.decision==="APPROVED"?"selected":""}>Aprovado</option><option value="REJECTED" ${i.decision==="REJECTED"?"selected":""}>Recusado</option></select></div></div></div>`).join("")+`<div class="total-box split"><span>Total</span><strong>${money(subtotal)}</strong></div>`:empty("Vazio","","new-item","Add Item")}</div></article>
+          <article class="card section-card"><div class="card-head"><div><h2>Atendimento</h2><p>Relato registrado na abertura da ordem</p></div></div><div class="card-pad"><p class="public-text">${esc(o.complaint||"Relato não informado.")}</p></div></article>
+          <article class="card section-card"><div class="card-head"><div><h2>Andamento</h2><p>Atualize o que o cliente verá no acompanhamento</p></div>${badge(o.status)}</div><div class="card-pad"><form id="status-form" class="form-grid"><div class="field full"><label for="order-status">Status atual</label><select id="order-status" name="status">${Object.entries(STATUS).map(([key,label])=>`<option value="${key}" ${o.status===key?"selected":""}>${label}</option>`).join("")}</select></div><div class="field full"><label for="status-note">Observação pública</label><input id="status-note" name="note" maxlength="240" placeholder="Ex.: Peças solicitadas ao fornecedor"><span class="help">Essa observação entra no histórico que o cliente acompanha.</span></div><div class="form-actions"><button class="btn btn-primary" type="submit">${icon("check")} Atualizar andamento</button></div></form></div></article>
+          <article class="card section-card"><div class="card-head"><div><h2>Diagnóstico</h2><p>Separe a explicação do cliente das anotações internas</p></div></div><div class="card-pad"><form id="diagnosis-form" class="form-grid"><div class="field full"><label for="diagnosis-title">Título</label><input id="diagnosis-title" name="title" maxlength="120" value="${esc(o.diagnosis?.title||"")}" placeholder="Ex.: Desgaste no sistema de freios"></div><div class="field full"><label for="diagnosis-description">Descrição para o cliente</label><textarea id="diagnosis-description" name="description" maxlength="1600" placeholder="Explique o diagnóstico em linguagem clara">${esc(o.diagnosis?.description||"")}</textarea></div><div class="field full"><label for="diagnosis-internal">Notas internas da oficina</label><textarea id="diagnosis-internal" name="internal" maxlength="1600" placeholder="Informações técnicas que não aparecem na página pública">${esc(o.diagnosis?.internal||"")}</textarea><span class="help">As notas internas permanecem somente na área administrativa.</span></div><div class="form-actions"><button class="btn btn-primary" type="submit">Salvar diagnóstico</button></div></form></div></article>
+          <article class="card section-card"><div class="card-head"><div><h2>Orçamento</h2><p>Peças, serviços e decisões do cliente</p></div><button class="btn btn-secondary btn-sm" data-action="new-item">${icon("plus")} Adicionar item</button></div><div class="card-pad">${items.length?items.map(i=>`<div class="item-row split mobile-stack"><div><strong>${esc(i.description)}</strong><p>${esc(i.type||"Serviço")} · ${i.qty} × ${money(i.unitCents)}</p></div><div class="item-price"><strong>${money(i.qty*i.unitCents)}</strong><select class="decision-control item-decision" data-id="${i.id}" aria-label="Decisão para ${esc(i.description)}"><option value="PENDING" ${i.decision==="PENDING"?"selected":""}>Pendente</option><option value="APPROVED" ${i.decision==="APPROVED"?"selected":""}>Aprovado</option><option value="REJECTED" ${i.decision==="REJECTED"?"selected":""}>Recusado</option></select></div></div>`).join("")+`<div class="total-box split"><span>Total do orçamento</span><strong>${money(subtotal)}</strong></div>`:empty("Orçamento em branco","Adicione peças e serviços para apresentar ao cliente.","new-item","Adicionar item")}</div></article>
         </div>
-        
         <aside class="stack">
-          <article class="card"><div class="card-head"><h2>Resumo Financeiro (Privado)</h2></div><div class="card-pad stack"><div class="split"><span>Orçamento</span><strong>${money(subtotal)}</strong></div><div class="split"><span>Recebido</span><strong style="color:var(--success)">${money(paid)}</strong></div><button class="btn btn-primary" data-action="new-payment">Registrar pagamento</button></div></article>
-          <article class="card"><div class="card-head"><h2>Linha do tempo</h2></div><div class="card-pad"><ol class="timeline">${[...(o.timeline||[])].sort((a,b)=>b.at-a.at).map(e=>`<li><strong>${esc(e.text)}</strong><time>${date(e.at,true)}</time></li>`).join("")}</ol></div></article>
-          <button class="btn btn-secondary" data-view="orders">← Voltar para ordens</button>
+          <section class="communication-card" aria-labelledby="communication-title">
+            <h2 id="communication-title">Comunicação com o cliente</h2><p>Compartilhe um acesso simples e sempre atualizado.</p>
+            <div class="communication-link" title="${esc(link)}">${esc(link)}</div>
+            <div class="communication-actions"><a href="${esc(link)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">${icon("external")} Abrir</a><button class="btn btn-secondary btn-sm" data-action="copy-public" data-id="${o.id}">${icon("copy")} Copiar</button><button class="btn btn-whatsapp btn-sm" data-action="send-whatsapp" data-id="${o.id}">${icon("whatsapp")} WhatsApp</button></div>
+            <p>Sincronizado em ${date(o.updatedAt,true)}</p>
+          </section>
+          <article class="card"><div class="card-head"><div><h2>Financeiro</h2><p>Informação privada da oficina</p></div></div><div class="card-pad finance-grid"><div class="finance-row"><span>Total da OS</span><strong>${money(subtotal)}</strong></div><div class="finance-row"><span>Recebido</span><strong>${money(paid)}</strong></div><div class="finance-row balance"><span>Saldo pendente</span><strong>${money(Math.max(0,balance))}</strong></div>${balance<=0&&subtotal>0?`<div class="paid-state">Pagamento concluído</div>`:""}<button class="btn btn-primary" data-action="new-payment">${icon("plus")} Registrar pagamento</button></div></article>
+          <article class="card"><div class="card-head"><div><h2>Histórico</h2><p>Eventos mais recentes primeiro</p></div></div><div class="card-pad"><ol class="timeline">${[...(o.timeline||[])].sort((a,b)=>b.at-a.at).map(e=>`<li><strong>${esc(e.text)}</strong><time datetime="${new Date(e.at).toISOString()}">${date(e.at,true)}</time></li>`).join("")}</ol></div></article>
+          <button class="btn btn-secondary back-link" data-view="orders">${icon("back")} Voltar para ordens</button>
         </aside>
       </section>`;
       
@@ -592,34 +1112,33 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     }
 
     function renderBackup(){
-      $("#main").innerHTML=`${pageHead("Segurança","Configurações","Ajustes da oficina.")}
+      const bytes=new Blob([JSON.stringify(state)]).size;
+      $("#main").innerHTML=`${pageHead("Administração","Configurações","Gerencie a identidade da oficina, sua conta e a segurança dos dados.")}
       <section class="grid dashboard-grid">
-        <aside class="card card-pad stack">
-          <h2>Configurações</h2>
-          <div class="field"><label>Oficina</label><input value="${esc(state.workshop.name)}" disabled></div>
-          <button class="btn btn-secondary" data-action="edit-workshop">Editar oficina</button>
-        </aside>
+        <article class="card"><div class="card-head"><div><h2>Dados da oficina</h2><p>Informações exibidas nos links de acompanhamento</p></div></div><div class="card-pad form-grid"><div class="field full"><label>Nome da oficina</label><input value="${esc(state.workshop.name)}" disabled></div><div class="field"><label>Responsável</label><input value="${esc(state.workshop.ownerName)}" disabled></div><div class="field"><label>WhatsApp comercial</label><input value="${esc(state.workshop.phone)}" disabled></div><div class="form-actions"><button class="btn btn-secondary" data-action="edit-workshop">${icon("edit")} Editar dados</button></div></div></article>
+        <aside class="stack"><article class="card"><div class="card-head"><div><h2>Conta</h2><p>Acesso autenticado</p></div></div><div class="card-pad stack"><div class="field"><label>E-mail</label><input value="${esc(currentUser?.email||"—")}" disabled></div><button class="btn btn-secondary" data-action="logout">Sair desta conta</button></div></article><article class="card"><div class="card-head"><div><h2>Backup</h2><p>Cópia local dos dados</p></div></div><div class="card-pad stack"><div class="finance-row"><span>Tamanho atual</span><strong>${(bytes/1024).toFixed(1)} KB</strong></div><div class="finance-row"><span>Última alteração</span><strong>${date(state.updatedAt,true)}</strong></div><button class="btn btn-primary" data-action="export">${icon("file")} Exportar backup</button><button class="btn btn-secondary" data-action="import">Importar backup</button></div></article></aside>
       </section>`;
     }
 
-    // Modal Forms Standard (Para clientes e veículos individuais - mantidos por segurança)
-    function clientForm(item={}){ modal(item.id?"Editar":"Novo cliente",`<form id="client-form" class="form-grid" data-id="${item.id||""}"><div class="field full"><label>Nome</label><input name="name" required value="${esc(item.name||"")}"></div><div class="field"><label>Telefone</label><input name="phone" required value="${esc(item.phone||"")}"></div><div class="form-actions"><button class="btn btn-primary" type="submit">Salvar</button></div></form>`) }
-    function vehicleForm(item={}){ modal(item.id?"Editar":"Novo veículo",`<form id="vehicle-form" class="form-grid" data-id="${item.id||""}"><div class="field full"><label>Cliente</label><select name="clientId" required>${state.clients.map(c=>`<option value="${c.id}" ${item.clientId===c.id?"selected":""}>${esc(c.name)}</option>`).join("")}</select></div><div class="field"><label>Placa</label><input name="plate" required value="${esc(item.plate||"")}"></div><div class="field"><label>Marca/Modelo</label><input name="brand" required value="${esc(item.brand||"")}"></div><div class="form-actions"><button class="btn btn-primary" type="submit">Salvar</button></div></form>`) }
-    function itemForm(){ modal("Item Orçamento",`<form id="item-form" class="form-grid"><div class="field full"><label>Descrição</label><input name="description" required></div><div class="field"><label>Qtd</label><input name="qty" type="number" min="1" value="1" required></div><div class="field"><label>Valor Un. (R$)</label><input name="price" required placeholder="0,00"></div><div class="form-actions"><button class="btn btn-primary" type="submit">Adicionar</button></div></form>`) }
-    function paymentForm(){ modal("Pagamento",`<form id="payment-form" class="form-grid"><div class="field"><label>Valor (R$)</label><input name="amount" required></div><div class="form-actions"><button class="btn btn-primary" type="submit">Registrar</button></div></form>`) }
-    function bindSearch(){ $("#search")?.addEventListener("input",e=>{search=e.target.value;render();}); }
+    function clientForm(item={}){modal(item.id?"Editar cliente":"Novo cliente",`<form id="client-form" class="form-grid" data-id="${item.id||""}"><div class="field full"><label for="client-name">Nome completo</label><input id="client-name" name="name" required maxlength="100" value="${esc(item.name||"")}" autocomplete="name"></div><div class="field"><label for="client-phone">Telefone / WhatsApp</label><input id="client-phone" name="phone" required maxlength="20" inputmode="tel" value="${esc(item.phone||"")}" autocomplete="tel"></div><div class="field"><label for="client-email">E-mail</label><input id="client-email" name="email" type="email" maxlength="120" value="${esc(item.email||"")}" autocomplete="email"></div><div class="field full"><label for="client-document">CPF ou CNPJ <span class="help">(opcional)</span></label><input id="client-document" name="document" maxlength="18" value="${esc(item.document||"")}"></div><div class="field full"><label for="client-notes">Observações internas</label><textarea id="client-notes" name="notes" maxlength="1000">${esc(item.notes||"")}</textarea></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Salvar cliente</button></div></form>`)}
+    function vehicleForm(item={}){if(!state.clients.length){toast("Cadastre um cliente antes de adicionar um veículo.","warning");clientForm();return;}modal(item.id?"Editar veículo":"Novo veículo",`<form id="vehicle-form" class="form-grid" data-id="${item.id||""}"><div class="field full"><label for="vehicle-client">Proprietário</label><select id="vehicle-client" name="clientId" required><option value="">Selecione o cliente</option>${state.clients.map(c=>`<option value="${c.id}" ${item.clientId===c.id?"selected":""}>${esc(c.name)}</option>`).join("")}</select></div><div class="field"><label for="vehicle-plate">Placa</label><input id="vehicle-plate" name="plate" required maxlength="8" value="${esc(item.plate||"")}" placeholder="ABC1D23"></div><div class="field"><label for="vehicle-year">Ano</label><input id="vehicle-year" name="year" type="number" min="1900" max="2100" value="${esc(item.year||"")}"></div><div class="field"><label for="vehicle-brand">Marca</label><input id="vehicle-brand" name="brand" required maxlength="60" value="${esc(item.brand||"")}" placeholder="Honda"></div><div class="field"><label for="vehicle-model">Modelo</label><input id="vehicle-model" name="model" required maxlength="60" value="${esc(item.model||"")}" placeholder="Civic"></div><div class="field"><label for="vehicle-color">Cor</label><input id="vehicle-color" name="color" maxlength="40" value="${esc(item.color||"")}"></div><div class="field"><label for="vehicle-mileage">Quilometragem</label><input id="vehicle-mileage" name="mileage" type="number" min="0" value="${Number(item.mileage||0)}"></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Salvar veículo</button></div></form>`)}
+    function itemForm(){modal("Adicionar item ao orçamento",`<form id="item-form" class="form-grid"><div class="field full"><label for="item-description">Descrição</label><input id="item-description" name="description" required maxlength="140" placeholder="Ex.: Troca das pastilhas dianteiras"></div><div class="field"><label for="item-type">Tipo</label><select id="item-type" name="type"><option>Serviço</option><option>Peça</option><option>Mão de obra</option></select></div><div class="field"><label for="item-qty">Quantidade</label><input id="item-qty" name="qty" type="number" min="1" value="1" required></div><div class="field full"><label for="item-price">Valor unitário (R$)</label><input id="item-price" name="price" inputmode="decimal" required placeholder="0,00"></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Adicionar item</button></div></form>`)}
+    function paymentForm(){modal("Registrar pagamento",`<form id="payment-form" class="form-grid"><div class="field"><label for="payment-amount">Valor recebido (R$)</label><input id="payment-amount" name="amount" inputmode="decimal" required placeholder="0,00"></div><div class="field"><label for="payment-method">Forma de pagamento</label><select id="payment-method" name="method"><option>Pix</option><option>Dinheiro</option><option>Cartão</option><option>Transferência</option><option>Outro</option></select></div><div class="field full"><label for="payment-note">Observação</label><input id="payment-note" name="note" maxlength="120"></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Registrar pagamento</button></div></form>`)}
+    function workshopForm(){modal("Editar dados da oficina",`<form id="workshop-form" class="form-grid"><div class="field full"><label for="workshop-name">Nome da oficina</label><input id="workshop-name" name="name" required maxlength="100" value="${esc(state.workshop.name)}"></div><div class="field"><label for="workshop-owner">Responsável</label><input id="workshop-owner" name="ownerName" required maxlength="100" value="${esc(state.workshop.ownerName)}"></div><div class="field"><label for="workshop-phone">WhatsApp comercial</label><input id="workshop-phone" name="phone" required maxlength="20" inputmode="tel" value="${esc(state.workshop.phone)}"></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Salvar alterações</button></div></form>`)}
+    function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=`oficlaro-backup-${new Date().toISOString().slice(0,10)}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Backup exportado com sucesso.");}
+    function bindSearch(){ $("#search")?.addEventListener("input",e=>{search=e.target.value;const cursor=e.target.selectionStart;render();requestAnimationFrame(()=>{const next=$("#search");next?.focus();next?.setSelectionRange(cursor,cursor);});}); }
 
     // ---------------------------------------------------------
     // EVENT LISTENERS E CONTROLES DE FORMULÁRIO
     // ---------------------------------------------------------
     document.addEventListener("click",async e=>{
-      const viewBtn=e.target.closest("[data-view]"); if(viewBtn){navigate(viewBtn.dataset.view);return;}
+      const viewBtn=e.target.closest("[data-view]"); if(viewBtn){e.preventDefault();navigate(viewBtn.dataset.view);return;}
       const act=e.target.closest("[data-action]")?.dataset.action, idV=e.target.closest("[data-id]")?.dataset.id;
       if(!act)return;
       
       if(act==="logout"){ await auth.signOut(); }
       if(act==="close"){ closeModal(); }
-      if(act==="close-menu"){ document.body.classList.remove("menu-open"); }
+      if(act==="close-menu"){ setMenuOpen(false); }
       if(act==="smart-order"){ smartOrderForm(); }
       if(act==="new-client"){ clientForm(); }
       if(act==="edit-client"){ clientForm(clientOf(idV)); }
@@ -628,7 +1147,15 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       if(act==="open-order"){ navigate("order-detail", idV); }
       if(act==="new-item"){ itemForm(); }
       if(act==="new-payment"){ paymentForm(); }
-      if(act==="edit-workshop"){ modal("Editar",`<form id="workshop-form" class="form-grid"><div class="field"><label>Nome Oficial</label><input name="name" value="${esc(state.workshop.name)}"></div><div class="field"><label>Telefone</label><input name="phone" value="${esc(state.workshop.phone)}"></div><div class="form-actions"><button class="btn btn-primary" type="submit">Salvar</button></div></form>`); }
+      if(act==="edit-workshop"){ workshopForm(); }
+      if(act==="send-whatsapp"){ openWhatsAppModal(orderOf(idV)); }
+      if(act==="copy-public"){
+        const order=orderOf(idV);if(!order)return;
+        try{await navigator.clipboard.writeText(getPublicLink(order.publicToken));toast("Link de acompanhamento copiado.");}
+        catch{toast("Não foi possível copiar o link automaticamente.","error");}
+      }
+      if(act==="export"){ exportData(); }
+      if(act==="import"){ $("#import-file").click(); }
     });
     
     document.addEventListener("submit", async e=>{
@@ -655,14 +1182,15 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
       // ASSISTENTE INTELIGENTE (CRIAR OS COMPLETA)
       if(f.id==="smart-order-form"){
-        let cl = state.clients.find(c => c.phone === d.phone.trim() || c.name.toLowerCase() === d.name.toLowerCase().trim());
-        if(!cl) { cl = { id:id("cli"), name:d.name.trim(), phone:d.phone.trim(), createdAt:Date.now() }; state.clients.push(cl); }
+        let cl = state.clients.find(c => phone(c.phone) === phone(d.phone) || c.name.toLowerCase() === d.name.toLowerCase().trim());
+        if(!cl) { cl = { id:id("cli"), name:d.name.trim(), phone:d.phone.trim(), email:"", document:"", notes:"", createdAt:Date.now(), updatedAt:Date.now() }; state.clients.push(cl); }
         
-        let ve = state.vehicles.find(v => v.plate === d.plate.toUpperCase().trim());
-        if(!ve) { ve = { id:id("vei"), clientId:cl.id, plate:d.plate.toUpperCase().trim(), brand:d.brand.trim(), model:d.model.trim(), year:d.year, mileage:Number(d.mileage||0), createdAt:Date.now() }; state.vehicles.push(ve); }
+        const normalizedPlate=d.plate.toUpperCase().replace(/[^A-Z0-9]/g,"");
+        let ve = state.vehicles.find(v => v.plate === normalizedPlate);
+        if(!ve) { ve = { id:id("vei"), clientId:cl.id, plate:normalizedPlate, brand:d.brand.trim(), model:d.model.trim(), year:d.year, color:d.color.trim(), mileage:Number(d.mileage||0), createdAt:Date.now(), updatedAt:Date.now() }; state.vehicles.push(ve); }
 
         state.counter++; const now=Date.now();
-        const o={ id:id("os"), number:`OS-${String(state.counter).padStart(6,"0")}`, publicToken:generateToken(), clientId:cl.id, vehicleId:ve.id, mileage:Number(d.mileage), complaint:d.complaint.trim(), status:"RECEIVED", estimate:{items:[]}, payments:[], timeline:[{text:"Veículo recebido.",at:now}], createdAt:now, updatedAt:now };
+        const o={ id:id("os"), number:`OS-${String(state.counter).padStart(6,"0")}`, publicToken:generateToken(), clientId:cl.id, vehicleId:ve.id, mileage:Number(d.mileage), expectedAt:d.expectedAt?new Date(d.expectedAt+"T12:00:00").getTime():null, complaint:d.complaint.trim(), status:"RECEIVED", diagnosis:null, estimate:{items:[]}, payments:[], timeline:[{id:id("evt"),text:"Veículo recebido pela oficina",at:now}], createdAt:now, updatedAt:now };
         state.orders.push(o);
         
         await saveState(); await syncPublicOrder(o.id);
@@ -673,7 +1201,7 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       if(f.id==="status-form"){
         const o=orderOf(selectedOrder), oldSt=o.status;
         o.status=d.status; o.updatedAt=Date.now();
-        o.timeline.push({text:d.note.trim()||STATUS[d.status], at:o.updatedAt});
+        o.timeline.push({id:id("evt"),text:d.note.trim()||STATUS[d.status], at:o.updatedAt});
         await saveState(); await syncPublicOrder(o.id);
         render(); toast("Atualizado com sucesso.");
         
@@ -683,12 +1211,33 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       }
       
       // FORMS MENORES
-      if(f.id==="diagnosis-form"){ const o=orderOf(selectedOrder); o.diagnosis={title:d.title.trim(), description:d.description.trim()}; o.updatedAt=Date.now(); await saveState(); await syncPublicOrder(o.id); render(); toast("Diagnóstico Salvo."); }
-      if(f.id==="item-form"){ const o=orderOf(selectedOrder); o.estimate.items.push({id:id("itm"), description:d.description.trim(), qty:Math.max(1,Number(d.qty)), unitCents:cents(d.price), decision:"PENDING"}); o.updatedAt=Date.now(); await saveState(); await syncPublicOrder(o.id); closeModal(); render(); toast("Item Adicionado."); }
-      if(f.id==="payment-form"){ const o=orderOf(selectedOrder), v=cents(d.amount); if(v){ o.payments.push({amountCents:v, at:Date.now()}); o.updatedAt=Date.now(); await saveState(); closeModal(); render(); toast("Pagamento registrado."); } }
-      if(f.id==="workshop-form"){ state.workshop.name=d.name.trim(); state.workshop.phone=d.phone.trim(); await saveState(); $("#side-workshop").textContent=state.workshop.name; closeModal(); render(); toast("Atualizado."); }
-      if(f.id==="client-form"){ const c=clientOf(f.dataset.id); if(c){c.name=d.name;c.phone=d.phone;} else state.clients.push({id:id("cli"), name:d.name, phone:d.phone, createdAt:Date.now()}); await saveState(); closeModal(); render(); }
-      if(f.id==="vehicle-form"){ const v=vehicleOf(f.dataset.id); if(v){v.plate=d.plate;v.brand=d.brand;} else state.vehicles.push({id:id("vei"), clientId:d.clientId, plate:d.plate, brand:d.brand, createdAt:Date.now()}); await saveState(); closeModal(); render(); }
+      if(f.id==="diagnosis-form"){ const o=orderOf(selectedOrder); o.diagnosis={title:d.title.trim(), description:d.description.trim(), internal:d.internal.trim(), updatedAt:Date.now()}; o.updatedAt=Date.now(); await saveState(); await syncPublicOrder(o.id); render(); toast("Diagnóstico salvo."); }
+      if(f.id==="item-form"){ const o=orderOf(selectedOrder); o.estimate.items.push({id:id("itm"), description:d.description.trim(), type:d.type, qty:Math.max(1,Number(d.qty)), unitCents:cents(d.price), decision:"PENDING"}); o.updatedAt=Date.now(); await saveState(); await syncPublicOrder(o.id); closeModal(); render(); toast("Item adicionado."); }
+      if(f.id==="payment-form"){ const o=orderOf(selectedOrder), value=cents(d.amount); if(!value){toast("Informe um valor maior que zero.","error");return;}const now=Date.now();o.payments.push({id:id("pay"),amountCents:value,method:d.method,note:d.note.trim(),at:now});o.timeline.push({id:id("evt"),text:`Pagamento registrado: ${money(value)}`,at:now});o.updatedAt=now;await saveState();closeModal();render();toast("Pagamento registrado."); }
+      if(f.id==="workshop-form"){ Object.assign(state.workshop,{name:d.name.trim(),ownerName:d.ownerName.trim(),phone:d.phone.trim()});await saveState();$("#side-workshop").textContent=state.workshop.name;$("#side-owner").textContent=state.workshop.ownerName;$("#side-avatar").textContent=initials(state.workshop.name);closeModal();render();toast("Dados da oficina atualizados."); }
+      if(f.id==="client-form"){ const current=clientOf(f.dataset.id),now=Date.now(),item={id:current?.id||id("cli"),name:d.name.trim(),phone:d.phone.trim(),email:d.email.trim(),document:d.document.trim(),notes:d.notes.trim(),createdAt:current?.createdAt||now,updatedAt:now};current?Object.assign(current,item):state.clients.push(item);await saveState();closeModal();render();toast("Cliente salvo."); }
+      if(f.id==="vehicle-form"){ const current=vehicleOf(f.dataset.id),now=Date.now(),item={id:current?.id||id("vei"),clientId:d.clientId,plate:d.plate.toUpperCase().replace(/[^A-Z0-9]/g,""),brand:d.brand.trim(),model:d.model.trim(),year:d.year,color:d.color.trim(),mileage:Number(d.mileage||0),createdAt:current?.createdAt||now,updatedAt:now};current?Object.assign(current,item):state.vehicles.push(item);await saveState();closeModal();render();toast("Veículo salvo."); }
+    });
+
+    $("#menu").addEventListener("click",()=>setMenuOpen(!document.body.classList.contains("menu-open")));
+    $("#modal").addEventListener("click",e=>{if(e.target===$("#modal"))closeModal();});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape")setMenuOpen(false);});
+    window.addEventListener("resize",()=>setMenuOpen(document.body.classList.contains("menu-open")));
+    setMenuOpen(false);
+
+    $("#import-file").addEventListener("change",async e=>{
+      const file=e.target.files[0];if(!file)return;
+      try{
+        const data=JSON.parse(await file.text());
+        if(!data.workshop||!Array.isArray(data.clients)||!Array.isArray(data.vehicles)||!Array.isArray(data.orders))throw new Error("invalid");
+        if(!confirm("Importar este backup e substituir os dados atuais desta oficina?"))return;
+        state={...fresh(),...data,version:2,updatedAt:Date.now()};
+        state.orders.forEach(o=>{o.publicToken=o.publicToken||generateToken();o.timeline=o.timeline||[];o.payments=o.payments||[];o.estimate=o.estimate||{items:[]};o.estimate.items=o.estimate.items||[];});
+        await saveState();
+        await Promise.all(state.orders.map(o=>syncPublicOrder(o.id)));
+        render();toast("Backup importado com sucesso.");
+      }catch(error){console.error(error);toast("O arquivo selecionado não é um backup válido do Oficlaro.","error");}
+      finally{e.target.value="";}
     });
     
   </script>
