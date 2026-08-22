@@ -14,62 +14,55 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+  <!-- Biblioteca leve para QR Code -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+  <!-- 
+  REGRAS DE SEGURANÇA RECOMENDADAS NO FIREBASE REALTIME DATABASE:
+  {
+    "rules": {
+      "workshops": {
+        "$uid": {
+          ".read": "auth != null && auth.uid == $uid",
+          ".write": "auth != null && auth.uid == $uid"
+        }
+      },
+      "publicOrders": {
+        "$token": {
+          ".read": "true",
+          ".write": "newData.child('ownerUid').val() == auth.uid || (data.exists() && newData.hasChildren())"
+        }
+      },
+      "publicCheckins": {
+        "$token": {
+          ".read": "auth != null",
+          ".write": "true"
+        }
+      }
+    }
+  }
+  -->
 
   <style>
 /* Design Tokens */
 :root {
-  --brand-950:#071426;
-  --brand-900:#0b1d35;
-  --brand-800:#123154;
-  --brand-700:#1f5fd1;
-  --brand-600:#2d6cdf;
-  --brand-500:#4b83e7;
-  --brand-100:#dce9fb;
-  --brand-50:#f2f7fd;
-  --brand:var(--brand-700);
-  --brand-hover:#174da9;
-  --brand-soft:var(--brand-50);
-  --background:#f4f6f9;
-  --surface:#ffffff;
-  --surface-secondary:#f8fafc;
-  --surface-tertiary:#eef2f7;
-  --text-primary:#101828;
-  --text-secondary:#344054;
-  --text-muted:#667085;
-  --text-subtle:#667085;
-  --border:#e3e8ef;
-  --border-strong:#cbd4df;
-  --success:#187a55;
-  --success-soft:#eaf7f0;
-  --warning:#9a5b13;
-  --warning-soft:#fff5df;
-  --danger:#b13a3a;
-  --danger-soft:#fdf0f0;
-  --info:#3267b5;
-  --info-soft:#edf4ff;
+  --brand-950:#071426; --brand-900:#0b1d35; --brand-800:#123154; --brand-700:#1f5fd1;
+  --brand-600:#2d6cdf; --brand-500:#4b83e7; --brand-100:#dce9fb; --brand-50:#f2f7fd;
+  --brand:var(--brand-700); --brand-hover:#174da9; --brand-soft:var(--brand-50);
+  --background:#f4f6f9; --surface:#ffffff; --surface-secondary:#f8fafc; --surface-tertiary:#eef2f7;
+  --text-primary:#101828; --text-secondary:#344054; --text-muted:#667085; --text-subtle:#667085;
+  --border:#e3e8ef; --border-strong:#cbd4df;
+  --success:#187a55; --success-soft:#eaf7f0; --warning:#9a5b13; --warning-soft:#fff5df;
+  --danger:#b13a3a; --danger-soft:#fdf0f0; --info:#3267b5; --info-soft:#edf4ff;
   --whatsapp:#177e4d;
-  --shadow-xs:0 1px 2px rgba(16,24,40,.04);
-  --shadow-sm:0 4px 12px rgba(16,24,40,.06);
-  --shadow-md:0 14px 34px rgba(16,24,40,.09);
-  --shadow-lg:0 28px 70px rgba(7,20,38,.18);
-  --radius-sm:8px;
-  --radius-md:12px;
-  --radius-lg:18px;
-  --radius-xl:24px;
-  --space-1:4px;
-  --space-2:8px;
-  --space-3:12px;
-  --space-4:16px;
-  --space-5:20px;
-  --space-6:24px;
-  --space-8:32px;
-  --space-10:40px;
-  --space-12:48px;
-  --sidebar:264px;
-  --topbar:68px;
-  --motion-fast:160ms;
-  --motion-base:220ms;
-  --ease:cubic-bezier(.2,.8,.2,1);
+  --shadow-xs:0 1px 2px rgba(16,24,40,.04); --shadow-sm:0 4px 12px rgba(16,24,40,.06);
+  --shadow-md:0 14px 34px rgba(16,24,40,.09); --shadow-lg:0 28px 70px rgba(7,20,38,.18);
+  --radius-sm:8px; --radius-md:12px; --radius-lg:18px; --radius-xl:24px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px;
+  --sidebar-expanded:264px; --sidebar-collapsed:76px; --sidebar:var(--sidebar-expanded);
+  --topbar:68px; --motion-fast:160ms; --motion-base:220ms; --ease:cubic-bezier(.2,.8,.2,1);
 }
 
 /* Reset */
@@ -88,9 +81,9 @@ svg{display:block}
 .skip:focus{transform:none}
 
 /* Layout */
-.app{min-height:100vh;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr)}
-.shell{min-width:0}
-.main{width:min(100%,1500px);margin:0 auto;padding:clamp(24px,3.2vw,46px)}
+.app{min-height:100vh;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);transition:grid-template-columns var(--motion-base) var(--ease)}
+.shell{min-width:0;display:flex;flex-direction:column}
+.main{width:min(100%,1500px);margin:0 auto;padding:clamp(24px,3.2vw,46px);flex:1;min-width:0}
 .grid{display:grid;gap:var(--space-5)}
 .stack{display:grid;gap:var(--space-5)}
 .split{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)}
@@ -102,14 +95,14 @@ svg{display:block}
 .brand-copy{display:grid;line-height:1.08}
 .brand-name{font-size:20px;font-weight:720;letter-spacing:-.035em}
 .brand-tagline{margin-top:4px;color:#879bb4;font-size:10px;font-weight:600;letter-spacing:.11em;text-transform:uppercase}
-.logo-mark{width:38px;height:38px;display:grid;place-items:center;flex:0 0 auto;border-radius:11px;background:#fff;color:var(--brand-700);box-shadow:0 1px 0 rgba(255,255,255,.15),0 8px 22px rgba(0,0,0,.14)}
+.logo-mark{width:38px;height:38px;display:grid;place-items:center;flex:0 0 auto;border-radius:11px;background:#fff;color:var(--brand-700);box-shadow:0 1px 0 rgba(255,255,255,.15),0 8px 22px rgba(0,0,0,.14);overflow:hidden;object-fit:cover}
 .logo-mark svg{width:24px;height:24px}
 .brand-dark{color:var(--brand-900)}
 .brand-dark .logo-mark{background:var(--brand-700);color:#fff;box-shadow:0 8px 20px rgba(31,95,209,.18)}
 .brand-dark .brand-tagline{color:var(--text-muted)}
 
 /* Sidebar */
-.sidebar{position:sticky;top:0;height:100vh;padding:22px 14px 16px;background:var(--brand-950);color:#fff;display:flex;flex-direction:column;overflow-y:auto;z-index:40;border-right:1px solid rgba(255,255,255,.05)}
+.sidebar{position:sticky;top:0;height:100vh;padding:22px 14px 16px;background:var(--brand-950);color:#fff;display:flex;flex-direction:column;overflow-y:auto;z-index:40;border-right:1px solid rgba(255,255,255,.05);transition:padding var(--motion-base) var(--ease)}
 .sidebar>.brand{padding:0 10px 22px}
 .sidebar-create{width:100%;min-height:50px;margin-bottom:26px;padding:8px 10px;border:1px solid rgba(255,255,255,.12);border-radius:var(--radius-md);background:var(--brand-700);color:#fff;display:flex;align-items:center;gap:10px;text-align:left;box-shadow:var(--shadow-sm);transition:background var(--motion-fast) var(--ease),transform var(--motion-fast) var(--ease)}
 .sidebar-create:hover{background:var(--brand-600);transform:translateY(-1px)}
@@ -134,7 +127,8 @@ svg{display:block}
 .sync-card strong{font-size:11px;font-weight:650;color:#d7e1ed}
 .sync-card span{margin-top:1px;font-size:9px;color:#768ca5}
 .profile-card{padding:10px;border-radius:11px;background:rgba(255,255,255,.04);display:flex;align-items:center;gap:10px}
-.profile-avatar{width:34px;height:34px;display:grid;place-items:center;flex:0 0 auto;border-radius:9px;background:#183657;color:#b9d4f6;font-size:11px;font-weight:750}
+.profile-avatar{width:34px;height:34px;display:grid;place-items:center;flex:0 0 auto;border-radius:9px;background:#183657;color:#b9d4f6;font-size:11px;font-weight:750;overflow:hidden}
+.profile-avatar img{width:100%;height:100%;object-fit:cover}
 .profile-copy{min-width:0;flex:1}
 .profile-copy strong,.profile-copy span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .profile-copy strong{font-size:11px;font-weight:650}
@@ -142,10 +136,33 @@ svg{display:block}
 .sidebar .profile-card .icon-btn{width:44px;height:44px;border-color:transparent;background:transparent;color:#9db0c5}
 .sidebar .profile-card .icon-btn:hover{background:rgba(255,255,255,.06);color:#fff}
 
+/* Collapsed Sidebar Logic */
+@media (min-width: 761px) {
+  body.sidebar-collapsed { --sidebar: var(--sidebar-collapsed); }
+  body.sidebar-collapsed .brand-copy,
+  body.sidebar-collapsed .sidebar-create small,
+  body.sidebar-collapsed .sidebar-create strong,
+  body.sidebar-collapsed .nav button span:not(.nav-icon),
+  body.sidebar-collapsed .nav-label,
+  body.sidebar-collapsed .sync-card,
+  body.sidebar-collapsed .profile-copy { display: none; }
+  body.sidebar-collapsed .sidebar-create { justify-content: center; padding: 8px; }
+  body.sidebar-collapsed .sidebar-create-icon { margin: 0; }
+  body.sidebar-collapsed .nav button { justify-content: center; padding: 8px; position:relative; }
+  body.sidebar-collapsed .nav-icon { margin: 0; }
+  body.sidebar-collapsed .profile-card { justify-content: center; padding: 10px 0; background: transparent; }
+  body.sidebar-collapsed .sidebar > .brand { padding: 0 0 22px; justify-content: center; }
+  body.sidebar-collapsed .nav button:hover::after {
+    content: attr(data-tooltip); position:absolute; left: 100%; top:50%; transform:translateY(-50%);
+    margin-left:12px; background:var(--brand-950); color:#fff; padding:6px 10px; border-radius:6px;
+    font-size:11px; white-space:nowrap; z-index:100; box-shadow:var(--shadow-md);
+  }
+}
+
 /* Topbar */
 .topbar{height:var(--topbar);position:sticky;top:0;z-index:30;padding:0 clamp(20px,3vw,44px);display:flex;align-items:center;justify-content:space-between;gap:20px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
 .topbar-left,.top-actions{display:flex;align-items:center;gap:12px}
-.menu{display:none}
+.menu{display:block}
 .crumb{color:var(--text-muted);font-size:12px}
 .crumb strong{color:var(--text-secondary);font-weight:600}
 .topbar-state{display:inline-flex;align-items:center;gap:6px;padding-left:12px;border-left:1px solid var(--border);color:var(--text-muted);font-size:11px}
@@ -168,7 +185,7 @@ svg{display:block}
 .btn-sm{min-height:44px;padding:8px 10px;font-size:12px}
 .icon-btn{width:44px;height:44px;padding:0;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text-muted);display:inline-grid;place-items:center;transition:background var(--motion-fast),color var(--motion-fast),border-color var(--motion-fast)}
 .icon-btn:hover{background:var(--surface-secondary);border-color:var(--border-strong);color:var(--text-primary)}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);overflow:hidden}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);overflow:hidden;min-width:0}
 .card-pad{padding:var(--space-6)}
 .card-head{min-height:64px;padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:14px}
 .card-head h2,.card-head h3{margin:0;font-size:15px;font-weight:680;letter-spacing:-.01em}
@@ -185,18 +202,23 @@ svg{display:block}
 .badge.info{background:var(--info-soft);color:var(--info)}
 .notice{margin-bottom:20px;padding:13px 14px;border:1px solid #cbdcf5;border-radius:10px;background:var(--info-soft);color:#234f8d;font-size:12px;display:flex;align-items:flex-start;gap:10px}
 .notice.warning{border-color:#efd8ad;background:var(--warning-soft);color:#825018}
-.notice svg{margin-top:1px}
-.help{color:var(--text-muted);font-size:11px}
+.notice.success{border-color:#a5dcb6;background:var(--success-soft);color:var(--success)}
+.notice svg{margin-top:1px; flex:0 0 auto;}
+.help{color:var(--text-muted);font-size:11px; display:block; margin-top:4px}
 .money{font-variant-numeric:tabular-nums}
 .empty{padding:54px 24px;text-align:center}
 .empty-icon{width:52px;height:52px;margin:0 auto 15px;display:grid;place-items:center;border:1px solid #d9e5f4;border-radius:15px;background:var(--brand-soft);color:var(--brand)}
 .empty-icon svg{width:22px;height:22px}
 .empty h3{margin:0 0 6px;font-size:16px}
 .empty p{margin:0 auto 18px;color:var(--text-muted);font-size:13px;max-width:430px}
+.chip-group{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip{padding:6px 12px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text-secondary);font-size:11px;font-weight:650;cursor:pointer;transition:all var(--motion-fast)}
+.chip:hover{background:var(--surface-secondary);border-color:var(--border-strong)}
+.chip.active{background:var(--brand);color:#fff;border-color:var(--brand)}
 
 /* Forms */
 .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.field{display:grid;gap:6px}
+.field{display:grid;gap:6px;min-width:0}
 .field.full{grid-column:1/-1}
 .field label,.field-label{font-size:11px;font-weight:650;color:var(--text-secondary)}
 input,select,textarea{width:100%;min-height:44px;padding:9px 11px;border:1px solid var(--border-strong);border-radius:9px;background:#fff;color:var(--text-primary);font-size:13px;transition:border-color var(--motion-fast),box-shadow var(--motion-fast),background var(--motion-fast)}
@@ -212,13 +234,15 @@ input:disabled{background:var(--surface-secondary);color:var(--text-muted)}
 .auth-switch a{color:var(--brand);font-weight:650;text-decoration:none}
 .modal-field{margin-bottom:20px}
 .message-field{min-height:126px}
+.qr-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;border:1px dashed var(--border-strong);border-radius:12px;background:var(--surface-secondary)}
 
 /* Tables */
-.toolbar{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:14px}
-.search{position:relative;flex:1;max-width:420px}
+.toolbar{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.search-group{display:flex;gap:12px;flex:1;flex-wrap:wrap}
+.search{position:relative;flex:1;min-width:200px;max-width:320px}
 .search .search-icon{position:absolute;left:12px;bottom:12px;width:16px;height:16px;color:var(--text-subtle);pointer-events:none}
 .search input{padding-left:38px}
-.toolbar-meta{color:var(--text-muted);font-size:12px}
+.toolbar-meta{color:var(--text-muted);font-size:12px;white-space:nowrap;align-self:center}
 .table-wrap{overflow-x:auto}
 .table{width:100%;border-collapse:collapse}
 .table th{padding:11px 16px;background:var(--surface-secondary);color:var(--text-muted);font-size:9px;font-weight:700;text-align:left;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
@@ -276,12 +300,13 @@ input:disabled{background:var(--surface-secondary);color:var(--text-muted)}
 .order-summary{margin-bottom:20px;padding:24px;border:1px solid #d7e2f2;border-radius:var(--radius-xl);background:linear-gradient(140deg,#fff,var(--brand-soft));box-shadow:var(--shadow-xs)}
 .order-summary-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
 .order-number{color:var(--brand);font-size:11px;font-weight:720;letter-spacing:.09em;text-transform:uppercase}
-.order-summary h1{margin:7px 0 3px;font-size:30px;line-height:1.08;font-weight:720;letter-spacing:-.04em}
+.order-summary h1{margin:7px 0 3px;font-size:30px;line-height:1.08;font-weight:720;letter-spacing:-.04em; word-break:break-word}
 .order-summary-subtitle{margin:0;color:var(--text-muted);font-size:13px}
 .order-summary-grid{margin-top:22px;padding-top:18px;border-top:1px solid #dce5f0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
 .order-summary-grid span{display:block;color:var(--text-muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em}
 .order-summary-grid strong{display:block;margin-top:4px;font-size:12px;font-weight:650;color:var(--text-secondary)}
 .detail-grid{grid-template-columns:minmax(0,1.5fr) minmax(290px,.65fr);align-items:start}
+.detail-grid * {min-width:0; overflow-wrap: anywhere;}
 .section-card{border-radius:var(--radius-lg)}
 .section-card .card-head{background:var(--surface-secondary)}
 .communication-card{padding:20px;border:1px solid #cbdcf4;border-radius:var(--radius-lg);background:var(--brand-soft)}
@@ -301,7 +326,7 @@ input:disabled{background:var(--surface-secondary);color:var(--text-muted)}
 .finance-grid{display:grid;gap:12px}
 .finance-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .finance-row span{color:var(--text-muted);font-size:11px}
-.finance-row strong{font-size:13px}
+.finance-row strong{font-size:13px; text-align:right}
 .finance-row.balance{padding-top:12px;border-top:1px solid var(--border)}
 .finance-row.balance strong{font-size:18px}
 .paid-state{padding:8px 10px;border-radius:8px;background:var(--success-soft);color:var(--success);font-size:10px;font-weight:650;text-align:center}
@@ -315,6 +340,14 @@ input:disabled{background:var(--surface-secondary);color:var(--text-muted)}
 .timeline time{margin-top:3px;color:var(--text-subtle);font-size:9px}
 .back-link{justify-content:flex-start;width:100%}
 
+/* Client Profile Extra */
+.client-profile-head{display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.client-profile-head .avatar{width:56px;height:56px;font-size:18px;border-radius:16px}
+.client-profile-head h2{margin:0 0 4px;font-size:20px}
+.client-profile-head p{margin:0;color:var(--text-muted);font-size:13px}
+.client-section{margin-bottom:24px}
+.client-section h3{margin:0 0 12px;font-size:14px;color:var(--text-secondary);border-bottom:1px solid var(--border);padding-bottom:8px}
+
 /* Smart Intake */
 .smart-panel{padding:18px;margin-bottom:20px;border:1px solid #cedcf0;border-radius:12px;background:var(--brand-soft)}
 .smart-panel-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
@@ -322,6 +355,11 @@ input:disabled{background:var(--surface-secondary);color:var(--text-muted)}
 .smart-panel h3{margin:0;color:var(--brand-900);font-size:13px}
 .smart-panel p{margin:0 0 12px;color:var(--text-muted);font-size:11px}
 .smart-panel textarea{min-height:92px;margin-bottom:10px;background:#fff}
+.big-choice-btn{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px;border:1px solid var(--border-strong);border-radius:16px;background:var(--surface);color:var(--text-primary);transition:all var(--motion-fast);text-align:center}
+.big-choice-btn:hover{border-color:var(--brand);background:var(--brand-soft);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.big-choice-btn svg{width:32px;height:32px;color:var(--brand)}
+.big-choice-btn strong{font-size:15px;display:block}
+.big-choice-btn span{font-size:12px;color:var(--text-muted);display:block}
 
 /* Authentication and Onboarding */
 .setup{min-height:100vh;display:grid;grid-template-columns:minmax(420px,.82fr) minmax(520px,1.18fr);background:#fff}
@@ -359,7 +397,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
 .toast.warning{border-left-color:var(--warning)}
 @keyframes toast-in{from{opacity:0;transform:translateY(8px)}}
 
-/* Public Tracking */
+/* Public Tracking & Checkin */
 .public-view{min-height:100vh;padding:clamp(18px,4vw,52px) 18px;background:#eef2f7;color:var(--text-primary)}
 .public-shell{width:min(100%,720px);margin:0 auto}
 .public-brand{margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;color:var(--brand-900)}
@@ -395,11 +433,16 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
 .public-btn{width:100%;min-height:52px;padding:12px 16px;border:1px solid transparent;border-radius:11px;display:flex;align-items:center;justify-content:center;gap:9px;font-size:15px;font-weight:680;text-decoration:none;transition:background var(--motion-fast),transform var(--motion-fast)}
 .public-btn:hover{transform:translateY(-1px)}
 .public-btn-whatsapp{background:var(--whatsapp);color:#fff}
+.public-btn-primary{background:var(--brand);color:#fff}
 .public-btn-secondary{background:#fff;border-color:var(--border-strong);color:var(--text-secondary)}
 .public-error{padding:56px 30px;text-align:center}
 .public-error-icon{width:48px;height:48px;margin:0 auto 15px;display:grid;place-items:center;border-radius:14px;background:var(--danger-soft);color:var(--danger)}
 .public-error h2{margin:0 0 8px;font-size:21px}
 .public-error p{margin:0;color:var(--text-muted);font-size:15px}
+.pix-box{padding:16px;border:1px dashed var(--brand);border-radius:12px;background:var(--brand-soft);text-align:center;margin-top:16px}
+.pix-box p{margin:0 0 10px;font-size:13px;color:var(--text-secondary)}
+.pix-key{display:inline-block;padding:8px 12px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:monospace;font-size:14px;font-weight:700;letter-spacing:0.05em;margin-bottom:12px;word-break:break-all}
+.decision-actions{display:flex;gap:6px;margin-top:8px}
 
 /* Responsive */
 @media(max-width:1120px){
@@ -433,6 +476,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
   .metric-value{font-size:24px}
   .pipeline{grid-template-columns:repeat(2,1fr)}
   .toolbar{align-items:stretch;flex-direction:column}
+  .search-group{flex-direction:column}
   .search{max-width:none}
   .form-grid{grid-template-columns:1fr}
   .field.full,.form-actions,.form-section-title{grid-column:auto}
@@ -504,9 +548,8 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
   <!-- TELA DE AUTENTICAÇÃO -->
   <section id="auth-view" class="setup hidden">
     <div class="setup-form">
-      <a class="brand brand-dark" href="." aria-label="Oficlaro — página inicial">
-        <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M22.5 7.5a10.5 10.5 0 1 0 0 17" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M23 12.5h-5.2a4.5 4.5 0 1 0 0 9H23" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" opacity=".55"/></svg></span>
-        <span class="brand-copy"><span class="brand-name">Oficlaro</span><span class="brand-tagline">Gestão para oficinas</span></span>
+      <a class="brand brand-dark" href="." aria-label="Oficlaro — página inicial" id="auth-brand">
+        <!-- Logo Injetada JS -->
       </a>
       <h1 id="auth-title">Bem-vindo de volta</h1><p id="auth-desc">Acesse sua operação com segurança.</p>
       <form id="auth-form" class="form-grid">
@@ -545,7 +588,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     <aside class="setup-aside"><div class="setup-aside-content"><span class="eyebrow">Primeiro acesso</span><h2>Sua operação começa organizada.</h2><p>Uma configuração rápida para criar ordens, acompanhar serviços e informar clientes com a sua marca.</p></div></aside>
   </section>
 
-  <!-- TELA DO CLIENTE (ACOMPANHAMENTO PÚBLICO) -->
+  <!-- TELA PÚBLICA (ACOMPANHAMENTO OU CHECK-IN) -->
   <main id="public-view" class="public-view hidden">
     <div id="public-content" aria-live="polite">
       <!-- Injetado por JS -->
@@ -557,18 +600,17 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     <a class="skip" href="#main">Ir para o conteúdo principal</a>
     <button class="menu-scrim" data-action="close-menu" aria-label="Fechar menu"></button>
     <aside class="sidebar" id="sidebar" aria-label="Menu principal">
-      <a class="brand" href="#" data-view="dashboard" aria-label="Oficlaro — visão geral">
-        <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M22.5 7.5a10.5 10.5 0 1 0 0 17" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M23 12.5h-5.2a4.5 4.5 0 1 0 0 9H23" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" opacity=".55"/></svg></span>
-        <span class="brand-copy"><span class="brand-name">Oficlaro</span><span class="brand-tagline">Gestão para oficinas</span></span>
+      <a class="brand" href="#" data-view="dashboard" aria-label="Oficlaro — visão geral" id="main-brand">
+        <!-- Logo Injetada JS -->
       </a>
-      <button class="sidebar-create" data-action="smart-order"><span class="sidebar-create-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span><strong>Nova ordem</strong><small>Cadastro assistido</small></span></button>
+      <button class="sidebar-create" data-action="new-order-choice"><span class="sidebar-create-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span><strong>Nova ordem</strong><small>Criar atendimento</small></span></button>
       <span class="nav-label">Menu principal</span>
       <nav class="nav">
-        <button data-view="dashboard"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 13h6V4H4v9Zm0 7h6v-3H4v3Zm10 0h6v-9h-6v9Zm0-13h6V4h-6v3Z"/></svg></span>Visão geral</button>
-        <button data-view="clients"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 20v-1.5a4.5 4.5 0 0 0-4.5-4.5h-3A4.5 4.5 0 0 0 4 18.5V20M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7-1a3 3 0 0 1 0 6m2.5 5v-1a4 4 0 0 0-2.7-3.8"/></svg></span>Clientes</button>
-        <button data-view="vehicles"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 11 1.6-4.2A2 2 0 0 1 8.5 5h7a2 2 0 0 1 1.9 1.4L19 11m-15 0h16a1 1 0 0 1 1 1v5H3v-5a1 1 0 0 1 1-1Zm2 6v2m12-2v2M7 14h.01M17 14h.01"/></svg></span>Veículos</button>
-        <button data-view="orders"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5h10v16H5V5h4Zm0 0V3h6v2M8 10h8M8 14h8M8 18h5"/></svg></span>Ordens de serviço</button>
-        <button data-view="backup"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg></span>Configurações</button>
+        <button data-view="dashboard" data-tooltip="Visão geral"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 13h6V4H4v9Zm0 7h6v-3H4v3Zm10 0h6v-9h-6v9Zm0-13h6V4h-6v3Z"/></svg></span><span>Visão geral</span></button>
+        <button data-view="clients" data-tooltip="Clientes"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 20v-1.5a4.5 4.5 0 0 0-4.5-4.5h-3A4.5 4.5 0 0 0 4 18.5V20M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7-1a3 3 0 0 1 0 6m2.5 5v-1a4 4 0 0 0-2.7-3.8"/></svg></span><span>Clientes</span></button>
+        <button data-view="vehicles" data-tooltip="Veículos"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 11 1.6-4.2A2 2 0 0 1 8.5 5h7a2 2 0 0 1 1.9 1.4L19 11m-15 0h16a1 1 0 0 1 1 1v5H3v-5a1 1 0 0 1 1-1Zm2 6v2m12-2v2M7 14h.01M17 14h.01"/></svg></span><span>Veículos</span></button>
+        <button data-view="orders" data-tooltip="Ordens de serviço"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5h10v16H5V5h4Zm0 0V3h6v2M8 10h8M8 14h8M8 18h5"/></svg></span><span>Ordens de serviço</span></button>
+        <button data-view="backup" data-tooltip="Configurações"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg></span><span>Configurações</span></button>
       </nav>
       <div class="sidebar-bottom">
         <div class="sync-card"><span class="sync-dot" aria-hidden="true"></span><span><strong>Dados sincronizados</strong><span>Firebase Realtime Database</span></span></div>
@@ -581,8 +623,8 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     </aside>
     <section class="shell">
       <header class="topbar">
-        <div class="topbar-left"><button class="icon-btn menu" id="menu" aria-label="Abrir menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><span class="mobile-brand">Oficlaro</span><div class="crumb">Oficlaro / <strong id="crumb">Visão geral</strong></div><span class="topbar-state">Sincronizado</span></div>
-        <div class="top-actions"><button class="btn btn-primary btn-sm" data-action="smart-order"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Nova ordem</span></button></div>
+        <div class="topbar-left"><button class="icon-btn menu" id="menu" aria-label="Alternar menu" aria-controls="sidebar" aria-expanded="false"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><span class="mobile-brand">Oficlaro</span><div class="crumb">Oficlaro / <strong id="crumb">Visão geral</strong></div><span class="topbar-state">Sincronizado</span></div>
+        <div class="top-actions"><button class="btn btn-primary btn-sm" data-action="new-order-choice"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Nova ordem</span></button></div>
       </header>
       <main id="main" class="main" tabindex="-1"></main>
     </section>
@@ -590,17 +632,22 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
   
   <dialog id="modal" aria-modal="true"></dialog>
   <input id="import-file" type="file" accept="application/json,.json" hidden>
+  <input id="logo-upload" type="file" accept="image/png, image/jpeg, image/webp" hidden>
   <div id="toasts" class="toast-region" aria-live="polite"></div>
 
   <script>
     "use strict";
     if("scrollRestoration" in history) history.scrollRestoration="manual";
     
+    // Configuração de Menu Recolhido (Desktop)
+    if(localStorage.getItem("oficlaroSidebarCollapsed") === "true") {
+      document.body.classList.add("sidebar-collapsed");
+    }
+    
     // ---------------------------------------------------------
     // 1. CONFIGURAÇÃO FIREBASE
-    // Substitua os valores abaixo pelos do seu projeto no console
     // ---------------------------------------------------------
- const firebaseConfig = {
+    const firebaseConfig = {
       apiKey: "AIzaSyAg0PzC7X_zRV0qyZxqSJGPQD4Rz1WZ_6Y",
       authDomain: "oficlaro-a632c.firebaseapp.com",
       databaseURL: "https://oficlaro-a632c-default-rtdb.firebaseio.com",
@@ -609,9 +656,10 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       messagingSenderId: "159383326795",
       appId: "1:159383326795:web:c9cd7dfdd2486447db7dce"
     };
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const auth = firebase.auth();
+    const storage = firebase.storage();
 
     // ---------------------------------------------------------
     // DICIONÁRIOS E FUNÇÕES UTILITÁRIAS
@@ -620,8 +668,9 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const STATUS_TONE={RECEIVED:"info",DIAGNOSING:"warning",DIAGNOSED:"info",AWAITING_APPROVAL:"warning",WAITING_PARTS:"warning",IN_PROGRESS:"info",FINAL_TESTS:"info",READY:"success",DELIVERED:"success",CANCELLED:"danger"};
     const DECISION={PENDING:"Pendente",APPROVED:"Aprovado",REJECTED:"Recusado"};
     const TITLES={dashboard:"Visão geral",clients:"Clientes",vehicles:"Veículos",orders:"Ordens de serviço",backup:"Configurações","order-detail":"Detalhes da ordem"};
-    const fresh=()=>({version:2,workshop:null,clients:[],vehicles:[],orders:[],counter:0,updatedAt:Date.now()});
-    let state=fresh(), view="dashboard", selectedOrder=null, search="", currentUser=null;
+    const fresh=()=>({version:2,workshop:{},clients:[],vehicles:[],orders:[],counter:0,updatedAt:Date.now()});
+    let state=fresh(), view="dashboard", selectedOrder=null, search="", searchOwner="", currentUser=null, pendingCheckins=[];
+    let clientFilter = "ALL", osFilter = "ALL";
     const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
     const uid=()=>currentUser?.uid;
 
@@ -643,10 +692,19 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       file:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6V3Z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
       alert:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5M12 17h.01M4 20h16L12 4 4 20Z"/></svg>',
       edit:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16-.5 4.5L8 20l11-11-4-4L4 16ZM13.5 6.5l4 4"/></svg>',
-      close:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>'
+      close:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>',
+      qr:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h7v7h-7zM14 17h7M17 14v7"/></svg>',
+      pen:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>'
     };
     const icon=name=>ICONS[name]||"";
-    function brandLogo(dark=false){return `<span class="brand ${dark?"brand-dark":""}"><span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M22.5 7.5a10.5 10.5 0 1 0 0 17" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M23 12.5h-5.2a4.5 4.5 0 1 0 0 9H23" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" opacity=".55"/></svg></span><span class="brand-copy"><span class="brand-name">Oficlaro</span></span></span>`}
+    
+    function getLogoHTML(workshop, dark=false){
+      const name = workshop?.name || "Oficlaro";
+      if(workshop?.logoUrl) {
+        return `<span class="brand ${dark?"brand-dark":""}"><span class="logo-mark"><img src="${esc(workshop.logoUrl)}" alt="Logo ${esc(name)}"></span><span class="brand-copy"><span class="brand-name">${esc(name)}</span><span class="brand-tagline">Powered by Oficlaro</span></span></span>`;
+      }
+      return `<span class="brand ${dark?"brand-dark":""}"><span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M22.5 7.5a10.5 10.5 0 1 0 0 17" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M23 12.5h-5.2a4.5 4.5 0 1 0 0 9H23" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" opacity=".55"/></svg></span><span class="brand-copy"><span class="brand-name">${esc(name==="Oficlaro"?"Oficlaro":name)}</span><span class="brand-tagline">${name==="Oficlaro"?"Gestão para oficinas":"Powered by Oficlaro"}</span></span></span>`;
+    }
 
     function generateToken(){
       if(typeof crypto!=="undefined"&&crypto.randomUUID) return crypto.randomUUID();
@@ -661,6 +719,7 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     function phone(v){ return String(v||"").replace(/\D/g,""); }
     function toast(m,t="success"){ const n=document.createElement("div");n.className=`toast ${t}`;n.textContent=m;$("#toasts").append(n);setTimeout(()=>n.remove(),4200); }
     function getPublicLink(token){const url=new URL(window.location.href);url.search="";url.hash="";url.searchParams.set("acompanhar",token);return url.toString();}
+    function getCheckinLink(token){const url=new URL(window.location.href);url.search="";url.hash="";url.searchParams.set("checkin",token);return url.toString();}
     function initials(name=""){return name.trim().split(/\s+/).slice(0,2).map(part=>part[0]).join("").toUpperCase()||"OF";}
     function vehicleName(v){return v?[v.brand,v.model].filter(Boolean).join(" ")||"Veículo":"Veículo removido";}
     function statusStep(status){const groups=[['RECEIVED'],['DIAGNOSING','DIAGNOSED'],['AWAITING_APPROVAL','WAITING_PARTS'],['IN_PROGRESS','FINAL_TESTS'],['READY','DELIVERED']];const found=groups.findIndex(group=>group.includes(status));return status==='CANCELLED'?0:Math.max(0,found);}
@@ -687,8 +746,13 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
             o.timeline = o.timeline || [];
             o.estimate = o.estimate || {items:[]};
             o.estimate.items = o.estimate.items || [];
-            if(!o.publicToken) o.publicToken = generateToken(); // Retrocompatibilidade
+            if(!o.publicToken) o.publicToken = generateToken();
           });
+          val.workshop = val.workshop || {};
+          val.workshop.pix = val.workshop.pix || {type:"", key:"", holderName:""};
+          if(!val.workshop.publicCheckinToken) {
+            val.workshop.publicCheckinToken = generateToken();
+          }
           return val;
         }
         return fresh();
@@ -714,6 +778,8 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         ownerUid: uid(),
         workshopName: state.workshop.name,
         workshopPhone: state.workshop.phone,
+        workshopLogo: state.workshop.logoUrl || null,
+        pix: state.workshop.pix?.key ? state.workshop.pix : null,
         customerFirstName: c ? c.name.split(' ')[0] : 'Cliente',
         orderNumber: o.number,
         vehicleStr: v ? vehicleName(v) : 'Veículo',
@@ -722,12 +788,22 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         expectedAt: o.expectedAt || null,
         complaint: o.complaint,
         diagnosis: (o.diagnosis && o.diagnosis.description) ? { title: o.diagnosis.title||'Diagnóstico', description: o.diagnosis.description } : null,
-        items: (o.estimate?.items||[]).map(i=>({ desc:i.description, qty:i.qty, price:i.unitCents, decision:i.decision })),
+        items: (o.estimate?.items||[]).map((i, idx)=>({ idx, desc:i.description, qty:i.qty, price:i.unitCents, decision:i.decision })),
         timeline: (o.timeline||[]).map(t=>({ text:t.text, at:t.at })),
         updatedAt: o.updatedAt
       };
-      // Escreve de forma isolada na área pública
       await db.ref(`publicOrders/${o.publicToken}`).set(publicData);
+    }
+
+    function setupCheckinListener() {
+      if(!state.workshop?.publicCheckinToken) return;
+      db.ref(`publicCheckins/${state.workshop.publicCheckinToken}`).on('value', snap => {
+        pendingCheckins = [];
+        snap.forEach(child => {
+          pendingCheckins.push({id: child.key, ...child.val()});
+        });
+        if(view === 'dashboard') render();
+      });
     }
 
     // ---------------------------------------------------------
@@ -747,9 +823,16 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     $("#auth-toggle-link").addEventListener("click", toggleAuthMode);
 
     auth.onAuthStateChanged(async (user) => {
-      const isPublicTracking = new URLSearchParams(window.location.search).has('acompanhar');
+      const urlParams = new URLSearchParams(window.location.search);
+      const isPublicTracking = urlParams.has('acompanhar');
+      const isPublicCheckin = urlParams.has('checkin');
+      
       if (isPublicTracking) {
-        initPublicTracking(); // Pula auth e vai para a tela pública
+        initPublicTracking(urlParams.get('acompanhar'));
+        return;
+      }
+      if (isPublicCheckin) {
+        initPublicCheckin(urlParams.get('checkin'));
         return;
       }
       
@@ -757,13 +840,19 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         currentUser = user;
         $("#auth-view").classList.add("hidden");
         state = await loadState();
-        if(!state.workshop) {
+        if(!state.workshop?.name) {
           $("#setup").classList.remove("hidden");
         } else {
+          if(!state.workshop.publicCheckinToken) {
+            state.workshop.publicCheckinToken = generateToken();
+            await saveState();
+          }
           $("#app").classList.remove("hidden");
           $("#side-workshop").textContent = state.workshop.name;
           $("#side-owner").textContent = state.workshop.ownerName;
-          $("#side-avatar").textContent = initials(state.workshop.name);
+          updateSidebarAvatar();
+          $$("#auth-brand, #main-brand").forEach(el => el.innerHTML = getLogoHTML(state.workshop, true));
+          setupCheckinListener();
           render();
         }
       } else {
@@ -771,21 +860,30 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         $("#app").classList.add("hidden");
         $("#setup").classList.add("hidden");
         $("#auth-view").classList.remove("hidden");
+        $("#auth-brand").innerHTML = getLogoHTML(null, true);
       }
     });
 
+    function updateSidebarAvatar() {
+      const el = $("#side-avatar");
+      if(state.workshop.logoUrl) {
+        el.innerHTML = `<img src="${esc(state.workshop.logoUrl)}" alt="Logo">`;
+      } else {
+        el.textContent = initials(state.workshop.name);
+      }
+    }
+
     // ---------------------------------------------------------
-    // VISÃO PÚBLICA (CLIENTE)
+    // VISÃO PÚBLICA (CLIENTE E CHECK-IN)
     // ---------------------------------------------------------
-    async function initPublicTracking() {
-      const token = new URLSearchParams(window.location.search).get('acompanhar');
+    async function initPublicTracking(token) {
       $("#auth-view").classList.add("hidden");
       $("#app").classList.add("hidden");
       $("#public-view").classList.remove("hidden");
       document.title = "Acompanhamento da ordem — Oficlaro";
       
       const content = $("#public-content");
-      content.innerHTML = `<div class="public-error" role="status">${brandLogo(true)}<h2>Carregando acompanhamento</h2><p>Estamos buscando as informações mais recentes.</p></div>`;
+      content.innerHTML = `<div class="public-error" role="status">${getLogoHTML(null, true)}<h2>Carregando acompanhamento</h2><p>Estamos buscando as informações mais recentes.</p></div>`;
       
       try {
         const snap = await db.ref(`publicOrders/${token}`).once('value');
@@ -800,9 +898,38 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const progress = Array.from({length:5},(_,index)=>`<span class="progress-segment ${index<=step?'complete':''}"></span>`).join('');
         const headline={RECEIVED:"Seu veículo foi recebido",DIAGNOSING:"Seu veículo está em diagnóstico",DIAGNOSED:"O diagnóstico foi concluído",AWAITING_APPROVAL:"Seu orçamento aguarda aprovação",WAITING_PARTS:"A oficina aguarda as peças",IN_PROGRESS:"Seu veículo está em serviço",FINAL_TESTS:"Seu veículo está nos testes finais",READY:"Seu veículo está pronto",DELIVERED:"Seu veículo foi entregue",CANCELLED:"Atendimento cancelado"}[pub.status]||"Acompanhe seu veículo";
         
+        let pixHTML = "";
+        if(pub.pix && pub.pix.key) {
+          pixHTML = `
+            <div class="pix-box">
+              <p>Pagamento ou sinal via PIX</p>
+              <strong class="pix-key">${esc(pub.pix.key)}</strong>
+              <p>Titular: ${esc(pub.pix.holderName)}</p>
+            </div>
+          `;
+        }
+
+        window.updateItemDecision = async (idx, decision) => {
+          try {
+            await db.ref(`publicOrders/${token}/items/${idx}`).update({decision});
+            initPublicTracking(token); // reload view
+            toast(decision === 'APPROVED' ? "Item aprovado!" : "Item recusado.");
+          } catch(e) {
+            toast("Erro ao atualizar decisão.", "error");
+          }
+        };
+
+        const renderItem = (i) => {
+          let actionHTML = `<span class="badge ${i.decision==='APPROVED'?'success':i.decision==='REJECTED'?'danger':''}">${esc(DECISION[i.decision]||"Pendente")}</span>`;
+          if (i.decision === 'PENDING') {
+            actionHTML = `<div class="decision-actions"><button type="button" class="btn btn-secondary btn-sm" onclick="updateItemDecision(${i.idx}, 'APPROVED')">Aprovar</button><button type="button" class="btn btn-ghost btn-sm" onclick="updateItemDecision(${i.idx}, 'REJECTED')">Recusar</button></div>`;
+          }
+          return `<li><div><span>${i.qty} × ${esc(i.desc)}</span>${actionHTML}</div><strong>${money(i.qty * i.price)}</strong></li>`;
+        };
+
         content.innerHTML = `
           <div class="public-shell">
-            <div class="public-brand">${brandLogo(true)}<span class="powered-by">Acompanhamento seguro</span></div>
+            <div class="public-brand">${getLogoHTML(pub, true)}</div>
             <article class="public-card">
             <header class="public-header">
               <p class="public-workshop">${esc(pub.workshopName)}</p>
@@ -831,9 +958,10 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
               <h2>Orçamento e serviços</h2>
               ${(pub.items||[]).length > 0 ? `
               <ul class="public-list">
-                ${pub.items.map(i => `<li><span>${i.qty} × ${esc(i.desc)} · ${esc(DECISION[i.decision]||"Pendente")}</span><strong>${money(i.qty * i.price)}</strong></li>`).join('')}
+                ${pub.items.map(renderItem).join('')}
               </ul>
               <div class="public-total"><span>Total</span><span>${money(total)}</span></div>
+              ${pixHTML}
               ` : '<p class="public-text">O orçamento ainda está em elaboração.</p>'}
             </section>
             <section class="public-section">
@@ -852,8 +980,109 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         `;
         $("[data-public-print]")?.addEventListener("click",()=>window.print());
       } catch(e) {
-        content.innerHTML = `<div class="public-shell"><div class="public-brand">${brandLogo(true)}<span class="powered-by">Acompanhamento seguro</span></div><article class="public-card"><div class="public-error"><span class="public-error-icon">${icon("alert")}</span><h2>Atendimento indisponível</h2><p>Este link é inválido ou a ordem de serviço não está mais disponível. Entre em contato com a oficina.</p></div></article></div>`;
+        content.innerHTML = `<div class="public-shell"><div class="public-brand">${getLogoHTML(null, true)}</div><article class="public-card"><div class="public-error"><span class="public-error-icon">${icon("alert")}</span><h2>Atendimento indisponível</h2><p>Este link é inválido ou a ordem de serviço não está mais disponível. Entre em contato com a oficina.</p></div></article></div>`;
       }
+    }
+
+    function initPublicCheckin(token) {
+      $("#auth-view").classList.add("hidden");
+      $("#app").classList.add("hidden");
+      $("#public-view").classList.remove("hidden");
+      document.title = "Recepção — Oficlaro";
+      
+      const content = $("#public-content");
+      
+      content.innerHTML = `
+        <div class="public-shell">
+          <div class="public-brand">${getLogoHTML(null, true)}</div>
+          <article class="public-card">
+            <header class="public-header">
+              <h1>Check-in da Oficina</h1>
+              <p>Preencha os dados abaixo para adiantar seu atendimento.</p>
+            </header>
+            <div class="public-body">
+              <form id="public-checkin-form" class="form-grid stack">
+                <div class="form-section-title">Seus dados</div>
+                <div class="field full"><label>Nome completo</label><input name="name" required maxlength="100"></div>
+                <div class="field full"><label>WhatsApp</label><input name="phone" required inputmode="tel" maxlength="20"></div>
+                <div class="field full"><label>E-mail <span class="help">(opcional)</span></label><input name="email" type="email" maxlength="120"></div>
+                
+                <div class="form-section-title">Veículo e Atendimento</div>
+                <div class="field"><label>Placa</label><input name="plate" required maxlength="8"></div>
+                <div class="field"><label>Marca</label><input name="brand" required maxlength="60"></div>
+                <div class="field"><label>Modelo</label><input name="model" required maxlength="60"></div>
+                <div class="field"><label>Ano <span class="help">(opcional)</span></label><input name="year" type="number" min="1900" max="2100"></div>
+                <div class="field full"><label>Quilometragem <span class="help">(opcional)</span></label><input name="mileage" type="number" min="0"></div>
+                <div class="field full"><label>Motivo da visita / Relato do problema</label><textarea name="complaint" required maxlength="1200" placeholder="Descreva o que está acontecendo com o veículo ou o serviço desejado"></textarea></div>
+                
+                <div class="notice">${icon("info")}<span>Seus dados serão enviados de forma segura para a oficina realizar o atendimento.</span></div>
+                
+                <div class="form-actions" style="margin-top:20px">
+                  <button class="btn btn-primary" style="width:100%" type="submit">Confirmar e Enviar</button>
+                </div>
+              </form>
+            </div>
+          </article>
+        </div>
+      `;
+
+      $("#public-checkin-form").addEventListener("submit", async e => {
+        e.preventDefault();
+        const d = Object.fromEntries(new FormData(e.target));
+        const payload = {
+          name: d.name.trim(), phone: d.phone.trim(), email: d.email.trim(),
+          plate: d.plate.toUpperCase().replace(/[^A-Z0-9]/g,""), brand: d.brand.trim(),
+          model: d.model.trim(), year: d.year, mileage: d.mileage, complaint: d.complaint.trim(),
+          createdAt: Date.now()
+        };
+        const submitBtn = e.target.querySelector("button[type='submit']");
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Enviando...";
+        try {
+          await db.ref(`publicCheckins/${token}`).push(payload);
+          content.innerHTML = `
+            <div class="public-shell">
+              <div class="public-brand">${getLogoHTML(null, true)}</div>
+              <article class="public-card">
+                <div class="public-body empty">
+                  <div class="empty-icon">${icon("check")}</div>
+                  <h3>Check-in enviado!</h3>
+                  <p>A oficina já recebeu seus dados e iniciará o atendimento em breve.</p>
+                </div>
+              </article>
+            </div>
+          `;
+        } catch(err) {
+          toast("Erro ao enviar. Tente novamente.", "error");
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Confirmar e Enviar";
+        }
+      });
+    }
+
+
+    // ---------------------------------------------------------
+    // ESCOLHA DE NOVA ORDEM
+    // ---------------------------------------------------------
+    function newOrderChoiceModal() {
+      modal("Como deseja criar a ordem?", `
+        <div class="form-grid">
+          <button type="button" class="big-choice-btn" data-action="new-order-smart">
+            ${icon("orders")}
+            <div>
+              <strong>Cadastro assistido</strong>
+              <span>Cole a mensagem do cliente e extrairemos os dados automaticamente.</span>
+            </div>
+          </button>
+          <button type="button" class="big-choice-btn" data-action="new-order-manual">
+            ${icon("pen")}
+            <div>
+              <strong>Preenchimento manual</strong>
+              <span>Abra o formulário tradicional e digite campo por campo.</span>
+            </div>
+          </button>
+        </div>
+      `);
     }
 
     // ---------------------------------------------------------
@@ -863,24 +1092,18 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       const data = { phone:"", name:"", plate:"", mileage:"", brand:"", model:"", year:"", color:"", complaint: text };
       if(!text) return data;
       const cleanText=text.replace(/\s+/g," ").trim();
-      
       const phoneMatch = cleanText.match(/(?:\+?55[\s.-]?)?(?:\(?\d{2}\)?[\s.-]?)?(?:9[\s.-]?)?\d{4}[\s.-]?\d{4}/);
       if(phoneMatch) data.phone = phoneMatch[0].trim();
-      
       const plateMatch = cleanText.match(/\b[A-Za-z]{3}[-\s]?[0-9][A-Za-z0-9][0-9]{2}\b/);
       if(plateMatch) data.plate = plateMatch[0].replace(/[-\s]/g, '').toUpperCase();
-      
       const thousandKm = cleanText.match(/(\d+(?:[,.]\d+)?)\s*mil\s*(?:km|quil[oô]metros)?/i);
       const kmMatch = cleanText.match(/(\d{1,3}(?:\.\d{3})+|\d+)\s*(?:km|quil[oô]metros)/i);
       if(thousandKm) data.mileage = String(Math.round(Number(thousandKm[1].replace(',','.'))*1000));
       else if(kmMatch) data.mileage = kmMatch[1].replace(/\./g, '');
-      
       const yearMatch = cleanText.match(/\b(19\d{2}|20\d{2})\b/);
       if(yearMatch) data.year = yearMatch[1];
-      
       const nameMatch = cleanText.match(/(?:sou(?: o| a)?|me chamo|aqui [ée] o|aqui [ée] a|meu nome [ée]|nome [ée])\s+([A-Za-zÀ-ÖØ-öø-ÿ]+(?:\s+(?!meu|tenho|whatsapp|telefone|celular)[A-Za-zÀ-ÖØ-öø-ÿ]+){0,3})/i);
       if(nameMatch) data.name = nameMatch[1].trim();
-
       const brands=["Chevrolet","Volkswagen","Mercedes-Benz","Mitsubishi","Citroën","Renault","Peugeot","Hyundai","Toyota","Honda","Fiat","Ford","Nissan","Jeep","Kia","BMW","Audi","Volvo","Subaru","Suzuki","Chery","Caoa","BYD","GWM"];
       const colors=["branco","branca","preto","preta","prata","cinza","vermelho","vermelha","azul","verde","bege","marrom","amarelo","amarela","dourado","dourada"];
       const brand=data.brand=brands.find(item=>new RegExp(`\\b${item.replace("-","[-\\s]?")}\\b`,"i").test(cleanText))||"";
@@ -894,7 +1117,6 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         for(const part of after){const normalized=part.toLowerCase().replace(/[^a-zà-ÿ0-9-]/gi,"");if(!normalized||stopWords.has(normalized)||/^(19|20)\d{2}$/.test(normalized)||model.length===3)break;model.push(part.replace(/[,.]$/, ""));}
         data.model=model.join(" ");
       }
-
       return data;
     }
 
@@ -906,19 +1128,10 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
           <textarea id="smart-text" placeholder="Ex: Oi, sou João da Silva, meu WhatsApp é (11) 99999-8888. Tenho um Honda Civic prata 2018, placa ABC1D23, com 87.500 km. O carro faz barulho ao frear."></textarea>
           <button type="button" class="btn btn-secondary btn-sm" id="btn-extract">${icon("search")} Analisar mensagem</button>
         </div>
-        <form id="smart-order-form" class="form-grid hidden">
+        <form id="create-order-form" class="form-grid hidden">
+          <input type="hidden" name="checkinId" value="">
           <div class="form-section-title">Revise os dados encontrados</div>
-          <div class="field full"><label for="smart-name">Nome do cliente</label><input id="smart-name" name="name" required maxlength="100"></div>
-          <div class="field"><label for="smart-phone">Telefone / WhatsApp</label><input id="smart-phone" name="phone" required maxlength="20" inputmode="tel"></div>
-          <div class="field"><label for="smart-plate">Placa</label><input id="smart-plate" name="plate" required maxlength="8"></div>
-          <div class="field"><label for="smart-brand">Marca</label><input id="smart-brand" name="brand" required maxlength="60"></div>
-          <div class="field"><label for="smart-model">Modelo</label><input id="smart-model" name="model" required maxlength="60"></div>
-          <div class="field"><label for="smart-year">Ano</label><input id="smart-year" name="year" type="number" min="1900" max="2100"></div>
-          <div class="field"><label for="smart-color">Cor</label><input id="smart-color" name="color" maxlength="40"></div>
-          <div class="field"><label for="smart-mileage">Quilometragem atual</label><input id="smart-mileage" name="mileage" type="number" min="0" required></div>
-          <div class="field full"><label for="smart-expected">Previsão de conclusão <span class="help">(opcional)</span></label><input id="smart-expected" name="expectedAt" type="date"></div>
-          <div class="field full"><label for="smart-complaint">Relato do problema</label><textarea id="smart-complaint" name="complaint" required maxlength="1200"></textarea></div>
-          <div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">${icon("check")} Criar ordem</button></div>
+          ${getOSFormFields()}
         </form>
       `);
 
@@ -926,41 +1139,77 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const txt = $("#smart-text").value;
         if(!txt) return toast("Cole algum texto primeiro.", "warning");
         const data = extractSmartData(txt);
-        const form = $("#smart-order-form");
-        form.elements.name.value = data.name;
-        form.elements.phone.value = data.phone;
-        form.elements.plate.value = data.plate;
-        form.elements.brand.value = data.brand;
-        form.elements.model.value = data.model;
-        form.elements.year.value = data.year;
-        form.elements.color.value = data.color;
-        form.elements.mileage.value = data.mileage;
-        form.elements.complaint.value = data.complaint;
-        form.classList.remove("hidden");
+        fillOSFormFields(data);
+        $("#create-order-form").classList.remove("hidden");
         toast("Dados analisados. Por favor, revise.");
       });
+    }
+
+    function manualOrderForm(data = null, checkinId = null) {
+      modal(data ? "Criar OS a partir de Check-in" : "Nova ordem manual", `
+        <form id="create-order-form" class="form-grid">
+          <input type="hidden" name="checkinId" value="${esc(checkinId||"")}">
+          <div class="form-section-title">Dados do Cliente e Veículo</div>
+          ${getOSFormFields()}
+        </form>
+      `);
+      if(data) fillOSFormFields(data);
+    }
+
+    function getOSFormFields() {
+      return `
+        <div class="field full"><label>Nome do cliente</label><input name="name" required maxlength="100"></div>
+        <div class="field"><label>Telefone / WhatsApp</label><input name="phone" required maxlength="20" inputmode="tel"></div>
+        <div class="field"><label>Placa</label><input name="plate" required maxlength="8"></div>
+        <div class="field"><label>Marca</label><input name="brand" required maxlength="60"></div>
+        <div class="field"><label>Modelo</label><input name="model" required maxlength="60"></div>
+        <div class="field"><label>Ano</label><input name="year" type="number" min="1900" max="2100"></div>
+        <div class="field"><label>Cor</label><input name="color" maxlength="40"></div>
+        <div class="field"><label>Quilometragem atual</label><input name="mileage" type="number" min="0" required></div>
+        <div class="field full"><label>Previsão de conclusão <span class="help">(opcional)</span></label><input name="expectedAt" type="date"></div>
+        <div class="field full"><label>Relato do problema</label><textarea name="complaint" required maxlength="1200"></textarea></div>
+        <div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">${icon("check")} Criar ordem</button></div>
+      `;
+    }
+
+    function fillOSFormFields(data) {
+      const form = $("#create-order-form");
+      if(!form) return;
+      form.elements.name.value = data.name || "";
+      form.elements.phone.value = data.phone || "";
+      form.elements.plate.value = data.plate || "";
+      form.elements.brand.value = data.brand || "";
+      form.elements.model.value = data.model || "";
+      form.elements.year.value = data.year || "";
+      form.elements.color.value = data.color || "";
+      form.elements.mileage.value = data.mileage || "";
+      form.elements.complaint.value = data.complaint || "";
     }
 
     // ---------------------------------------------------------
     // WHATSAPP HELPER
     // ---------------------------------------------------------
-    function openWhatsAppModal(order, customMsg = null) {
+    function openWhatsAppModal(order, customMsg = null, requireConfirmation = true) {
       const c = clientOf(order.clientId);
       if(!c || !c.phone) return toast("Cliente sem telefone cadastrado.", "error");
-      
       let cleanPhone = phone(c.phone);
       if (cleanPhone.length <= 11) cleanPhone = "55" + cleanPhone;
       if(cleanPhone.length<12||cleanPhone.length>13) return toast("Revise o telefone do cliente antes de abrir o WhatsApp.","error");
       
       const link = getPublicLink(order.publicToken);
-      const defaultMsg = `Olá, ${c.name.split(' ')[0]}! O status do seu serviço na ${state.workshop.name} mudou para: *${STATUS[order.status]}*.\n\nAcompanhe seu atendimento e orçamento aqui: ${link}`;
-      const msg = customMsg || defaultMsg;
+      let defaultMsg = `Olá, ${c.name.split(' ')[0]}! O status do seu serviço na ${state.workshop.name} mudou para: *${STATUS[order.status]}*.\n\nAcompanhe seu atendimento e orçamento aqui: ${link}`;
+      
+      if(customMsg === "BUDGET") {
+        defaultMsg = `Olá, ${c.name.split(' ')[0]}! Seu orçamento já está disponível para análise.\n\nAcesse o link abaixo para aprovar os itens diretamente pelo seu celular:\n${link}`;
+      } else if (customMsg) {
+        defaultMsg = customMsg;
+      }
 
-      modal("Compartilhar atualização", `
-        <div class="notice">${icon("info")}<span>A mensagem será aberta no WhatsApp para sua confirmação. O Oficlaro não afirma que ela foi entregue ou lida.</span></div>
+      modal("Enviar WhatsApp", `
+        <div class="notice">${icon("info")}<span>A mensagem será aberta no WhatsApp para sua confirmação.</span></div>
         <div class="field modal-field">
           <label for="wa-msg-text">Mensagem para o cliente</label>
-          <textarea id="wa-msg-text" class="message-field">${esc(msg)}</textarea>
+          <textarea id="wa-msg-text" class="message-field">${esc(defaultMsg)}</textarea>
         </div>
         <div class="dialog-actions">
           <button class="btn btn-ghost" type="button" data-action="close">Agora não</button>
@@ -991,7 +1240,7 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     function empty(title,desc,action,label){return `<div class="empty"><div class="empty-icon">${icon("file")}</div><h3>${esc(title)}</h3><p>${esc(desc)}</p>${action?`<button class="btn btn-primary" data-action="${action}">${icon("plus")}${esc(label)}</button>`:""}</div>`}
     
     function setMenuOpen(open){const mobile=window.matchMedia?.("(max-width: 760px)").matches;document.body.classList.toggle("menu-open",Boolean(open&&mobile));$("#menu").setAttribute("aria-expanded",String(Boolean(open&&mobile)));$("#sidebar").toggleAttribute?.("inert",Boolean(mobile&&!open));}
-    function navigate(next,idValue=null){view=next;selectedOrder=idValue;search="";setMenuOpen(false);render();$("#main").focus()}
+    function navigate(next,idValue=null){view=next;selectedOrder=idValue;search="";searchOwner="";setMenuOpen(false);render();$("#main").focus()}
     
     function render(){
       const active=view==="order-detail"?"orders":view;
@@ -1003,22 +1252,36 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       wireLabels($("#main"));
     }
 
-    // Dashboard, Clients, Vehicles se mantêm funcionalmente iguais, mas usam funções base
     function renderDashboard(){
       const open=state.orders.filter(o=>!["DELIVERED","CANCELLED"].includes(o.status)).length;
       const delivered=state.orders.filter(o=>o.status==="DELIVERED").length;
       const revenue=state.orders.reduce((s,o)=>s+(o.payments||[]).reduce((a,p)=>a+p.amountCents,0),0);
       const pending=state.orders.filter(o=>o.status==="AWAITING_APPROVAL").length;
       const ready=state.orders.filter(o=>o.status==="READY").length;
-      const firstName=esc(state.workshop.ownerName.trim().split(/\s+/)[0]||"equipe");
+      const firstName=esc((state.workshop.ownerName||"").trim().split(/\s+/)[0]||"equipe");
       const recent=[...state.orders].sort((a,b)=>b.updatedAt-a.updatedAt).slice(0,6);
       const stages=[["Recebidos",["RECEIVED"]],["Diagnóstico",["DIAGNOSING","DIAGNOSED"]],["Aprovação",["AWAITING_APPROVAL"]],["Em execução",["WAITING_PARTS","IN_PROGRESS","FINAL_TESTS"]],["Prontos",["READY"]]];
       const hour=new Date().getHours(),greeting=hour<12?"Bom dia":hour<18?"Boa tarde":"Boa noite";
       
+      let checkinsAlert = "";
+      if (pendingCheckins.length > 0) {
+        checkinsAlert = `
+          <div class="notice success" style="cursor:pointer; align-items:center" data-action="view-checkins">
+            ${icon("car")}
+            <div>
+              <strong>${pendingCheckins.length} check-in(s) aguardando confirmação</strong><br>
+              <span>Clientes preencheram dados via QR Code. Clique para revisar e criar a Ordem de Serviço.</span>
+            </div>
+            <button class="btn btn-ghost btn-sm" style="margin-left:auto; pointer-events:none">Revisar ${icon("arrow")}</button>
+          </div>
+        `;
+      }
+      
       $("#main").innerHTML=`
+        ${checkinsAlert}
         <section class="dashboard-intro" aria-labelledby="dashboard-title">
           <div><span class="eyebrow">Central da oficina</span><h1 id="dashboard-title">${greeting}, <span>${firstName}.</span></h1><p>Veja o que precisa da sua atenção e mantenha cada atendimento em movimento.</p></div>
-          <div class="dashboard-actions"><button class="btn btn-primary" data-action="smart-order">${icon("plus")} Nova ordem</button><button class="btn btn-secondary" data-view="orders">Ver todas as ordens</button></div>
+          <div class="dashboard-actions"><button class="btn btn-primary" data-action="new-order-choice">${icon("plus")} Nova ordem</button><button class="btn btn-secondary" data-view="orders">Ver todas as ordens</button></div>
         </section>
         <section class="grid stats" aria-label="Indicadores da oficina">
           <article class="card metric"><div class="metric-top"><span class="metric-icon">${icon("orders")}</span><span class="metric-context">Agora</span></div><div><span class="metric-label">Ordens em aberto</span><strong class="metric-value">${open}</strong><span class="metric-note">Atendimentos ativos</span></div></article>
@@ -1031,9 +1294,9 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
           <div class="pipeline">${stages.map(([label,statuses])=>{const count=state.orders.filter(o=>statuses.includes(o.status)).length;return `<div class="pipeline-stage ${count?"active":""}"><strong>${count}</strong><span>${label}</span></div>`}).join("")}</div>
         </section>
         <section class="grid dashboard-grid">
-          <article class="card"><div class="card-head"><div><h2>Ordens recentes</h2><p>Últimas movimentações da operação</p></div><button class="btn btn-ghost btn-sm" data-view="orders">Ver todas ${icon("arrow")}</button></div>${recent.length?ordersTable(recent):empty("Nenhuma ordem ainda","Crie o primeiro atendimento para começar a acompanhar sua operação.","smart-order","Criar primeira ordem")}</article>
+          <article class="card"><div class="card-head"><div><h2>Ordens recentes</h2><p>Últimas movimentações da operação</p></div><button class="btn btn-ghost btn-sm" data-view="orders">Ver todas ${icon("arrow")}</button></div>${recent.length?ordersTable(recent):empty("Nenhuma ordem ainda","Crie o primeiro atendimento para começar a acompanhar sua operação.","new-order-choice","Criar primeira ordem")}</article>
           <aside class="card"><div class="card-head"><div><h2>Ações rápidas</h2><p>Atalhos da rotina</p></div></div><div class="quick-actions">
-            <button class="quick-action" data-action="smart-order"><span class="quick-action-icon">${icon("orders")}</span><span><strong>Nova ordem</strong><span>Iniciar atendimento</span></span><span class="quick-action-arrow">${icon("arrow")}</span></button>
+            <button class="quick-action" data-action="new-order-choice"><span class="quick-action-icon">${icon("orders")}</span><span><strong>Nova ordem</strong><span>Iniciar atendimento</span></span><span class="quick-action-arrow">${icon("arrow")}</span></button>
             <button class="quick-action" data-action="new-client"><span class="quick-action-icon">${icon("users")}</span><span><strong>Novo cliente</strong><span>Adicionar contato</span></span><span class="quick-action-arrow">${icon("arrow")}</span></button>
             <button class="quick-action" data-action="new-vehicle"><span class="quick-action-icon">${icon("car")}</span><span><strong>Novo veículo</strong><span>Vincular proprietário</span></span><span class="quick-action-arrow">${icon("arrow")}</span></button>
           </div></aside>
@@ -1049,26 +1312,129 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     }
 
     function renderClients(){
-      const term=search.toLowerCase(),items=state.clients.filter(c=>!term||`${c.name} ${c.phone} ${c.email}`.toLowerCase().includes(term));
-      $("#main").innerHTML=`${pageHead("Relacionamento","Clientes","Uma visão clara dos contatos, veículos e histórico de atendimento.","new-client","Novo cliente")}<div class="toolbar"><label class="field search"><span class="field-label">Buscar clientes</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Nome, telefone ou e-mail"></label><span class="toolbar-meta">${items.length} cliente${items.length===1?"":"s"}</span></div><section class="card">${items.length?`<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Cliente</th><th>Contato</th><th>Veículos</th><th>Ordens</th><th>Último atendimento</th><th></th></tr></thead><tbody>${items.map(c=>{const vehicles=state.vehicles.filter(v=>v.clientId===c.id);const orders=state.orders.filter(o=>o.clientId===c.id).sort((a,b)=>b.updatedAt-a.updatedAt);return `<tr><td data-label="Cliente"><div class="entity-cell"><span class="avatar">${esc(initials(c.name))}</span><span class="entity-copy"><strong>${esc(c.name)}</strong><span>Desde ${date(c.createdAt)}</span></span></div></td><td data-label="Contato"><span class="entity-copy"><strong>${esc(c.phone)}</strong><span>${esc(c.email||"E-mail não informado")}</span></span></td><td data-label="Veículos">${vehicles.length}</td><td data-label="Ordens">${orders.length}</td><td data-label="Último atendimento">${orders.length?date(orders[0].updatedAt):"—"}</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="edit-client" data-id="${c.id}">${icon("edit")} Editar</button></td></tr>`}).join("")}</tbody></table></div>`:empty("Nenhum cliente cadastrado","Cadastre o primeiro cliente para começar a criar veículos e ordens de serviço.","new-client","Cadastrar cliente")}</section>`;
+      const term=search.toLowerCase();
+      const now = Date.now();
+      const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+      const ninetyDays = 90 * 24 * 60 * 60 * 1000;
+
+      let items = state.clients.filter(c=>!term||`${c.name} ${c.phone} ${c.email}`.toLowerCase().includes(term));
+      
+      if(clientFilter === 'NEW') items = items.filter(c => now - c.createdAt < thirtyDays);
+      if(clientFilter === 'OLD') items = items.sort((a,b) => a.createdAt - b.createdAt);
+      if(clientFilter === 'RECENT' || clientFilter === 'LONG_TIME') {
+         items = items.filter(c => {
+            const lastOrder = state.orders.filter(o => o.clientId === c.id).sort((a,b)=>b.updatedAt-a.updatedAt)[0];
+            if(!lastOrder) return false;
+            const timeSince = now - lastOrder.updatedAt;
+            return clientFilter === 'RECENT' ? timeSince < thirtyDays : timeSince > ninetyDays;
+         });
+      }
+      if(clientFilter !== 'OLD') items.sort((a,b) => b.updatedAt - a.updatedAt);
+
+      $("#main").innerHTML=`${pageHead("Relacionamento","Clientes","Uma visão clara dos contatos, veículos e histórico de atendimento.","new-client","Novo cliente")}
+      <div class="chip-group">
+        <button class="chip ${clientFilter==='ALL'?'active':''}" data-client-filter="ALL">Todos</button>
+        <button class="chip ${clientFilter==='NEW'?'active':''}" data-client-filter="NEW">Novos</button>
+        <button class="chip ${clientFilter==='OLD'?'active':''}" data-client-filter="OLD">Mais antigos</button>
+        <button class="chip ${clientFilter==='RECENT'?'active':''}" data-client-filter="RECENT">Atendimento recente</button>
+        <button class="chip ${clientFilter==='LONG_TIME'?'active':''}" data-client-filter="LONG_TIME">Mais tempo sem atendimento</button>
+      </div>
+      <div class="toolbar"><label class="field search"><span class="field-label">Buscar clientes</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Nome, telefone ou e-mail"></label><span class="toolbar-meta">${items.length} cliente${items.length===1?"":"s"}</span></div><section class="card">${items.length?`<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Cliente</th><th>Contato</th><th>Veículos</th><th>Ordens</th><th>Último atendimento</th><th></th></tr></thead><tbody>${items.map(c=>{const vehicles=state.vehicles.filter(v=>v.clientId===c.id);const orders=state.orders.filter(o=>o.clientId===c.id).sort((a,b)=>b.updatedAt-a.updatedAt);return `<tr><td data-label="Cliente"><div class="entity-cell"><span class="avatar">${esc(initials(c.name))}</span><span class="entity-copy"><strong>${esc(c.name)}</strong><span>Desde ${date(c.createdAt)}</span></span></div></td><td data-label="Contato"><span class="entity-copy"><strong>${esc(c.phone)}</strong><span>${esc(c.email||"E-mail não informado")}</span></span></td><td data-label="Veículos">${vehicles.length}</td><td data-label="Ordens">${orders.length}</td><td data-label="Último atendimento">${orders.length?date(orders[0].updatedAt):"—"}</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="view-client" data-id="${c.id}">Abrir perfil</button></td></tr>`}).join("")}</tbody></table></div>`:empty("Nenhum cliente encontrado","Mude os filtros ou cadastre um novo cliente.","new-client","Cadastrar cliente")}</section>`;
       bindSearch();
+      $$("[data-client-filter]").forEach(btn => btn.addEventListener('click', e => {
+        clientFilter = e.target.dataset.clientFilter;
+        render();
+      }));
     }
     
     function renderVehicles(){
-      const term=search.toLowerCase(),items=state.vehicles.filter(v=>!term||`${v.brand} ${v.model} ${v.plate}`.toLowerCase().includes(term));
-      $("#main").innerHTML=`${pageHead("Prontuário digital","Veículos","Identifique rapidamente cada veículo e mantenha o histórico ligado ao proprietário.","new-vehicle","Novo veículo")}<div class="toolbar"><label class="field search"><span class="field-label">Buscar veículos</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Marca, modelo ou placa"></label><span class="toolbar-meta">${items.length} veículo${items.length===1?"":"s"}</span></div><section class="card">${items.length?`<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Veículo</th><th>Placa</th><th>Ano</th><th>Proprietário</th><th>Quilometragem</th><th></th></tr></thead><tbody>${items.map(v=>`<tr><td data-label="Veículo"><div class="entity-cell"><span class="avatar">${icon("car")}</span><span class="entity-copy"><strong>${esc(vehicleName(v))}</strong><span>${esc(v.color||"Cor não informada")}</span></span></div></td><td data-label="Placa"><span class="plate">${esc(v.plate)}</span></td><td data-label="Ano">${esc(v.year||"—")}</td><td data-label="Proprietário">${esc(clientOf(v.clientId)?.name||"Cliente removido")}</td><td data-label="Quilometragem">${Number(v.mileage||0).toLocaleString("pt-BR")} km</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="edit-vehicle" data-id="${v.id}">${icon("edit")} Editar</button></td></tr>`).join("")}</tbody></table></div>`:empty("Nenhum veículo cadastrado",state.clients.length?"Cadastre o primeiro veículo para vinculá-lo ao prontuário do cliente.":"Cadastre um cliente antes de adicionar o primeiro veículo.",state.clients.length?"new-vehicle":"new-client",state.clients.length?"Cadastrar veículo":"Cadastrar cliente")}</section>`;
+      const term=search.toLowerCase();
+      const termOwner=searchOwner.toLowerCase();
+      const items=state.vehicles.filter(v=>{
+        const c = clientOf(v.clientId);
+        const matchVehicle = !term||`${v.brand} ${v.model} ${v.plate}`.toLowerCase().includes(term);
+        const matchOwner = !termOwner||(c && c.name.toLowerCase().includes(termOwner));
+        return matchVehicle && matchOwner;
+      });
+      $("#main").innerHTML=`${pageHead("Prontuário digital","Veículos","Identifique rapidamente cada veículo e mantenha o histórico ligado ao proprietário.","new-vehicle","Novo veículo")}
+      <div class="toolbar">
+        <div class="search-group">
+          <label class="field search"><span class="field-label">Buscar veículo</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Marca, modelo ou placa"></label>
+          <label class="field search"><span class="field-label">Proprietário</span>${icon("search")}<input id="searchOwner" type="search" value="${esc(searchOwner)}" placeholder="Nome do cliente"></label>
+        </div>
+        <span class="toolbar-meta">${items.length} veículo${items.length===1?"":"s"}</span>
+      </div><section class="card">${items.length?`<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Veículo</th><th>Placa</th><th>Ano</th><th>Proprietário</th><th>Quilometragem</th><th></th></tr></thead><tbody>${items.map(v=>`<tr><td data-label="Veículo"><div class="entity-cell"><span class="avatar">${icon("car")}</span><span class="entity-copy"><strong>${esc(vehicleName(v))}</strong><span>${esc(v.color||"Cor não informada")}</span></span></div></td><td data-label="Placa"><span class="plate">${esc(v.plate)}</span></td><td data-label="Ano">${esc(v.year||"—")}</td><td data-label="Proprietário">${esc(clientOf(v.clientId)?.name||"Cliente removido")}</td><td data-label="Quilometragem">${Number(v.mileage||0).toLocaleString("pt-BR")} km</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="edit-vehicle" data-id="${v.id}">${icon("edit")} Editar</button></td></tr>`).join("")}</tbody></table></div>`:empty("Nenhum veículo encontrado",state.clients.length?"Cadastre o primeiro veículo ou altere a busca.":"Cadastre um cliente antes de adicionar o primeiro veículo.",state.clients.length?"new-vehicle":"new-client",state.clients.length?"Cadastrar veículo":"Cadastrar cliente")}</section>`;
       bindSearch();
     }
 
     function renderOrders(){
-      const term=search.toLowerCase(),items=state.orders.filter(o=>{const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId);return !term||`${o.number} ${c?.name} ${vehicleName(v)} ${v?.plate}`.toLowerCase().includes(term)}).sort((a,b)=>b.updatedAt-a.updatedAt);
-      $("#main").innerHTML=`${pageHead("Acompanhamento operacional","Ordens de serviço","Gerencie cada atendimento do recebimento à entrega.","smart-order","Nova ordem")}<div class="toolbar"><label class="field search"><span class="field-label">Buscar ordens</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Número, cliente, veículo ou placa"></label><span class="toolbar-meta">${items.length} ordem${items.length===1?"":"ns"}</span></div><section class="card">${items.length?ordersTable(items):empty("Nenhuma ordem de serviço","Crie o primeiro atendimento para iniciar o acompanhamento da oficina.","smart-order","Criar ordem")}</section>`;
+      const term=search.toLowerCase();
+      let items=state.orders.filter(o=>{const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId);return !term||`${o.number} ${c?.name} ${vehicleName(v)} ${v?.plate}`.toLowerCase().includes(term)});
+      
+      const filterGroups = {
+        'ALL': [],
+        'RECEIVED': ['RECEIVED'],
+        'DIAGNOSIS': ['DIAGNOSING', 'DIAGNOSED'],
+        'APPROVAL': ['AWAITING_APPROVAL'],
+        'EXECUTION': ['WAITING_PARTS', 'IN_PROGRESS', 'FINAL_TESTS'],
+        'READY': ['READY'],
+        'DELIVERED': ['DELIVERED']
+      };
+
+      if(osFilter !== 'ALL') {
+        items = items.filter(o => filterGroups[osFilter].includes(o.status));
+      }
+      items.sort((a,b)=>b.updatedAt-a.updatedAt);
+
+      $("#main").innerHTML=`${pageHead("Acompanhamento operacional","Ordens de serviço","Gerencie cada atendimento do recebimento à entrega.","new-order-choice","Nova ordem")}
+      <div class="chip-group">
+        <button class="chip ${osFilter==='ALL'?'active':''}" data-os-filter="ALL">Todas (${state.orders.length})</button>
+        <button class="chip ${osFilter==='RECEIVED'?'active':''}" data-os-filter="RECEIVED">Recebidas</button>
+        <button class="chip ${osFilter==='DIAGNOSIS'?'active':''}" data-os-filter="DIAGNOSIS">Diagnóstico</button>
+        <button class="chip ${osFilter==='APPROVAL'?'active':''}" data-os-filter="APPROVAL">Aprovação</button>
+        <button class="chip ${osFilter==='EXECUTION'?'active':''}" data-os-filter="EXECUTION">Execução</button>
+        <button class="chip ${osFilter==='READY'?'active':''}" data-os-filter="READY">Prontas</button>
+        <button class="chip ${osFilter==='DELIVERED'?'active':''}" data-os-filter="DELIVERED">Entregues</button>
+      </div>
+      <div class="toolbar"><label class="field search"><span class="field-label">Buscar ordens</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Número, cliente, veículo ou placa"></label><span class="toolbar-meta">${items.length} ordem${items.length===1?"":"ns"}</span></div><section class="card">${items.length?ordersTable(items):empty("Nenhuma ordem encontrada","Crie um novo atendimento ou limpe os filtros.","new-order-choice","Criar ordem")}</section>`;
       bindSearch();
+      $$("[data-os-filter]").forEach(btn => btn.addEventListener('click', e => {
+        osFilter = e.target.dataset.osFilter;
+        render();
+      }));
     }
 
-    function renderOrderDetail(){
+    async function loadPublicDecisions(order) {
+      if(!order || !order.publicToken) return false;
+      try {
+        const snap = await db.ref(`publicOrders/${order.publicToken}/items`).once('value');
+        const pubItems = snap.val();
+        if(!pubItems) return false;
+        let changed = false;
+        (order.estimate.items || []).forEach((item, idx) => {
+          const pItem = pubItems[idx];
+          if(pItem && pItem.decision !== item.decision) {
+            item.decision = pItem.decision;
+            changed = true;
+          }
+        });
+        if(changed) {
+          order.updatedAt = Date.now();
+          await saveState();
+          return true;
+        }
+      } catch(e) {}
+      return false;
+    }
+
+    async function renderOrderDetail(){
       const o=orderOf(selectedOrder);if(!o){navigate("orders");return;}
-      const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId),items=o.estimate?.items||[],subtotal=items.reduce((s,i)=>s+i.qty*i.unitCents,0),paid=(o.payments||[]).reduce((s,p)=>s+p.amountCents,0);
+      const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId);
+      
+      // Attempt to load client decisions before rendering
+      const changed = await loadPublicDecisions(o);
+      
+      const items=o.estimate?.items||[],subtotal=items.reduce((s,i)=>s+i.qty*i.unitCents,0),paid=(o.payments||[]).reduce((s,p)=>s+p.amountCents,0);
       const balance=subtotal-paid;
       const link = getPublicLink(o.publicToken);
 
@@ -1094,10 +1460,12 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
           <section class="communication-card" aria-labelledby="communication-title">
             <h2 id="communication-title">Comunicação com o cliente</h2><p>Compartilhe um acesso simples e sempre atualizado.</p>
             <div class="communication-link" title="${esc(link)}">${esc(link)}</div>
-            <div class="communication-actions"><a href="${esc(link)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">${icon("external")} Abrir</a><button class="btn btn-secondary btn-sm" data-action="copy-public" data-id="${o.id}">${icon("copy")} Copiar</button><button class="btn btn-whatsapp btn-sm" data-action="send-whatsapp" data-id="${o.id}">${icon("whatsapp")} WhatsApp</button></div>
+            <div class="communication-actions"><a href="${esc(link)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">${icon("external")} Abrir</a><button class="btn btn-secondary btn-sm" data-action="copy-public" data-id="${o.id}">${icon("copy")} Copiar</button><button class="btn btn-whatsapp btn-sm" data-action="send-whatsapp-status" data-id="${o.id}">${icon("whatsapp")} WhatsApp</button></div>
             <p>Sincronizado em ${date(o.updatedAt,true)}</p>
           </section>
-          <article class="card"><div class="card-head"><div><h2>Financeiro</h2><p>Informação privada da oficina</p></div></div><div class="card-pad finance-grid"><div class="finance-row"><span>Total da OS</span><strong>${money(subtotal)}</strong></div><div class="finance-row"><span>Recebido</span><strong>${money(paid)}</strong></div><div class="finance-row balance"><span>Saldo pendente</span><strong>${money(Math.max(0,balance))}</strong></div>${balance<=0&&subtotal>0?`<div class="paid-state">Pagamento concluído</div>`:""}<button class="btn btn-primary" data-action="new-payment">${icon("plus")} Registrar pagamento</button></div></article>
+          <article class="card"><div class="card-head"><div><h2>Financeiro</h2><p>Informação privada da oficina</p></div></div><div class="card-pad finance-grid"><div class="finance-row"><span>Total da OS</span><strong>${money(subtotal)}</strong></div><div class="finance-row"><span>Recebido</span><strong>${money(paid)}</strong></div>
+          ${(o.payments||[]).map(p => `<div class="finance-row"><span>${esc(p.method)}${p.installments ? ` · ${p.installments}x` : ''}</span><span>${money(p.amountCents)}</span></div>`).join('')}
+          <div class="finance-row balance"><span>Saldo pendente</span><strong>${money(Math.max(0,balance))}</strong></div>${balance<=0&&subtotal>0?`<div class="paid-state">Pagamento concluído</div>`:""}<button class="btn btn-primary" data-action="new-payment">${icon("plus")} Registrar pagamento</button></div></article>
           <article class="card"><div class="card-head"><div><h2>Histórico</h2><p>Eventos mais recentes primeiro</p></div></div><div class="card-pad"><ol class="timeline">${[...(o.timeline||[])].sort((a,b)=>b.at-a.at).map(e=>`<li><strong>${esc(e.text)}</strong><time datetime="${new Date(e.at).toISOString()}">${date(e.at,true)}</time></li>`).join("")}</ol></div></article>
           <button class="btn btn-secondary back-link" data-view="orders">${icon("back")} Voltar para ordens</button>
         </aside>
@@ -1113,20 +1481,209 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
     function renderBackup(){
       const bytes=new Blob([JSON.stringify(state)]).size;
-      $("#main").innerHTML=`${pageHead("Administração","Configurações","Gerencie a identidade da oficina, sua conta e a segurança dos dados.")}
+      const pix = state.workshop.pix || {type:"",key:"",holderName:""};
+      const checkinToken = state.workshop.publicCheckinToken;
+      const checkinUrl = getCheckinLink(checkinToken);
+
+      $("#main").innerHTML=`${pageHead("Administração","Configurações","Gerencie a identidade da oficina, pagamentos, recepção e segurança.")}
       <section class="grid dashboard-grid">
-        <article class="card"><div class="card-head"><div><h2>Dados da oficina</h2><p>Informações exibidas nos links de acompanhamento</p></div></div><div class="card-pad form-grid"><div class="field full"><label>Nome da oficina</label><input value="${esc(state.workshop.name)}" disabled></div><div class="field"><label>Responsável</label><input value="${esc(state.workshop.ownerName)}" disabled></div><div class="field"><label>WhatsApp comercial</label><input value="${esc(state.workshop.phone)}" disabled></div><div class="form-actions"><button class="btn btn-secondary" data-action="edit-workshop">${icon("edit")} Editar dados</button></div></div></article>
-        <aside class="stack"><article class="card"><div class="card-head"><div><h2>Conta</h2><p>Acesso autenticado</p></div></div><div class="card-pad stack"><div class="field"><label>E-mail</label><input value="${esc(currentUser?.email||"—")}" disabled></div><button class="btn btn-secondary" data-action="logout">Sair desta conta</button></div></article><article class="card"><div class="card-head"><div><h2>Backup</h2><p>Cópia local dos dados</p></div></div><div class="card-pad stack"><div class="finance-row"><span>Tamanho atual</span><strong>${(bytes/1024).toFixed(1)} KB</strong></div><div class="finance-row"><span>Última alteração</span><strong>${date(state.updatedAt,true)}</strong></div><button class="btn btn-primary" data-action="export">${icon("file")} Exportar backup</button><button class="btn btn-secondary" data-action="import">Importar backup</button></div></article></aside>
+        <div class="stack">
+          <article class="card"><div class="card-head"><div><h2>Perfil da Oficina</h2><p>Informações e marca exibidas nos links</p></div></div>
+            <div class="card-pad form-grid">
+              <div class="field full"><label>Nome da oficina</label><input value="${esc(state.workshop.name)}" disabled></div>
+              <div class="field"><label>Responsável</label><input value="${esc(state.workshop.ownerName)}" disabled></div>
+              <div class="field"><label>WhatsApp comercial</label><input value="${esc(state.workshop.phone)}" disabled></div>
+              <div class="field full" style="margin-top:10px">
+                <label>Logo da oficina</label>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div class="avatar" style="width:60px;height:60px;overflow:hidden">
+                    ${state.workshop.logoUrl ? `<img src="${esc(state.workshop.logoUrl)}" style="width:100%;height:100%;object-fit:cover">` : initials(state.workshop.name)}
+                  </div>
+                  <button class="btn btn-secondary btn-sm" onclick="document.getElementById('logo-upload').click()">Alterar logo</button>
+                  ${state.workshop.logoUrl ? `<button class="btn btn-ghost btn-sm" data-action="remove-logo">Remover</button>` : ''}
+                </div>
+              </div>
+              <div class="form-actions"><button class="btn btn-secondary" data-action="edit-workshop">${icon("edit")} Editar dados base</button></div>
+            </div>
+          </article>
+          <article class="card"><div class="card-head"><div><h2>Pagamentos (PIX)</h2><p>Configure a chave que aparecerá nos orçamentos</p></div></div>
+            <div class="card-pad">
+              <form id="pix-form" class="form-grid">
+                <div class="field"><label>Tipo de chave</label><select name="type">
+                  <option value="" ${!pix.type?'selected':''}>Nenhum</option>
+                  <option value="CPF" ${pix.type==='CPF'?'selected':''}>CPF</option>
+                  <option value="CNPJ" ${pix.type==='CNPJ'?'selected':''}>CNPJ</option>
+                  <option value="Telefone" ${pix.type==='Telefone'?'selected':''}>Telefone</option>
+                  <option value="E-mail" ${pix.type==='E-mail'?'selected':''}>E-mail</option>
+                  <option value="Aleatória" ${pix.type==='Aleatória'?'selected':''}>Chave aleatória</option>
+                </select></div>
+                <div class="field"><label>Chave PIX</label><input name="key" value="${esc(pix.key)}" placeholder="Sua chave PIX"></div>
+                <div class="field full"><label>Nome do titular</label><input name="holderName" value="${esc(pix.holderName)}" placeholder="Nome completo ou Razão Social"></div>
+                <div class="form-actions"><button class="btn btn-primary" type="submit">Salvar PIX</button></div>
+              </form>
+            </div>
+          </article>
+        </div>
+        <aside class="stack">
+          <article class="card"><div class="card-head"><div><h2>QR Code da Recepção</h2><p>O cliente escaneia para fazer check-in</p></div></div>
+            <div class="card-pad stack">
+              <div class="qr-preview">
+                <canvas id="qr-canvas"></canvas>
+                <div class="communication-link" style="width:100%;text-align:center;margin-bottom:0">${esc(checkinUrl)}</div>
+              </div>
+              <div style="display:flex;gap:8px;flex-direction:column">
+                <button class="btn btn-primary" data-action="print-qr">${icon("qr")} Imprimir / Salvar QR</button>
+                <button class="btn btn-secondary" data-action="copy-checkin-link">${icon("copy")} Copiar link</button>
+              </div>
+            </div>
+          </article>
+          <article class="card"><div class="card-head"><div><h2>Conta e Backup</h2><p>Acesso autenticado e cópia de segurança</p></div></div>
+            <div class="card-pad stack">
+              <div class="field"><label>E-mail</label><input value="${esc(currentUser?.email||"—")}" disabled></div>
+              <div class="finance-row" style="margin-top:10px"><span>Tamanho atual</span><strong>${(bytes/1024).toFixed(1)} KB</strong></div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button class="btn btn-secondary" style="flex:1" data-action="export">${icon("file")} Exportar</button>
+                <button class="btn btn-secondary" style="flex:1" data-action="import">Importar</button>
+              </div>
+              <button class="btn btn-ghost" style="margin-top:12px" data-action="logout">Sair desta conta</button>
+            </div>
+          </article>
+        </aside>
       </section>`;
+
+      requestAnimationFrame(() => {
+        new QRious({element: document.getElementById('qr-canvas'), value: checkinUrl, size: 220, level: 'H'});
+      });
+    }
+
+    function viewClientModal(c) {
+      if(!c) return;
+      const vehicles=state.vehicles.filter(v=>v.clientId===c.id);
+      const orders=state.orders.filter(o=>o.clientId===c.id).sort((a,b)=>b.updatedAt-a.updatedAt);
+      const now = Date.now();
+      
+      let alertHTML = "";
+      if (orders.length > 0) {
+        const timeSince = now - orders[0].updatedAt;
+        const days = Math.floor(timeSince / (1000 * 60 * 60 * 24));
+        if (days >= 90) {
+          alertHTML = `
+            <div class="notice warning">
+              ${icon("alert")}
+              <div>
+                <strong>Mais tempo sem atendimento</strong><br>
+                <span>Última passagem foi há ${days} dias. Pode ser um bom momento para um contato de manutenção preventiva.</span>
+              </div>
+              <button class="btn btn-whatsapp btn-sm" style="margin-left:auto;white-space:nowrap" data-action="whatsapp-recovery" data-id="${c.id}">${icon("whatsapp")} Mensagem</button>
+            </div>
+          `;
+        }
+      }
+
+      modal("Perfil do Cliente", `
+        <div class="client-profile-head">
+          <div class="avatar">${esc(initials(c.name))}</div>
+          <div>
+            <h2>${esc(c.name)}</h2>
+            <p>${esc(c.phone)} · Cadastrado em ${date(c.createdAt)}</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" style="margin-left:auto" data-action="edit-client" data-id="${c.id}">${icon("edit")} Editar dados</button>
+        </div>
+        ${alertHTML}
+        <div class="form-grid">
+          <div class="stack">
+            <div class="client-section">
+              <h3>Veículos Cadastrados (${vehicles.length})</h3>
+              ${vehicles.length ? `<ul class="timeline" style="margin-top:10px">`+vehicles.map(v=>`<li><strong>${esc(vehicleName(v))}</strong><time>${esc(v.plate)} · ${Number(v.mileage||0).toLocaleString('pt-BR')} km</time></li>`).join('')+`</ul>` : '<p class="help">Nenhum veículo vinculado.</p>'}
+            </div>
+          </div>
+          <div class="stack">
+            <div class="client-section">
+              <h3>Histórico de Ordens (${orders.length})</h3>
+              ${orders.length ? `<ul class="timeline" style="margin-top:10px">`+orders.map(o=>`<li><strong>OS ${esc(o.number)}</strong><time>${date(o.updatedAt)} · ${esc(STATUS[o.status]||o.status)}</time></li>`).join('')+`</ul>` : '<p class="help">Nenhum atendimento realizado.</p>'}
+            </div>
+          </div>
+        </div>
+      `, true);
+    }
+
+    function whatsappRecoveryModal(c) {
+      if(!c || !c.phone) return toast("Cliente sem telefone.", "error");
+      let cleanPhone = phone(c.phone);
+      if (cleanPhone.length <= 11) cleanPhone = "55" + cleanPhone;
+      
+      const defaultMsg = `Olá, ${c.name.split(' ')[0]}.\n\nAqui é da ${state.workshop.name}.\n\nVimos que já faz algum tempo desde o último atendimento conosco. Caso queira, podemos verificar os itens de manutenção preventiva e ajudar a manter seu veículo em dia.\n\nFicamos à disposição!`;
+      
+      modal("Retomada de Cliente", `
+        <div class="notice">${icon("info")}<span>A mensagem será aberta no WhatsApp para revisão.</span></div>
+        <div class="field modal-field">
+          <label>Mensagem de Retomada</label>
+          <textarea id="wa-recovery-text" class="message-field">${esc(defaultMsg)}</textarea>
+        </div>
+        <div class="dialog-actions">
+          <button class="btn btn-ghost" type="button" data-action="close">Cancelar</button>
+          <button class="btn btn-whatsapp" type="button" id="wa-recovery-send">${icon("whatsapp")} Abrir WhatsApp</button>
+        </div>
+      `);
+
+      $("#wa-recovery-send").addEventListener("click", () => {
+        const finalMsg = encodeURIComponent($("#wa-recovery-text").value);
+        window.open(`https://wa.me/${cleanPhone}?text=${finalMsg}`, '_blank', 'noopener');
+        closeModal();
+      });
+    }
+
+    function pendingCheckinsModal() {
+      if(!pendingCheckins.length) return toast("Nenhum check-in pendente.");
+      const listHTML = pendingCheckins.sort((a,b)=>b.createdAt-a.createdAt).map(c => `
+        <div class="item-row split mobile-stack" style="align-items:center;background:var(--surface-secondary);padding:14px;border-radius:12px;margin-bottom:8px">
+          <div>
+            <strong>${esc(c.name)} · ${esc(c.phone)}</strong>
+            <p>${esc(c.brand)} ${esc(c.model)} ${esc(c.plate)} · ${date(c.createdAt,true)}</p>
+          </div>
+          <div style="display:flex;gap:8px">
+             <button class="btn btn-secondary btn-sm" data-action="dismiss-checkin" data-id="${c.id}">Remover</button>
+             <button class="btn btn-primary btn-sm" data-action="create-from-checkin" data-id="${c.id}">Criar OS</button>
+          </div>
+        </div>
+      `).join('');
+      modal("Check-ins da Recepção", `<p>Os clientes abaixo preencheram os dados via QR Code.</p>${listHTML}`, true);
     }
 
     function clientForm(item={}){modal(item.id?"Editar cliente":"Novo cliente",`<form id="client-form" class="form-grid" data-id="${item.id||""}"><div class="field full"><label for="client-name">Nome completo</label><input id="client-name" name="name" required maxlength="100" value="${esc(item.name||"")}" autocomplete="name"></div><div class="field"><label for="client-phone">Telefone / WhatsApp</label><input id="client-phone" name="phone" required maxlength="20" inputmode="tel" value="${esc(item.phone||"")}" autocomplete="tel"></div><div class="field"><label for="client-email">E-mail</label><input id="client-email" name="email" type="email" maxlength="120" value="${esc(item.email||"")}" autocomplete="email"></div><div class="field full"><label for="client-document">CPF ou CNPJ <span class="help">(opcional)</span></label><input id="client-document" name="document" maxlength="18" value="${esc(item.document||"")}"></div><div class="field full"><label for="client-notes">Observações internas</label><textarea id="client-notes" name="notes" maxlength="1000">${esc(item.notes||"")}</textarea></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Salvar cliente</button></div></form>`)}
     function vehicleForm(item={}){if(!state.clients.length){toast("Cadastre um cliente antes de adicionar um veículo.","warning");clientForm();return;}modal(item.id?"Editar veículo":"Novo veículo",`<form id="vehicle-form" class="form-grid" data-id="${item.id||""}"><div class="field full"><label for="vehicle-client">Proprietário</label><select id="vehicle-client" name="clientId" required><option value="">Selecione o cliente</option>${state.clients.map(c=>`<option value="${c.id}" ${item.clientId===c.id?"selected":""}>${esc(c.name)}</option>`).join("")}</select></div><div class="field"><label for="vehicle-plate">Placa</label><input id="vehicle-plate" name="plate" required maxlength="8" value="${esc(item.plate||"")}" placeholder="ABC1D23"></div><div class="field"><label for="vehicle-year">Ano</label><input id="vehicle-year" name="year" type="number" min="1900" max="2100" value="${esc(item.year||"")}"></div><div class="field"><label for="vehicle-brand">Marca</label><input id="vehicle-brand" name="brand" required maxlength="60" value="${esc(item.brand||"")}" placeholder="Honda"></div><div class="field"><label for="vehicle-model">Modelo</label><input id="vehicle-model" name="model" required maxlength="60" value="${esc(item.model||"")}" placeholder="Civic"></div><div class="field"><label for="vehicle-color">Cor</label><input id="vehicle-color" name="color" maxlength="40" value="${esc(item.color||"")}"></div><div class="field"><label for="vehicle-mileage">Quilometragem</label><input id="vehicle-mileage" name="mileage" type="number" min="0" value="${Number(item.mileage||0)}"></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Salvar veículo</button></div></form>`)}
     function itemForm(){modal("Adicionar item ao orçamento",`<form id="item-form" class="form-grid"><div class="field full"><label for="item-description">Descrição</label><input id="item-description" name="description" required maxlength="140" placeholder="Ex.: Troca das pastilhas dianteiras"></div><div class="field"><label for="item-type">Tipo</label><select id="item-type" name="type"><option>Serviço</option><option>Peça</option><option>Mão de obra</option></select></div><div class="field"><label for="item-qty">Quantidade</label><input id="item-qty" name="qty" type="number" min="1" value="1" required></div><div class="field full"><label for="item-price">Valor unitário (R$)</label><input id="item-price" name="price" inputmode="decimal" required placeholder="0,00"></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Adicionar item</button></div></form>`)}
-    function paymentForm(){modal("Registrar pagamento",`<form id="payment-form" class="form-grid"><div class="field"><label for="payment-amount">Valor recebido (R$)</label><input id="payment-amount" name="amount" inputmode="decimal" required placeholder="0,00"></div><div class="field"><label for="payment-method">Forma de pagamento</label><select id="payment-method" name="method"><option>Pix</option><option>Dinheiro</option><option>Cartão</option><option>Transferência</option><option>Outro</option></select></div><div class="field full"><label for="payment-note">Observação</label><input id="payment-note" name="note" maxlength="120"></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Registrar pagamento</button></div></form>`)}
+    
+    function paymentForm(){
+      modal("Registrar pagamento",`
+      <form id="payment-form" class="form-grid">
+        <div class="field"><label for="payment-amount">Valor recebido (R$)</label><input id="payment-amount" name="amount" inputmode="decimal" required placeholder="0,00"></div>
+        <div class="field">
+          <label for="payment-method">Forma de pagamento</label>
+          <select id="payment-method" name="method">
+            <option>PIX</option><option>Dinheiro</option><option value="Cartão de Débito">Cartão de Débito</option><option value="Cartão de Crédito">Cartão de Crédito</option><option>Transferência</option><option>Outro</option>
+          </select>
+        </div>
+        <div class="field" id="installments-wrapper" style="display:none">
+          <label>Parcelas</label><input type="number" name="installments" min="1" max="24" value="1">
+        </div>
+        <div class="field full"><label for="payment-note">Observação</label><input id="payment-note" name="note" maxlength="120"></div>
+        <div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Registrar pagamento</button></div>
+      </form>`);
+      
+      const pm = $("#payment-method");
+      pm.addEventListener("change", (e) => {
+        $("#installments-wrapper").style.display = (e.target.value === "Cartão de Crédito") ? "block" : "none";
+      });
+    }
+
     function workshopForm(){modal("Editar dados da oficina",`<form id="workshop-form" class="form-grid"><div class="field full"><label for="workshop-name">Nome da oficina</label><input id="workshop-name" name="name" required maxlength="100" value="${esc(state.workshop.name)}"></div><div class="field"><label for="workshop-owner">Responsável</label><input id="workshop-owner" name="ownerName" required maxlength="100" value="${esc(state.workshop.ownerName)}"></div><div class="field"><label for="workshop-phone">WhatsApp comercial</label><input id="workshop-phone" name="phone" required maxlength="20" inputmode="tel" value="${esc(state.workshop.phone)}"></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Salvar alterações</button></div></form>`)}
     function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=`oficlaro-backup-${new Date().toISOString().slice(0,10)}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Backup exportado com sucesso.");}
-    function bindSearch(){ $("#search")?.addEventListener("input",e=>{search=e.target.value;const cursor=e.target.selectionStart;render();requestAnimationFrame(()=>{const next=$("#search");next?.focus();next?.setSelectionRange(cursor,cursor);});}); }
+    
+    function bindSearch(){ 
+      $("#search")?.addEventListener("input",e=>{search=e.target.value;const cursor=e.target.selectionStart;render();requestAnimationFrame(()=>{const next=$("#search");next?.focus();next?.setSelectionRange(cursor,cursor);});}); 
+      $("#searchOwner")?.addEventListener("input",e=>{searchOwner=e.target.value;const cursor=e.target.selectionStart;render();requestAnimationFrame(()=>{const next=$("#searchOwner");next?.focus();next?.setSelectionRange(cursor,cursor);});}); 
+    }
 
     // ---------------------------------------------------------
     // EVENT LISTENERS E CONTROLES DE FORMULÁRIO
@@ -1139,26 +1696,59 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       if(act==="logout"){ await auth.signOut(); }
       if(act==="close"){ closeModal(); }
       if(act==="close-menu"){ setMenuOpen(false); }
-      if(act==="smart-order"){ smartOrderForm(); }
+      if(act==="new-order-choice"){ newOrderChoiceModal(); }
+      if(act==="new-order-smart"){ closeModal(); smartOrderForm(); }
+      if(act==="new-order-manual"){ closeModal(); manualOrderForm(); }
       if(act==="new-client"){ clientForm(); }
+      if(act==="view-client"){ viewClientModal(clientOf(idV)); }
       if(act==="edit-client"){ clientForm(clientOf(idV)); }
+      if(act==="whatsapp-recovery"){ whatsappRecoveryModal(clientOf(idV)); }
       if(act==="new-vehicle"){ vehicleForm(); }
       if(act==="edit-vehicle"){ vehicleForm(vehicleOf(idV)); }
       if(act==="open-order"){ navigate("order-detail", idV); }
       if(act==="new-item"){ itemForm(); }
       if(act==="new-payment"){ paymentForm(); }
       if(act==="edit-workshop"){ workshopForm(); }
-      if(act==="send-whatsapp"){ openWhatsAppModal(orderOf(idV)); }
+      if(act==="send-whatsapp-status"){ openWhatsAppModal(orderOf(idV)); }
+      if(act==="view-checkins"){ pendingCheckinsModal(); }
+      if(act==="create-from-checkin"){ closeModal(); manualOrderForm(pendingCheckins.find(c=>c.id===idV), idV); }
+      if(act==="dismiss-checkin"){ 
+        await db.ref(`publicCheckins/${state.workshop.publicCheckinToken}/${idV}`).remove(); 
+        toast("Check-in descartado.");
+        if(pendingCheckins.length <= 1) closeModal(); else pendingCheckinsModal();
+      }
       if(act==="copy-public"){
         const order=orderOf(idV);if(!order)return;
         try{await navigator.clipboard.writeText(getPublicLink(order.publicToken));toast("Link de acompanhamento copiado.");}
         catch{toast("Não foi possível copiar o link automaticamente.","error");}
+      }
+      if(act==="copy-checkin-link"){
+        try{await navigator.clipboard.writeText(getCheckinLink(state.workshop.publicCheckinToken));toast("Link de check-in copiado.");}
+        catch{toast("Não foi possível copiar o link automaticamente.","error");}
+      }
+      if(act==="print-qr"){
+        const win = window.open('', '_blank');
+        const img = $("#qr-canvas").toDataURL("image/png");
+        win.document.write(`<html><body style="text-align:center;font-family:sans-serif;margin-top:50px"><h1>Check-in da Oficina</h1><img src="${img}" style="width:300px;height:300px;margin:20px 0;"><p>Aponte a câmera do celular para preencher seus dados.</p><script>window.onload=function(){window.print();}</script></body></html>`);
+        win.document.close();
+      }
+      if(act==="remove-logo"){
+        if(confirm("Remover a logo da oficina?")) {
+          state.workshop.logoUrl = "";
+          await saveState();
+          updateSidebarAvatar();
+          $$("#auth-brand, #main-brand").forEach(el => el.innerHTML = getLogoHTML(state.workshop, true));
+          render();
+        }
       }
       if(act==="export"){ exportData(); }
       if(act==="import"){ $("#import-file").click(); }
     });
     
     document.addEventListener("submit", async e=>{
+      // Ignore public checkin form as it's handled separately
+      if(e.target.id === "public-checkin-form") return;
+
       e.preventDefault(); const f=e.target, d=Object.fromEntries(new FormData(f));
       
       // AUTH (LOGIN/REGISTER)
@@ -1174,14 +1764,14 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       
       // SETUP INICIAL
       if(f.id==="setup-form"){
-        state.workshop = { ownerName:d.ownerName.trim(), name:d.workshopName.trim(), phone:d.phone.trim() };
+        state.workshop = { ownerName:d.ownerName.trim(), name:d.workshopName.trim(), phone:d.phone.trim(), publicCheckinToken: generateToken(), pix: {type:"",key:"",holderName:""} };
         await saveState();
         location.reload();
         return;
       }
 
-      // ASSISTENTE INTELIGENTE (CRIAR OS COMPLETA)
-      if(f.id==="smart-order-form"){
+      // CRIAÇÃO DE OS
+      if(f.id==="create-order-form"){
         let cl = state.clients.find(c => phone(c.phone) === phone(d.phone) || c.name.toLowerCase() === d.name.toLowerCase().trim());
         if(!cl) { cl = { id:id("cli"), name:d.name.trim(), phone:d.phone.trim(), email:"", document:"", notes:"", createdAt:Date.now(), updatedAt:Date.now() }; state.clients.push(cl); }
         
@@ -1193,6 +1783,10 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const o={ id:id("os"), number:`OS-${String(state.counter).padStart(6,"0")}`, publicToken:generateToken(), clientId:cl.id, vehicleId:ve.id, mileage:Number(d.mileage), expectedAt:d.expectedAt?new Date(d.expectedAt+"T12:00:00").getTime():null, complaint:d.complaint.trim(), status:"RECEIVED", diagnosis:null, estimate:{items:[]}, payments:[], timeline:[{id:id("evt"),text:"Veículo recebido pela oficina",at:now}], createdAt:now, updatedAt:now };
         state.orders.push(o);
         
+        if (d.checkinId) {
+          await db.ref(`publicCheckins/${state.workshop.publicCheckinToken}/${d.checkinId}`).remove();
+        }
+
         await saveState(); await syncPublicOrder(o.id);
         closeModal(); navigate("order-detail", o.id); toast("Ordem Criada!");
       }
@@ -1204,25 +1798,69 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         o.timeline.push({id:id("evt"),text:d.note.trim()||STATUS[d.status], at:o.updatedAt});
         await saveState(); await syncPublicOrder(o.id);
         render(); toast("Atualizado com sucesso.");
-        
-        if (oldSt !== d.status) {
-          openWhatsAppModal(o); // Pergunta proativa (sem usar window.confirm nativo)
-        }
+        if (oldSt !== d.status) openWhatsAppModal(o); 
       }
       
       // FORMS MENORES
       if(f.id==="diagnosis-form"){ const o=orderOf(selectedOrder); o.diagnosis={title:d.title.trim(), description:d.description.trim(), internal:d.internal.trim(), updatedAt:Date.now()}; o.updatedAt=Date.now(); await saveState(); await syncPublicOrder(o.id); render(); toast("Diagnóstico salvo."); }
-      if(f.id==="item-form"){ const o=orderOf(selectedOrder); o.estimate.items.push({id:id("itm"), description:d.description.trim(), type:d.type, qty:Math.max(1,Number(d.qty)), unitCents:cents(d.price), decision:"PENDING"}); o.updatedAt=Date.now(); await saveState(); await syncPublicOrder(o.id); closeModal(); render(); toast("Item adicionado."); }
-      if(f.id==="payment-form"){ const o=orderOf(selectedOrder), value=cents(d.amount); if(!value){toast("Informe um valor maior que zero.","error");return;}const now=Date.now();o.payments.push({id:id("pay"),amountCents:value,method:d.method,note:d.note.trim(),at:now});o.timeline.push({id:id("evt"),text:`Pagamento registrado: ${money(value)}`,at:now});o.updatedAt=now;await saveState();closeModal();render();toast("Pagamento registrado."); }
-      if(f.id==="workshop-form"){ Object.assign(state.workshop,{name:d.name.trim(),ownerName:d.ownerName.trim(),phone:d.phone.trim()});await saveState();$("#side-workshop").textContent=state.workshop.name;$("#side-owner").textContent=state.workshop.ownerName;$("#side-avatar").textContent=initials(state.workshop.name);closeModal();render();toast("Dados da oficina atualizados."); }
+      
+      if(f.id==="item-form"){ 
+        const o=orderOf(selectedOrder); 
+        o.estimate.items.push({id:id("itm"), description:d.description.trim(), type:d.type, qty:Math.max(1,Number(d.qty)), unitCents:cents(d.price), decision:"PENDING"}); 
+        o.updatedAt=Date.now(); await saveState(); await syncPublicOrder(o.id); 
+        closeModal(); render(); toast("Item adicionado."); 
+        setTimeout(() => { if(confirm("Deseja enviar WhatsApp informando o orçamento para aprovação?")) openWhatsAppModal(o, "BUDGET"); }, 300);
+      }
+      
+      if(f.id==="payment-form"){ 
+        const o=orderOf(selectedOrder), value=cents(d.amount); 
+        if(!value){toast("Informe um valor maior que zero.","error");return;}
+        const now=Date.now();
+        o.payments.push({id:id("pay"),amountCents:value,method:d.method,installments:d.method==="Cartão de Crédito"?Number(d.installments||1):null,note:d.note.trim(),at:now});
+        o.timeline.push({id:id("evt"),text:`Pagamento registrado: ${money(value)} (${d.method})`,at:now});
+        o.updatedAt=now;await saveState();closeModal();render();toast("Pagamento registrado."); 
+      }
+      
+      if(f.id==="workshop-form"){ Object.assign(state.workshop,{name:d.name.trim(),ownerName:d.ownerName.trim(),phone:d.phone.trim()});await saveState();$("#side-workshop").textContent=state.workshop.name;$("#side-owner").textContent=state.workshop.ownerName;$$("#auth-brand, #main-brand").forEach(el => el.innerHTML = getLogoHTML(state.workshop, true));closeModal();render();toast("Dados da oficina atualizados."); }
+      if(f.id==="pix-form"){ state.workshop.pix = {type:d.type, key:d.key.trim(), holderName:d.holderName.trim()}; await saveState(); toast("PIX salvo."); }
+      
       if(f.id==="client-form"){ const current=clientOf(f.dataset.id),now=Date.now(),item={id:current?.id||id("cli"),name:d.name.trim(),phone:d.phone.trim(),email:d.email.trim(),document:d.document.trim(),notes:d.notes.trim(),createdAt:current?.createdAt||now,updatedAt:now};current?Object.assign(current,item):state.clients.push(item);await saveState();closeModal();render();toast("Cliente salvo."); }
       if(f.id==="vehicle-form"){ const current=vehicleOf(f.dataset.id),now=Date.now(),item={id:current?.id||id("vei"),clientId:d.clientId,plate:d.plate.toUpperCase().replace(/[^A-Z0-9]/g,""),brand:d.brand.trim(),model:d.model.trim(),year:d.year,color:d.color.trim(),mileage:Number(d.mileage||0),createdAt:current?.createdAt||now,updatedAt:now};current?Object.assign(current,item):state.vehicles.push(item);await saveState();closeModal();render();toast("Veículo salvo."); }
     });
 
-    $("#menu").addEventListener("click",()=>setMenuOpen(!document.body.classList.contains("menu-open")));
+    $("#logo-upload").addEventListener("change", async e => {
+      const file = e.target.files[0];
+      if(!file) return;
+      if(file.size > 2 * 1024 * 1024) return toast("A imagem deve ter no máximo 2MB.", "error");
+      toast("Enviando logo...");
+      try {
+        const ref = storage.ref(`workshops/${uid()}/branding/logo_${Date.now()}`);
+        await ref.put(file);
+        const url = await ref.getDownloadURL();
+        state.workshop.logoUrl = url;
+        await saveState();
+        updateSidebarAvatar();
+        $$("#auth-brand, #main-brand").forEach(el => el.innerHTML = getLogoHTML(state.workshop, true));
+        render();
+        toast("Logo atualizada com sucesso!");
+      } catch (err) {
+        toast("Erro ao enviar logo. Verifique sua conexão.", "error");
+      }
+      e.target.value = "";
+    });
+
+    $("#menu").addEventListener("click", () => {
+      if(window.innerWidth > 760) {
+        const isCollapsed = document.body.classList.toggle("sidebar-collapsed");
+        localStorage.setItem("oficlaroSidebarCollapsed", isCollapsed);
+      } else {
+        setMenuOpen(!document.body.classList.contains("menu-open"));
+      }
+    });
+
     $("#modal").addEventListener("click",e=>{if(e.target===$("#modal"))closeModal();});
     document.addEventListener("keydown",e=>{if(e.key==="Escape")setMenuOpen(false);});
-    window.addEventListener("resize",()=>setMenuOpen(document.body.classList.contains("menu-open")));
+    window.addEventListener("resize",()=>{ if(window.innerWidth<=760) setMenuOpen(document.body.classList.contains("menu-open")); });
     setMenuOpen(false);
 
     $("#import-file").addEventListener("change",async e=>{
@@ -1232,9 +1870,11 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         if(!data.workshop||!Array.isArray(data.clients)||!Array.isArray(data.vehicles)||!Array.isArray(data.orders))throw new Error("invalid");
         if(!confirm("Importar este backup e substituir os dados atuais desta oficina?"))return;
         state={...fresh(),...data,version:2,updatedAt:Date.now()};
+        state.workshop.publicCheckinToken=state.workshop.publicCheckinToken||generateToken();
         state.orders.forEach(o=>{o.publicToken=o.publicToken||generateToken();o.timeline=o.timeline||[];o.payments=o.payments||[];o.estimate=o.estimate||{items:[]};o.estimate.items=o.estimate.items||[];});
         await saveState();
         await Promise.all(state.orders.map(o=>syncPublicOrder(o.id)));
+        setupCheckinListener();
         render();toast("Backup importado com sucesso.");
       }catch(error){console.error(error);toast("O arquivo selecionado não é um backup válido do Oficlaro.","error");}
       finally{e.target.value="";}
