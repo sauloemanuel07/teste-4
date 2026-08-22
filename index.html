@@ -19,32 +19,6 @@
   <!-- Biblioteca leve para QR Code -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 
-  <!-- 
-  REGRAS DE SEGURANÇA RECOMENDADAS NO FIREBASE REALTIME DATABASE:
-  {
-    "rules": {
-      "workshops": {
-        "$uid": {
-          ".read": "auth != null && auth.uid == $uid",
-          ".write": "auth != null && auth.uid == $uid"
-        }
-      },
-      "publicOrders": {
-        "$token": {
-          ".read": "true",
-          ".write": "newData.child('ownerUid').val() == auth.uid || (data.exists() && newData.hasChildren())"
-        }
-      },
-      "publicCheckins": {
-        "$token": {
-          ".read": "auth != null",
-          ".write": "true"
-        }
-      }
-    }
-  }
-  -->
-
   <style>
 /* Design Tokens */
 :root {
@@ -88,7 +62,8 @@ svg{display:block}
 .stack{display:grid;gap:var(--space-5)}
 .split{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)}
 .mobile-brand,.mobile-dock{display:none}
-.menu-scrim{display:none}
+.menu-scrim{display:none; pointer-events:none;} /* Fixed overlay blocking */
+body.menu-open .menu-scrim{display:block; pointer-events:auto;}
 
 /* Brand */
 .brand{display:inline-flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
@@ -97,6 +72,7 @@ svg{display:block}
 .brand-tagline{margin-top:4px;color:#879bb4;font-size:10px;font-weight:600;letter-spacing:.11em;text-transform:uppercase}
 .logo-mark{width:38px;height:38px;display:grid;place-items:center;flex:0 0 auto;border-radius:11px;background:#fff;color:var(--brand-700);box-shadow:0 1px 0 rgba(255,255,255,.15),0 8px 22px rgba(0,0,0,.14);overflow:hidden;object-fit:cover}
 .logo-mark svg{width:24px;height:24px}
+.logo-mark img{width:100%;height:100%;object-fit:cover}
 .brand-dark{color:var(--brand-900)}
 .brand-dark .logo-mark{background:var(--brand-700);color:#fff;box-shadow:0 8px 20px rgba(31,95,209,.18)}
 .brand-dark .brand-tagline{color:var(--text-muted)}
@@ -171,17 +147,18 @@ svg{display:block}
 /* Components */
 .icon{width:18px;height:18px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
 .btn{min-height:44px;padding:9px 14px;border:1px solid transparent;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:650;line-height:1.2;text-decoration:none;white-space:nowrap;transition:background var(--motion-fast) var(--ease),border-color var(--motion-fast) var(--ease),color var(--motion-fast) var(--ease),transform var(--motion-fast) var(--ease),box-shadow var(--motion-fast) var(--ease)}
-.btn:hover{transform:translateY(-1px)}
-.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:0.6; cursor:not-allowed; transform:none}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn:active:not(:disabled){transform:translateY(0)}
 .btn-primary{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 4px 10px rgba(31,95,209,.15)}
-.btn-primary:hover{background:var(--brand-hover);border-color:var(--brand-hover)}
+.btn-primary:hover:not(:disabled){background:var(--brand-hover);border-color:var(--brand-hover)}
 .btn-secondary{background:var(--surface);border-color:var(--border-strong);color:var(--text-secondary);box-shadow:var(--shadow-xs)}
-.btn-secondary:hover{border-color:#aebac8;background:var(--surface-secondary)}
+.btn-secondary:hover:not(:disabled){border-color:#aebac8;background:var(--surface-secondary)}
 .btn-ghost{background:transparent;color:var(--text-muted)}
-.btn-ghost:hover{background:var(--surface-tertiary);color:var(--text-secondary)}
+.btn-ghost:hover:not(:disabled){background:var(--surface-tertiary);color:var(--text-secondary)}
 .btn-danger{background:var(--danger-soft);border-color:#f1cece;color:var(--danger)}
 .btn-whatsapp{background:var(--whatsapp);border-color:var(--whatsapp);color:#fff}
-.btn-whatsapp:hover{background:#126a40;border-color:#126a40}
+.btn-whatsapp:hover:not(:disabled){background:#126a40;border-color:#126a40}
 .btn-sm{min-height:44px;padding:8px 10px;font-size:12px}
 .icon-btn{width:44px;height:44px;padding:0;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text-muted);display:inline-grid;place-items:center;transition:background var(--motion-fast),color var(--motion-fast),border-color var(--motion-fast)}
 .icon-btn:hover{background:var(--surface-secondary);border-color:var(--border-strong);color:var(--text-primary)}
@@ -224,9 +201,9 @@ svg{display:block}
 input,select,textarea{width:100%;min-height:44px;padding:9px 11px;border:1px solid var(--border-strong);border-radius:9px;background:#fff;color:var(--text-primary);font-size:13px;transition:border-color var(--motion-fast),box-shadow var(--motion-fast),background var(--motion-fast)}
 input::placeholder,textarea::placeholder{color:#98a3b2}
 textarea{min-height:96px;resize:vertical}
-input:hover,select:hover,textarea:hover{border-color:#aeb9c7}
+input:hover:not(:disabled),select:hover:not(:disabled),textarea:hover:not(:disabled){border-color:#aeb9c7}
 input:focus,select:focus,textarea:focus{outline:0;border-color:#6f9be4;box-shadow:0 0 0 3px rgba(45,108,223,.1)}
-input:disabled{background:var(--surface-secondary);color:var(--text-muted)}
+input:disabled,select:disabled,textarea:disabled{background:var(--surface-secondary);color:var(--text-muted);cursor:not-allowed}
 .form-section-title{grid-column:1/-1;margin:4px 0 0;padding-bottom:9px;border-bottom:1px solid var(--border);font-size:12px;font-weight:680;color:var(--text-secondary)}
 .form-actions{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-end;gap:9px;padding-top:4px}
 .auth-actions{flex-direction:column;align-items:stretch;margin-top:6px}
@@ -235,6 +212,7 @@ input:disabled{background:var(--surface-secondary);color:var(--text-muted)}
 .modal-field{margin-bottom:20px}
 .message-field{min-height:126px}
 .qr-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;border:1px dashed var(--border-strong);border-radius:12px;background:var(--surface-secondary)}
+.qr-preview canvas{max-width:100%;height:auto} /* QR Margin Fix */
 
 /* Tables */
 .toolbar{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:14px;flex-wrap:wrap}
@@ -348,7 +326,7 @@ input:disabled{background:var(--surface-secondary);color:var(--text-muted)}
 .client-section{margin-bottom:24px}
 .client-section h3{margin:0 0 12px;font-size:14px;color:var(--text-secondary);border-bottom:1px solid var(--border);padding-bottom:8px}
 
-/* Smart Intake */
+/* Smart Intake & Choices */
 .smart-panel{padding:18px;margin-bottom:20px;border:1px solid #cedcf0;border-radius:12px;background:var(--brand-soft)}
 .smart-panel-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
 .smart-panel-icon{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:#fff;color:var(--brand);box-shadow:var(--shadow-xs)}
@@ -390,8 +368,8 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
 .dialog-body{padding:20px}
 .dialog-actions{margin:20px -20px -20px;padding:14px 20px;border-top:1px solid var(--border);background:var(--surface-secondary);display:flex;justify-content:flex-end;gap:9px}
 @keyframes modal-in{from{opacity:0;transform:translateY(10px) scale(.985)}}
-.toast-region{position:fixed;right:20px;bottom:20px;z-index:200;display:grid;gap:8px}
-.toast{min-width:260px;max-width:390px;padding:12px 14px;border:1px solid var(--border);border-left:3px solid var(--brand);border-radius:10px;background:#fff;color:var(--text-secondary);box-shadow:var(--shadow-md);font-size:12px;animation:toast-in var(--motion-base) var(--ease)}
+.toast-region{position:fixed;right:20px;bottom:20px;z-index:200;display:grid;gap:8px; pointer-events:none;} /* Fixed overlay blocking */
+.toast{min-width:260px;max-width:390px;padding:12px 14px;border:1px solid var(--border);border-left:3px solid var(--brand);border-radius:10px;background:#fff;color:var(--text-secondary);box-shadow:var(--shadow-md);font-size:12px;animation:toast-in var(--motion-base) var(--ease); pointer-events:auto;}
 .toast.success{border-left-color:var(--success)}
 .toast.error{border-left-color:var(--danger)}
 .toast.warning{border-left-color:var(--warning)}
@@ -431,7 +409,8 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
 .public-timeline time{color:var(--text-muted);font-size:11px;text-align:right}
 .public-actions{padding:20px 30px 28px;border-top:1px solid var(--border);background:var(--surface-secondary);display:grid;gap:10px}
 .public-btn{width:100%;min-height:52px;padding:12px 16px;border:1px solid transparent;border-radius:11px;display:flex;align-items:center;justify-content:center;gap:9px;font-size:15px;font-weight:680;text-decoration:none;transition:background var(--motion-fast),transform var(--motion-fast)}
-.public-btn:hover{transform:translateY(-1px)}
+.public-btn:hover:not(:disabled){transform:translateY(-1px)}
+.public-btn:disabled{opacity:0.6; cursor:not-allowed;}
 .public-btn-whatsapp{background:var(--whatsapp);color:#fff}
 .public-btn-primary{background:var(--brand);color:#fff}
 .public-btn-secondary{background:#fff;border-color:var(--border-strong);color:var(--text-secondary)}
@@ -460,8 +439,6 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
   .app{display:block}
   .sidebar{position:fixed;left:0;top:0;transform:translateX(-102%);transition:transform var(--motion-base) var(--ease);box-shadow:var(--shadow-lg)}
   body.menu-open .sidebar{transform:none}
-  .menu-scrim{position:fixed;inset:0;z-index:35;border:0;background:rgba(7,20,38,.42)}
-  body.menu-open .menu-scrim{display:block}
   .menu{display:grid}
   .mobile-brand{display:block;color:var(--brand-900);font-size:14px;font-weight:700;letter-spacing:-.02em}
   .crumb,.topbar-state{display:none}
@@ -554,7 +531,11 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       <h1 id="auth-title">Bem-vindo de volta</h1><p id="auth-desc">Acesse sua operação com segurança.</p>
       <form id="auth-form" class="form-grid">
         <div class="field full"><label for="auth-email">E-mail</label><input id="auth-email" type="email" name="email" required autocomplete="email" placeholder="voce@oficina.com.br"></div>
-        <div class="field full"><label for="auth-password">Senha</label><input id="auth-password" type="password" name="password" required minlength="6" autocomplete="current-password" placeholder="Sua senha"></div>
+        <div class="field full">
+          <label for="auth-password">Senha</label>
+          <input id="auth-password" type="password" name="password" required minlength="6" autocomplete="current-password" placeholder="Sua senha">
+          <div style="text-align:right; margin-top:2px"><a href="#" id="auth-forgot" class="help" style="display:inline-block; color:var(--brand); font-weight:600; text-decoration:none;">Esqueci minha senha</a></div>
+        </div>
         <div class="form-actions auth-actions">
           <button class="btn btn-primary" type="submit" id="auth-submit">Entrar no Oficlaro</button>
           <div class="auth-switch">
@@ -582,7 +563,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         <div class="field full"><label for="setup-owner">Seu nome</label><input id="setup-owner" name="ownerName" required maxlength="100" autocomplete="name" placeholder="Nome do responsável"></div>
         <div class="field full"><label for="setup-workshop">Nome da oficina</label><input id="setup-workshop" name="workshopName" required maxlength="100" autocomplete="organization" placeholder="Como seus clientes conhecem a oficina"></div>
         <div class="field full"><label for="setup-phone">WhatsApp comercial</label><input id="setup-phone" name="phone" required maxlength="20" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999"></div>
-        <div class="form-actions"><button class="btn btn-primary" type="submit">Concluir configuração</button></div>
+        <div class="form-actions"><button class="btn btn-primary" type="submit" id="setup-submit">Concluir configuração</button></div>
       </form>
     </div>
     <aside class="setup-aside"><div class="setup-aside-content"><span class="eyebrow">Primeiro acesso</span><h2>Sua operação começa organizada.</h2><p>Uma configuração rápida para criar ordens, acompanhar serviços e informar clientes com a sua marca.</p></div></aside>
@@ -670,7 +651,9 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     const TITLES={dashboard:"Visão geral",clients:"Clientes",vehicles:"Veículos",orders:"Ordens de serviço",backup:"Configurações","order-detail":"Detalhes da ordem"};
     const fresh=()=>({version:2,workshop:{},clients:[],vehicles:[],orders:[],counter:0,updatedAt:Date.now()});
     let state=fresh(), view="dashboard", selectedOrder=null, search="", searchOwner="", currentUser=null, pendingCheckins=[];
-    let clientFilter = "ALL", osFilter = "ALL";
+    let clientFilter = "ALL", osFilter = "ALL", vehicleFilter = "ACTIVE";
+    let activeOrderListener = null; // Para aprovações em tempo real
+    let knownCheckins = new Set();
     const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
     const uid=()=>currentUser?.uid;
 
@@ -694,7 +677,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       edit:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16-.5 4.5L8 20l11-11-4-4L4 16ZM13.5 6.5l4 4"/></svg>',
       close:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>',
       qr:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h7v7h-7zM14 17h7M17 14v7"/></svg>',
-      pen:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>'
+      pen:'<svg class="icon" viewBox="0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>'
     };
     const icon=name=>ICONS[name]||"";
     
@@ -729,6 +712,13 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     function vehicleOf(id){return state.vehicles.find(x=>x.id===id)} 
     function orderOf(id){return state.orders.find(x=>x.id===id)}
     
+    function cleanupOrderListener() {
+        if(activeOrderListener) {
+            db.ref(`publicOrders/${activeOrderListener.token}/items`).off('value', activeOrderListener.cb);
+            activeOrderListener = null;
+        }
+    }
+
     // ---------------------------------------------------------
     // PERSISTÊNCIA E SINCRONIZAÇÃO
     // ---------------------------------------------------------
@@ -746,6 +736,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
             o.timeline = o.timeline || [];
             o.estimate = o.estimate || {items:[]};
             o.estimate.items = o.estimate.items || [];
+            o.showPix = Boolean(o.showPix);
             if(!o.publicToken) o.publicToken = generateToken();
           });
           val.workshop = val.workshop || {};
@@ -779,7 +770,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         workshopName: state.workshop.name,
         workshopPhone: state.workshop.phone,
         workshopLogo: state.workshop.logoUrl || null,
-        pix: state.workshop.pix?.key ? state.workshop.pix : null,
+        pix: (o.showPix && state.workshop.pix?.key) ? state.workshop.pix : null,
         customerFirstName: c ? c.name.split(' ')[0] : 'Cliente',
         orderNumber: o.number,
         vehicleStr: v ? vehicleName(v) : 'Veículo',
@@ -799,9 +790,16 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       if(!state.workshop?.publicCheckinToken) return;
       db.ref(`publicCheckins/${state.workshop.publicCheckinToken}`).on('value', snap => {
         pendingCheckins = [];
+        let newlyArrived = false;
         snap.forEach(child => {
-          pendingCheckins.push({id: child.key, ...child.val()});
+          const val = {id: child.key, ...child.val()};
+          pendingCheckins.push(val);
+          if(!knownCheckins.has(child.key)) {
+            knownCheckins.add(child.key);
+            newlyArrived = true;
+          }
         });
+        if(newlyArrived && state.updatedAt) toast("Novo check-in recebido na recepção!", "info");
         if(view === 'dashboard') render();
       });
     }
@@ -821,6 +819,24 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       $("#auth-password").setAttribute("autocomplete",isLoginMode?"current-password":"new-password");
     }
     $("#auth-toggle-link").addEventListener("click", toggleAuthMode);
+
+    $("#auth-forgot").addEventListener("click", async (e) => {
+        e.preventDefault();
+        const email = $("#auth-email").value.trim();
+        if(!email) return toast("Preencha seu e-mail acima para recuperar a senha.", "warning");
+        const btn = e.target;
+        btn.style.pointerEvents = "none";
+        btn.textContent = "Enviando...";
+        try {
+            await auth.sendPasswordResetEmail(email);
+            toast("Se houver conta, as instruções foram enviadas ao seu e-mail.");
+        } catch(err) {
+            toast("Erro ao tentar recuperar a senha.", "error");
+        } finally {
+            btn.style.pointerEvents = "auto";
+            btn.textContent = "Esqueci minha senha";
+        }
+    });
 
     auth.onAuthStateChanged(async (user) => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -857,6 +873,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         }
       } else {
         currentUser = null;
+        cleanupOrderListener();
         $("#app").classList.add("hidden");
         $("#setup").classList.add("hidden");
         $("#auth-view").classList.remove("hidden");
@@ -910,8 +927,10 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         }
 
         window.updateItemDecision = async (idx, decision) => {
+          const item = pub.items[idx];
+          if(!item || item.decision !== 'PENDING') return toast("Decisão já registrada.");
           try {
-            await db.ref(`publicOrders/${token}/items/${idx}`).update({decision});
+            await db.ref(`publicOrders/${token}/items/${idx}`).update({decision, decidedAt: Date.now(), decisionSource: "CUSTOMER"});
             initPublicTracking(token); // reload view
             toast(decision === 'APPROVED' ? "Item aprovado!" : "Item recusado.");
           } catch(e) {
@@ -1011,7 +1030,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
                 <div class="field"><label>Placa</label><input name="plate" required maxlength="8"></div>
                 <div class="field"><label>Marca</label><input name="brand" required maxlength="60"></div>
                 <div class="field"><label>Modelo</label><input name="model" required maxlength="60"></div>
-                <div class="field"><label>Ano <span class="help">(opcional)</span></label><input name="year" type="number" min="1900" max="2100"></div>
+                <div class="field"><label>Ano</label><input name="year" type="number" required min="1900" max="2100"></div>
                 <div class="field full"><label>Quilometragem <span class="help">(opcional)</span></label><input name="mileage" type="number" min="0"></div>
                 <div class="field full"><label>Motivo da visita / Relato do problema</label><textarea name="complaint" required maxlength="1200" placeholder="Descreva o que está acontecendo com o veículo ou o serviço desejado"></textarea></div>
                 
@@ -1060,7 +1079,6 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       });
     }
 
-
     // ---------------------------------------------------------
     // ESCOLHA DE NOVA ORDEM
     // ---------------------------------------------------------
@@ -1070,7 +1088,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
           <button type="button" class="big-choice-btn" data-action="new-order-smart">
             ${icon("orders")}
             <div>
-              <strong>Cadastro assistido</strong>
+              <strong>Preenchimento assistido</strong>
               <span>Cole a mensagem do cliente e extrairemos os dados automaticamente.</span>
             </div>
           </button>
@@ -1146,7 +1164,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     }
 
     function manualOrderForm(data = null, checkinId = null) {
-      modal(data ? "Criar OS a partir de Check-in" : "Nova ordem manual", `
+      modal(data ? "Revisar Check-in e Criar OS" : "Nova ordem manual", `
         <form id="create-order-form" class="form-grid">
           <input type="hidden" name="checkinId" value="${esc(checkinId||"")}">
           <div class="form-section-title">Dados do Cliente e Veículo</div>
@@ -1189,7 +1207,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     // ---------------------------------------------------------
     // WHATSAPP HELPER
     // ---------------------------------------------------------
-    function openWhatsAppModal(order, customMsg = null, requireConfirmation = true) {
+    function openWhatsAppModal(order, customMsg = null) {
       const c = clientOf(order.clientId);
       if(!c || !c.phone) return toast("Cliente sem telefone cadastrado.", "error");
       let cleanPhone = phone(c.phone);
@@ -1205,8 +1223,22 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         defaultMsg = customMsg;
       }
 
+      let pixAlert = "";
+      if (order.showPix && state.workshop.pix?.key) {
+        pixAlert = `
+          <div class="notice success">
+            ${icon("wallet")}
+            <div>
+              <strong>Confirme os dados PIX</strong><br>
+              <span>A chave PIX está visível no link. Verifique: ${esc(state.workshop.pix.type)} · ${esc(state.workshop.pix.key)} · ${esc(state.workshop.pix.holderName)}</span>
+            </div>
+          </div>
+        `;
+      }
+
       modal("Enviar WhatsApp", `
         <div class="notice">${icon("info")}<span>A mensagem será aberta no WhatsApp para sua confirmação.</span></div>
+        ${pixAlert}
         <div class="field modal-field">
           <label for="wa-msg-text">Mensagem para o cliente</label>
           <textarea id="wa-msg-text" class="message-field">${esc(defaultMsg)}</textarea>
@@ -1240,7 +1272,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     function empty(title,desc,action,label){return `<div class="empty"><div class="empty-icon">${icon("file")}</div><h3>${esc(title)}</h3><p>${esc(desc)}</p>${action?`<button class="btn btn-primary" data-action="${action}">${icon("plus")}${esc(label)}</button>`:""}</div>`}
     
     function setMenuOpen(open){const mobile=window.matchMedia?.("(max-width: 760px)").matches;document.body.classList.toggle("menu-open",Boolean(open&&mobile));$("#menu").setAttribute("aria-expanded",String(Boolean(open&&mobile)));$("#sidebar").toggleAttribute?.("inert",Boolean(mobile&&!open));}
-    function navigate(next,idValue=null){view=next;selectedOrder=idValue;search="";searchOwner="";setMenuOpen(false);render();$("#main").focus()}
+    function navigate(next,idValue=null){cleanupOrderListener();view=next;selectedOrder=idValue;search="";searchOwner="";setMenuOpen(false);render();$("#main").focus()}
     
     function render(){
       const active=view==="order-detail"?"orders":view;
@@ -1269,8 +1301,8 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
           <div class="notice success" style="cursor:pointer; align-items:center" data-action="view-checkins">
             ${icon("car")}
             <div>
-              <strong>${pendingCheckins.length} check-in(s) aguardando confirmação</strong><br>
-              <span>Clientes preencheram dados via QR Code. Clique para revisar e criar a Ordem de Serviço.</span>
+              <strong>${pendingCheckins.length} check-in(s) aguardando atendimento</strong><br>
+              <span>Clientes preencheram dados via QR Code. Clique para revisar e iniciar atendimento.</span>
             </div>
             <button class="btn btn-ghost btn-sm" style="margin-left:auto; pointer-events:none">Revisar ${icon("arrow")}</button>
           </div>
@@ -1350,21 +1382,40 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     function renderVehicles(){
       const term=search.toLowerCase();
       const termOwner=searchOwner.toLowerCase();
-      const items=state.vehicles.filter(v=>{
+      let items=state.vehicles.filter(v=>{
         const c = clientOf(v.clientId);
         const matchVehicle = !term||`${v.brand} ${v.model} ${v.plate}`.toLowerCase().includes(term);
         const matchOwner = !termOwner||(c && c.name.toLowerCase().includes(termOwner));
         return matchVehicle && matchOwner;
       });
+
+      if(vehicleFilter === 'ACTIVE') {
+         items = items.filter(v => {
+            return state.orders.some(o => o.vehicleId === v.id && !['DELIVERED','CANCELLED'].includes(o.status));
+         });
+      }
+
       $("#main").innerHTML=`${pageHead("Prontuário digital","Veículos","Identifique rapidamente cada veículo e mantenha o histórico ligado ao proprietário.","new-vehicle","Novo veículo")}
+      <div class="chip-group">
+        <button class="chip ${vehicleFilter==='ACTIVE'?'active':''}" data-vehicle-filter="ACTIVE">Na oficina</button>
+        <button class="chip ${vehicleFilter==='ALL'?'active':''}" data-vehicle-filter="ALL">Todos os veículos</button>
+      </div>
       <div class="toolbar">
         <div class="search-group">
           <label class="field search"><span class="field-label">Buscar veículo</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Marca, modelo ou placa"></label>
           <label class="field search"><span class="field-label">Proprietário</span>${icon("search")}<input id="searchOwner" type="search" value="${esc(searchOwner)}" placeholder="Nome do cliente"></label>
         </div>
         <span class="toolbar-meta">${items.length} veículo${items.length===1?"":"s"}</span>
-      </div><section class="card">${items.length?`<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Veículo</th><th>Placa</th><th>Ano</th><th>Proprietário</th><th>Quilometragem</th><th></th></tr></thead><tbody>${items.map(v=>`<tr><td data-label="Veículo"><div class="entity-cell"><span class="avatar">${icon("car")}</span><span class="entity-copy"><strong>${esc(vehicleName(v))}</strong><span>${esc(v.color||"Cor não informada")}</span></span></div></td><td data-label="Placa"><span class="plate">${esc(v.plate)}</span></td><td data-label="Ano">${esc(v.year||"—")}</td><td data-label="Proprietário">${esc(clientOf(v.clientId)?.name||"Cliente removido")}</td><td data-label="Quilometragem">${Number(v.mileage||0).toLocaleString("pt-BR")} km</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="edit-vehicle" data-id="${v.id}">${icon("edit")} Editar</button></td></tr>`).join("")}</tbody></table></div>`:empty("Nenhum veículo encontrado",state.clients.length?"Cadastre o primeiro veículo ou altere a busca.":"Cadastre um cliente antes de adicionar o primeiro veículo.",state.clients.length?"new-vehicle":"new-client",state.clients.length?"Cadastrar veículo":"Cadastrar cliente")}</section>`;
+      </div><section class="card">${items.length?`<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Veículo</th><th>Placa</th><th>Ano</th><th>Proprietário</th><th>Quilometragem</th><th></th></tr></thead><tbody>${items.map(v=>{
+        const c = clientOf(v.clientId);
+        const activeOS = state.orders.find(o => o.vehicleId === v.id && !['DELIVERED','CANCELLED'].includes(o.status));
+        return `<tr><td data-label="Veículo"><div class="entity-cell"><span class="avatar">${icon("car")}</span><span class="entity-copy"><strong>${esc(vehicleName(v))}</strong><span>${activeOS ? 'Atualmente na oficina' : (esc(v.color||"Cor não informada"))}</span></span></div></td><td data-label="Placa"><span class="plate">${esc(v.plate)}</span></td><td data-label="Ano">${esc(v.year||"—")}</td><td data-label="Proprietário">${esc(c?.name||"Cliente removido")}</td><td data-label="Quilometragem">${Number(v.mileage||0).toLocaleString("pt-BR")} km</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="edit-vehicle" data-id="${v.id}">${icon("edit")} Editar</button></td></tr>`
+      }).join("")}</tbody></table></div>`:empty("Nenhum veículo encontrado",state.clients.length?"Cadastre o primeiro veículo ou altere a busca.":"Cadastre um cliente antes de adicionar o primeiro veículo.",state.clients.length?"new-vehicle":"new-client",state.clients.length?"Cadastrar veículo":"Cadastrar cliente")}</section>`;
       bindSearch();
+      $$("[data-vehicle-filter]").forEach(btn => btn.addEventListener('click', e => {
+        vehicleFilter = e.target.dataset.vehicleFilter;
+        render();
+      }));
     }
 
     function renderOrders(){
@@ -1386,15 +1437,25 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       }
       items.sort((a,b)=>b.updatedAt-a.updatedAt);
 
+      const counters = {
+        'ALL': state.orders.length,
+        'RECEIVED': state.orders.filter(o=>filterGroups['RECEIVED'].includes(o.status)).length,
+        'DIAGNOSIS': state.orders.filter(o=>filterGroups['DIAGNOSIS'].includes(o.status)).length,
+        'APPROVAL': state.orders.filter(o=>filterGroups['APPROVAL'].includes(o.status)).length,
+        'EXECUTION': state.orders.filter(o=>filterGroups['EXECUTION'].includes(o.status)).length,
+        'READY': state.orders.filter(o=>filterGroups['READY'].includes(o.status)).length,
+        'DELIVERED': state.orders.filter(o=>filterGroups['DELIVERED'].includes(o.status)).length,
+      };
+
       $("#main").innerHTML=`${pageHead("Acompanhamento operacional","Ordens de serviço","Gerencie cada atendimento do recebimento à entrega.","new-order-choice","Nova ordem")}
       <div class="chip-group">
-        <button class="chip ${osFilter==='ALL'?'active':''}" data-os-filter="ALL">Todas (${state.orders.length})</button>
-        <button class="chip ${osFilter==='RECEIVED'?'active':''}" data-os-filter="RECEIVED">Recebidas</button>
-        <button class="chip ${osFilter==='DIAGNOSIS'?'active':''}" data-os-filter="DIAGNOSIS">Diagnóstico</button>
-        <button class="chip ${osFilter==='APPROVAL'?'active':''}" data-os-filter="APPROVAL">Aprovação</button>
-        <button class="chip ${osFilter==='EXECUTION'?'active':''}" data-os-filter="EXECUTION">Execução</button>
-        <button class="chip ${osFilter==='READY'?'active':''}" data-os-filter="READY">Prontas</button>
-        <button class="chip ${osFilter==='DELIVERED'?'active':''}" data-os-filter="DELIVERED">Entregues</button>
+        <button class="chip ${osFilter==='ALL'?'active':''}" data-os-filter="ALL">Todas ${counters['ALL']}</button>
+        <button class="chip ${osFilter==='RECEIVED'?'active':''}" data-os-filter="RECEIVED">Recebidas ${counters['RECEIVED']}</button>
+        <button class="chip ${osFilter==='DIAGNOSIS'?'active':''}" data-os-filter="DIAGNOSIS">Diagnóstico ${counters['DIAGNOSIS']}</button>
+        <button class="chip ${osFilter==='APPROVAL'?'active':''}" data-os-filter="APPROVAL">Aprovação ${counters['APPROVAL']}</button>
+        <button class="chip ${osFilter==='EXECUTION'?'active':''}" data-os-filter="EXECUTION">Execução ${counters['EXECUTION']}</button>
+        <button class="chip ${osFilter==='READY'?'active':''}" data-os-filter="READY">Prontas ${counters['READY']}</button>
+        <button class="chip ${osFilter==='DELIVERED'?'active':''}" data-os-filter="DELIVERED">Entregues ${counters['DELIVERED']}</button>
       </div>
       <div class="toolbar"><label class="field search"><span class="field-label">Buscar ordens</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Número, cliente, veículo ou placa"></label><span class="toolbar-meta">${items.length} ordem${items.length===1?"":"ns"}</span></div><section class="card">${items.length?ordersTable(items):empty("Nenhuma ordem encontrada","Crie um novo atendimento ou limpe os filtros.","new-order-choice","Criar ordem")}</section>`;
       bindSearch();
@@ -1404,35 +1465,9 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       }));
     }
 
-    async function loadPublicDecisions(order) {
-      if(!order || !order.publicToken) return false;
-      try {
-        const snap = await db.ref(`publicOrders/${order.publicToken}/items`).once('value');
-        const pubItems = snap.val();
-        if(!pubItems) return false;
-        let changed = false;
-        (order.estimate.items || []).forEach((item, idx) => {
-          const pItem = pubItems[idx];
-          if(pItem && pItem.decision !== item.decision) {
-            item.decision = pItem.decision;
-            changed = true;
-          }
-        });
-        if(changed) {
-          order.updatedAt = Date.now();
-          await saveState();
-          return true;
-        }
-      } catch(e) {}
-      return false;
-    }
-
-    async function renderOrderDetail(){
+    async function renderOrderDetail(silent = false){
       const o=orderOf(selectedOrder);if(!o){navigate("orders");return;}
       const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId);
-      
-      // Attempt to load client decisions before rendering
-      const changed = await loadPublicDecisions(o);
       
       const items=o.estimate?.items||[],subtotal=items.reduce((s,i)=>s+i.qty*i.unitCents,0),paid=(o.payments||[]).reduce((s,p)=>s+p.amountCents,0);
       const balance=subtotal-paid;
@@ -1463,9 +1498,19 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
             <div class="communication-actions"><a href="${esc(link)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">${icon("external")} Abrir</a><button class="btn btn-secondary btn-sm" data-action="copy-public" data-id="${o.id}">${icon("copy")} Copiar</button><button class="btn btn-whatsapp btn-sm" data-action="send-whatsapp-status" data-id="${o.id}">${icon("whatsapp")} WhatsApp</button></div>
             <p>Sincronizado em ${date(o.updatedAt,true)}</p>
           </section>
-          <article class="card"><div class="card-head"><div><h2>Financeiro</h2><p>Informação privada da oficina</p></div></div><div class="card-pad finance-grid"><div class="finance-row"><span>Total da OS</span><strong>${money(subtotal)}</strong></div><div class="finance-row"><span>Recebido</span><strong>${money(paid)}</strong></div>
-          ${(o.payments||[]).map(p => `<div class="finance-row"><span>${esc(p.method)}${p.installments ? ` · ${p.installments}x` : ''}</span><span>${money(p.amountCents)}</span></div>`).join('')}
-          <div class="finance-row balance"><span>Saldo pendente</span><strong>${money(Math.max(0,balance))}</strong></div>${balance<=0&&subtotal>0?`<div class="paid-state">Pagamento concluído</div>`:""}<button class="btn btn-primary" data-action="new-payment">${icon("plus")} Registrar pagamento</button></div></article>
+          <article class="card"><div class="card-head"><div><h2>Financeiro</h2><p>Informação privada da oficina</p></div></div><div class="card-pad finance-grid">
+            <div class="finance-row"><span>Total da OS</span><strong>${money(subtotal)}</strong></div>
+            <div class="finance-row"><span>Recebido</span><strong>${money(paid)}</strong></div>
+            ${(o.payments||[]).map(p => `<div class="finance-row"><span>${esc(p.method)}${p.installments ? ` · ${p.installments}x` : ''}</span><span>${money(p.amountCents)}</span></div>`).join('')}
+            <div class="finance-row balance"><span>Saldo pendente</span><strong>${money(Math.max(0,balance))}</strong></div>${balance<=0&&subtotal>0?`<div class="paid-state">Pagamento concluído</div>`:""}
+            <div class="field" style="margin-top:8px">
+              <label class="split" style="align-items:center; cursor:pointer; background:var(--surface-secondary); padding:10px 12px; border-radius:8px; border:1px solid var(--border)">
+                <span>Mostrar PIX no acompanhamento do cliente</span>
+                <input type="checkbox" id="toggle-pix" ${o.showPix ? 'checked' : ''} style="width:auto; min-height:auto; transform:scale(1.2)">
+              </label>
+            </div>
+            <button class="btn btn-primary" data-action="new-payment">${icon("plus")} Registrar pagamento</button>
+          </div></article>
           <article class="card"><div class="card-head"><div><h2>Histórico</h2><p>Eventos mais recentes primeiro</p></div></div><div class="card-pad"><ol class="timeline">${[...(o.timeline||[])].sort((a,b)=>b.at-a.at).map(e=>`<li><strong>${esc(e.text)}</strong><time datetime="${new Date(e.at).toISOString()}">${date(e.at,true)}</time></li>`).join("")}</ol></div></article>
           <button class="btn btn-secondary back-link" data-view="orders">${icon("back")} Voltar para ordens</button>
         </aside>
@@ -1477,6 +1522,39 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         await saveState(); await syncPublicOrder(o.id);
         toast("Decisão atualizada.");
       }));
+
+      $("#toggle-pix")?.addEventListener("change", async e => {
+        o.showPix = e.target.checked;
+        await saveState(); await syncPublicOrder(o.id);
+        toast(o.showPix ? "PIX visível para o cliente." : "PIX oculto.");
+      });
+
+      // Ativar Listener em tempo real para orçamentos apenas quando estamos nesta view
+      cleanupOrderListener();
+      activeOrderListener = {
+          token: o.publicToken,
+          cb: async (snap) => {
+              const pubItems = snap.val();
+              if(!pubItems) return;
+              let changed = false;
+              (o.estimate.items || []).forEach((item, idx) => {
+                const pItem = pubItems[idx];
+                if(pItem && pItem.decision !== item.decision) {
+                  item.decision = pItem.decision;
+                  changed = true;
+                }
+              });
+              if(changed) {
+                  o.updatedAt = Date.now();
+                  await saveState();
+                  if(view === 'order-detail' && selectedOrder === o.id) {
+                     toast("O cliente respondeu ao orçamento!", "info");
+                     renderOrderDetail(true); // Redesenha a tela
+                  }
+              }
+          }
+      };
+      db.ref(`publicOrders/${o.publicToken}/items`).on('value', activeOrderListener.cb);
     }
 
     function renderBackup(){
@@ -1487,7 +1565,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
 
       $("#main").innerHTML=`${pageHead("Administração","Configurações","Gerencie a identidade da oficina, pagamentos, recepção e segurança.")}
       <section class="grid dashboard-grid">
-        <div class="stack">
+        <div class="stack" style="min-width:0">
           <article class="card"><div class="card-head"><div><h2>Perfil da Oficina</h2><p>Informações e marca exibidas nos links</p></div></div>
             <div class="card-pad form-grid">
               <div class="field full"><label>Nome da oficina</label><input value="${esc(state.workshop.name)}" disabled></div>
@@ -1495,7 +1573,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
               <div class="field"><label>WhatsApp comercial</label><input value="${esc(state.workshop.phone)}" disabled></div>
               <div class="field full" style="margin-top:10px">
                 <label>Logo da oficina</label>
-                <div style="display:flex;align-items:center;gap:12px">
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
                   <div class="avatar" style="width:60px;height:60px;overflow:hidden">
                     ${state.workshop.logoUrl ? `<img src="${esc(state.workshop.logoUrl)}" style="width:100%;height:100%;object-fit:cover">` : initials(state.workshop.name)}
                   </div>
@@ -1524,7 +1602,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
             </div>
           </article>
         </div>
-        <aside class="stack">
+        <aside class="stack" style="min-width:0">
           <article class="card"><div class="card-head"><div><h2>QR Code da Recepção</h2><p>O cliente escaneia para fazer check-in</p></div></div>
             <div class="card-pad stack">
               <div class="qr-preview">
@@ -1594,13 +1672,13 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
           <div class="stack">
             <div class="client-section">
               <h3>Veículos Cadastrados (${vehicles.length})</h3>
-              ${vehicles.length ? `<ul class="timeline" style="margin-top:10px">`+vehicles.map(v=>`<li><strong>${esc(vehicleName(v))}</strong><time>${esc(v.plate)} · ${Number(v.mileage||0).toLocaleString('pt-BR')} km</time></li>`).join('')+`</ul>` : '<p class="help">Nenhum veículo vinculado.</p>'}
+              ${vehicles.length ? `<ul class="timeline" style="margin-top:10px">`+vehicles.map(v=>`<li style="padding-bottom:12px"><strong>${esc(vehicleName(v))}</strong><time>${esc(v.plate)} · ${Number(v.mileage||0).toLocaleString('pt-BR')} km <button class="btn btn-ghost btn-sm" style="padding:0; min-height:auto; display:inline-block; margin-left:8px;" data-action="edit-vehicle" data-id="${v.id}">Editar veículo</button></time></li>`).join('')+`</ul>` : '<p class="help">Nenhum veículo vinculado.</p>'}
             </div>
           </div>
           <div class="stack">
             <div class="client-section">
               <h3>Histórico de Ordens (${orders.length})</h3>
-              ${orders.length ? `<ul class="timeline" style="margin-top:10px">`+orders.map(o=>`<li><strong>OS ${esc(o.number)}</strong><time>${date(o.updatedAt)} · ${esc(STATUS[o.status]||o.status)}</time></li>`).join('')+`</ul>` : '<p class="help">Nenhum atendimento realizado.</p>'}
+              ${orders.length ? `<ul class="timeline" style="margin-top:10px">`+orders.map(o=>`<li style="padding-bottom:12px"><strong>OS ${esc(o.number)}</strong><time>${date(o.updatedAt)} · ${esc(STATUS[o.status]||o.status)} <button class="btn btn-ghost btn-sm" style="padding:0; min-height:auto; display:inline-block; margin-left:8px;" data-action="open-order" data-id="${o.id}">Ver OS</button></time></li>`).join('')+`</ul>` : '<p class="help">Nenhum atendimento realizado.</p>'}
             </div>
           </div>
         </div>
@@ -1636,14 +1714,15 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     function pendingCheckinsModal() {
       if(!pendingCheckins.length) return toast("Nenhum check-in pendente.");
       const listHTML = pendingCheckins.sort((a,b)=>b.createdAt-a.createdAt).map(c => `
-        <div class="item-row split mobile-stack" style="align-items:center;background:var(--surface-secondary);padding:14px;border-radius:12px;margin-bottom:8px">
+        <div class="item-row split mobile-stack" style="align-items:center;background:var(--surface-secondary);padding:14px;border-radius:12px;margin-bottom:8px;border:1px solid var(--border)">
           <div>
-            <strong>${esc(c.name)} · ${esc(c.phone)}</strong>
-            <p>${esc(c.brand)} ${esc(c.model)} ${esc(c.plate)} · ${date(c.createdAt,true)}</p>
+            <strong style="font-size:14px">${esc(c.name)} · ${esc(c.phone)}</strong>
+            <p style="font-size:12px; margin-top:2px">${esc(c.brand)} ${esc(c.model)} ${esc(c.year)} · Placa ${esc(c.plate)} · ${date(c.createdAt,true)}</p>
+            <p style="font-size:11px; margin-top:6px; color:var(--text-secondary)">"${esc(c.complaint)}"</p>
           </div>
-          <div style="display:flex;gap:8px">
-             <button class="btn btn-secondary btn-sm" data-action="dismiss-checkin" data-id="${c.id}">Remover</button>
-             <button class="btn btn-primary btn-sm" data-action="create-from-checkin" data-id="${c.id}">Criar OS</button>
+          <div style="display:flex;gap:8px;margin-top:10px">
+             <button class="btn btn-secondary btn-sm" data-action="dismiss-checkin" data-id="${c.id}">Descartar</button>
+             <button class="btn btn-primary btn-sm" data-action="create-from-checkin" data-id="${c.id}">Revisar e Criar OS</button>
           </div>
         </div>
       `).join('');
@@ -1705,7 +1784,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       if(act==="whatsapp-recovery"){ whatsappRecoveryModal(clientOf(idV)); }
       if(act==="new-vehicle"){ vehicleForm(); }
       if(act==="edit-vehicle"){ vehicleForm(vehicleOf(idV)); }
-      if(act==="open-order"){ navigate("order-detail", idV); }
+      if(act==="open-order"){ closeModal(); navigate("order-detail", idV); }
       if(act==="new-item"){ itemForm(); }
       if(act==="new-payment"){ paymentForm(); }
       if(act==="edit-workshop"){ workshopForm(); }
@@ -1715,7 +1794,8 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       if(act==="dismiss-checkin"){ 
         await db.ref(`publicCheckins/${state.workshop.publicCheckinToken}/${idV}`).remove(); 
         toast("Check-in descartado.");
-        if(pendingCheckins.length <= 1) closeModal(); else pendingCheckinsModal();
+        pendingCheckins = pendingCheckins.filter(c => c.id !== idV);
+        if(pendingCheckins.length < 1) closeModal(); else pendingCheckinsModal();
       }
       if(act==="copy-public"){
         const order=orderOf(idV);if(!order)return;
@@ -1729,7 +1809,6 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       if(act==="print-qr"){
         const win = window.open('', '_blank');
         const img = $("#qr-canvas").toDataURL("image/png");
-        // A barra invertida impede que o parser HTML encerre este script principal.
         win.document.write(`<html><body style="text-align:center;font-family:sans-serif;margin-top:50px"><h1>Check-in da Oficina</h1><img src="${img}" style="width:300px;height:300px;margin:20px 0;"><p>Aponte a câmera do celular para preencher seus dados.</p><script>window.onload=function(){window.print();}<\/script></body></html>`);
         win.document.close();
       }
@@ -1747,86 +1826,93 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     });
     
     document.addEventListener("submit", async e=>{
-      // Ignore public checkin form as it's handled separately
       if(e.target.id === "public-checkin-form") return;
-
       e.preventDefault(); const f=e.target, d=Object.fromEntries(new FormData(f));
-      
-      // AUTH (LOGIN/REGISTER)
-      if(f.id==="auth-form"){
-        try {
-          if(isLoginMode) await auth.signInWithEmailAndPassword(d.email, d.password);
-          else await auth.createUserWithEmailAndPassword(d.email, d.password);
-        } catch(err) {
-          toast(err.message.includes('user-not-found') ? 'Usuário não encontrado.' : err.message.includes('wrong-password') ? 'Senha incorreta.' : 'Erro na autenticação.', 'error');
+      const submitBtn = f.querySelector('button[type="submit"]');
+      const origText = submitBtn ? submitBtn.innerHTML : "";
+      if(submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = "Aguarde..."; }
+
+      try {
+        // AUTH (LOGIN/REGISTER)
+        if(f.id==="auth-form"){
+            if(isLoginMode) await auth.signInWithEmailAndPassword(d.email, d.password);
+            else await auth.createUserWithEmailAndPassword(d.email, d.password);
+            return;
         }
-        return;
-      }
-      
-      // SETUP INICIAL
-      if(f.id==="setup-form"){
-        state.workshop = { ownerName:d.ownerName.trim(), name:d.workshopName.trim(), phone:d.phone.trim(), publicCheckinToken: generateToken(), pix: {type:"",key:"",holderName:""} };
-        await saveState();
-        location.reload();
-        return;
-      }
-
-      // CRIAÇÃO DE OS
-      if(f.id==="create-order-form"){
-        let cl = state.clients.find(c => phone(c.phone) === phone(d.phone) || c.name.toLowerCase() === d.name.toLowerCase().trim());
-        if(!cl) { cl = { id:id("cli"), name:d.name.trim(), phone:d.phone.trim(), email:"", document:"", notes:"", createdAt:Date.now(), updatedAt:Date.now() }; state.clients.push(cl); }
         
-        const normalizedPlate=d.plate.toUpperCase().replace(/[^A-Z0-9]/g,"");
-        let ve = state.vehicles.find(v => v.plate === normalizedPlate);
-        if(!ve) { ve = { id:id("vei"), clientId:cl.id, plate:normalizedPlate, brand:d.brand.trim(), model:d.model.trim(), year:d.year, color:d.color.trim(), mileage:Number(d.mileage||0), createdAt:Date.now(), updatedAt:Date.now() }; state.vehicles.push(ve); }
-
-        state.counter++; const now=Date.now();
-        const o={ id:id("os"), number:`OS-${String(state.counter).padStart(6,"0")}`, publicToken:generateToken(), clientId:cl.id, vehicleId:ve.id, mileage:Number(d.mileage), expectedAt:d.expectedAt?new Date(d.expectedAt+"T12:00:00").getTime():null, complaint:d.complaint.trim(), status:"RECEIVED", diagnosis:null, estimate:{items:[]}, payments:[], timeline:[{id:id("evt"),text:"Veículo recebido pela oficina",at:now}], createdAt:now, updatedAt:now };
-        state.orders.push(o);
-        
-        if (d.checkinId) {
-          await db.ref(`publicCheckins/${state.workshop.publicCheckinToken}/${d.checkinId}`).remove();
+        // SETUP INICIAL
+        if(f.id==="setup-form"){
+          state.workshop = { ownerName:d.ownerName.trim(), name:d.workshopName.trim(), phone:d.phone.trim(), publicCheckinToken: generateToken(), pix: {type:"",key:"",holderName:""} };
+          await saveState();
+          location.reload();
+          return;
         }
 
-        await saveState(); await syncPublicOrder(o.id);
-        closeModal(); navigate("order-detail", o.id); toast("Ordem Criada!");
-      }
+        // CRIAÇÃO DE OS
+        if(f.id==="create-order-form"){
+          // Avoid duplicate client
+          let cl = state.clients.find(c => phone(c.phone) === phone(d.phone) || (c.name.toLowerCase() === d.name.toLowerCase().trim() && phone(d.phone)));
+          if(!cl) { cl = { id:id("cli"), name:d.name.trim(), phone:d.phone.trim(), email:"", document:"", notes:"", createdAt:Date.now(), updatedAt:Date.now() }; state.clients.push(cl); }
+          
+          // Avoid duplicate vehicle
+          const normalizedPlate=d.plate.toUpperCase().replace(/[^A-Z0-9]/g,"");
+          let ve = state.vehicles.find(v => v.plate === normalizedPlate);
+          if(!ve) { ve = { id:id("vei"), clientId:cl.id, plate:normalizedPlate, brand:d.brand.trim(), model:d.model.trim(), year:d.year, color:d.color.trim(), mileage:Number(d.mileage||0), createdAt:Date.now(), updatedAt:Date.now() }; state.vehicles.push(ve); }
 
-      // ATUALIZAR STATUS DA OS
-      if(f.id==="status-form"){
-        const o=orderOf(selectedOrder), oldSt=o.status;
-        o.status=d.status; o.updatedAt=Date.now();
-        o.timeline.push({id:id("evt"),text:d.note.trim()||STATUS[d.status], at:o.updatedAt});
-        await saveState(); await syncPublicOrder(o.id);
-        render(); toast("Atualizado com sucesso.");
-        if (oldSt !== d.status) openWhatsAppModal(o); 
+          state.counter++; const now=Date.now();
+          const o={ id:id("os"), number:`OS-${String(state.counter).padStart(6,"0")}`, publicToken:generateToken(), clientId:cl.id, vehicleId:ve.id, mileage:Number(d.mileage), expectedAt:d.expectedAt?new Date(d.expectedAt+"T12:00:00").getTime():null, complaint:d.complaint.trim(), status:"RECEIVED", diagnosis:null, estimate:{items:[]}, payments:[], timeline:[{id:id("evt"),text:"Veículo recebido pela oficina",at:now}], showPix:false, createdAt:now, updatedAt:now };
+          state.orders.push(o);
+          
+          if (d.checkinId) {
+            await db.ref(`publicCheckins/${state.workshop.publicCheckinToken}/${d.checkinId}`).remove();
+            pendingCheckins = pendingCheckins.filter(c => c.id !== d.checkinId);
+          }
+
+          await saveState(); await syncPublicOrder(o.id);
+          closeModal(); navigate("order-detail", o.id); toast("Ordem Criada!");
+        }
+
+        // ATUALIZAR STATUS DA OS
+        if(f.id==="status-form"){
+          const o=orderOf(selectedOrder), oldSt=o.status;
+          o.status=d.status; o.updatedAt=Date.now();
+          o.timeline.push({id:id("evt"),text:d.note.trim()||STATUS[d.status], at:o.updatedAt});
+          await saveState(); await syncPublicOrder(o.id);
+          render(); toast("Atualizado com sucesso.");
+          if (oldSt !== d.status) openWhatsAppModal(o); 
+        }
+        
+        // FORMS MENORES
+        if(f.id==="diagnosis-form"){ const o=orderOf(selectedOrder); o.diagnosis={title:d.title.trim(), description:d.description.trim(), internal:d.internal.trim(), updatedAt:Date.now()}; o.updatedAt=Date.now(); await saveState(); await syncPublicOrder(o.id); render(); toast("Diagnóstico salvo."); }
+        
+        if(f.id==="item-form"){ 
+          const o=orderOf(selectedOrder); 
+          o.estimate.items.push({id:id("itm"), description:d.description.trim(), type:d.type, qty:Math.max(1,Number(d.qty)), unitCents:cents(d.price), decision:"PENDING"}); 
+          o.updatedAt=Date.now(); await saveState(); await syncPublicOrder(o.id); 
+          closeModal(); render(); toast("Item adicionado."); 
+          setTimeout(() => { if(confirm("Deseja enviar WhatsApp informando o orçamento para aprovação?")) openWhatsAppModal(o, "BUDGET"); }, 300);
+        }
+        
+        if(f.id==="payment-form"){ 
+          const o=orderOf(selectedOrder), value=cents(d.amount); 
+          if(!value){toast("Informe um valor maior que zero.","error");return;}
+          const now=Date.now();
+          o.payments.push({id:id("pay"),amountCents:value,method:d.method,installments:d.method==="Cartão de Crédito"?Number(d.installments||1):null,note:d.note.trim(),at:now});
+          o.timeline.push({id:id("evt"),text:`Pagamento registrado: ${money(value)} (${d.method})`,at:now});
+          o.updatedAt=now;await saveState();closeModal();render();toast("Pagamento registrado."); 
+        }
+        
+        if(f.id==="workshop-form"){ Object.assign(state.workshop,{name:d.name.trim(),ownerName:d.ownerName.trim(),phone:d.phone.trim()});await saveState();$("#side-workshop").textContent=state.workshop.name;$("#side-owner").textContent=state.workshop.ownerName;$$("#auth-brand, #main-brand").forEach(el => el.innerHTML = getLogoHTML(state.workshop, true));closeModal();render();toast("Dados da oficina atualizados."); }
+        if(f.id==="pix-form"){ state.workshop.pix = {type:d.type, key:d.key.trim(), holderName:d.holderName.trim()}; await saveState(); toast("PIX salvo."); }
+        
+        if(f.id==="client-form"){ const current=clientOf(f.dataset.id),now=Date.now(),item={id:current?.id||id("cli"),name:d.name.trim(),phone:d.phone.trim(),email:d.email.trim(),document:d.document.trim(),notes:d.notes.trim(),createdAt:current?.createdAt||now,updatedAt:now};current?Object.assign(current,item):state.clients.push(item);await saveState();closeModal();render();toast("Cliente salvo."); }
+        if(f.id==="vehicle-form"){ const current=vehicleOf(f.dataset.id),now=Date.now(),item={id:current?.id||id("vei"),clientId:d.clientId,plate:d.plate.toUpperCase().replace(/[^A-Z0-9]/g,""),brand:d.brand.trim(),model:d.model.trim(),year:d.year,color:d.color.trim(),mileage:Number(d.mileage||0),createdAt:current?.createdAt||now,updatedAt:now};current?Object.assign(current,item):state.vehicles.push(item);await saveState();closeModal();render();toast("Veículo salvo."); }
+      } catch (err) {
+        if(f.id==="auth-form") toast(err.message.includes('user-not-found') ? 'Usuário não encontrado.' : err.message.includes('wrong-password') ? 'Senha incorreta.' : 'Erro na autenticação. Verifique os dados.', 'error');
+        else toast("Ocorreu um erro ao salvar.", "error");
+      } finally {
+        if(submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = origText; }
       }
-      
-      // FORMS MENORES
-      if(f.id==="diagnosis-form"){ const o=orderOf(selectedOrder); o.diagnosis={title:d.title.trim(), description:d.description.trim(), internal:d.internal.trim(), updatedAt:Date.now()}; o.updatedAt=Date.now(); await saveState(); await syncPublicOrder(o.id); render(); toast("Diagnóstico salvo."); }
-      
-      if(f.id==="item-form"){ 
-        const o=orderOf(selectedOrder); 
-        o.estimate.items.push({id:id("itm"), description:d.description.trim(), type:d.type, qty:Math.max(1,Number(d.qty)), unitCents:cents(d.price), decision:"PENDING"}); 
-        o.updatedAt=Date.now(); await saveState(); await syncPublicOrder(o.id); 
-        closeModal(); render(); toast("Item adicionado."); 
-        setTimeout(() => { if(confirm("Deseja enviar WhatsApp informando o orçamento para aprovação?")) openWhatsAppModal(o, "BUDGET"); }, 300);
-      }
-      
-      if(f.id==="payment-form"){ 
-        const o=orderOf(selectedOrder), value=cents(d.amount); 
-        if(!value){toast("Informe um valor maior que zero.","error");return;}
-        const now=Date.now();
-        o.payments.push({id:id("pay"),amountCents:value,method:d.method,installments:d.method==="Cartão de Crédito"?Number(d.installments||1):null,note:d.note.trim(),at:now});
-        o.timeline.push({id:id("evt"),text:`Pagamento registrado: ${money(value)} (${d.method})`,at:now});
-        o.updatedAt=now;await saveState();closeModal();render();toast("Pagamento registrado."); 
-      }
-      
-      if(f.id==="workshop-form"){ Object.assign(state.workshop,{name:d.name.trim(),ownerName:d.ownerName.trim(),phone:d.phone.trim()});await saveState();$("#side-workshop").textContent=state.workshop.name;$("#side-owner").textContent=state.workshop.ownerName;$$("#auth-brand, #main-brand").forEach(el => el.innerHTML = getLogoHTML(state.workshop, true));closeModal();render();toast("Dados da oficina atualizados."); }
-      if(f.id==="pix-form"){ state.workshop.pix = {type:d.type, key:d.key.trim(), holderName:d.holderName.trim()}; await saveState(); toast("PIX salvo."); }
-      
-      if(f.id==="client-form"){ const current=clientOf(f.dataset.id),now=Date.now(),item={id:current?.id||id("cli"),name:d.name.trim(),phone:d.phone.trim(),email:d.email.trim(),document:d.document.trim(),notes:d.notes.trim(),createdAt:current?.createdAt||now,updatedAt:now};current?Object.assign(current,item):state.clients.push(item);await saveState();closeModal();render();toast("Cliente salvo."); }
-      if(f.id==="vehicle-form"){ const current=vehicleOf(f.dataset.id),now=Date.now(),item={id:current?.id||id("vei"),clientId:d.clientId,plate:d.plate.toUpperCase().replace(/[^A-Z0-9]/g,""),brand:d.brand.trim(),model:d.model.trim(),year:d.year,color:d.color.trim(),mileage:Number(d.mileage||0),createdAt:current?.createdAt||now,updatedAt:now};current?Object.assign(current,item):state.vehicles.push(item);await saveState();closeModal();render();toast("Veículo salvo."); }
     });
 
     $("#logo-upload").addEventListener("change", async e => {
@@ -1845,7 +1931,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         render();
         toast("Logo atualizada com sucesso!");
       } catch (err) {
-        toast("Erro ao enviar logo. Verifique sua conexão.", "error");
+        toast("Erro ao enviar logo. Verifique sua conexão e permissões.", "error");
       }
       e.target.value = "";
     });
