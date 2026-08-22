@@ -40,7 +40,6 @@
     @media(max-width:760px){:root{--sidebar:280px}.app{display:block}.sidebar{position:fixed;left:0;transform:translateX(-102%);transition:transform var(--ease);box-shadow:var(--shadow-lg)}body.menu-open .sidebar{transform:none}.menu{display:grid;place-items:center}.topbar{height:68px;padding:0 15px}.topbar .btn-primary{display:none}.main{padding:22px 15px 90px}.page-head{align-items:flex-start;flex-direction:column}.page-head .btn{width:100%}.stats{grid-template-columns:1fr 1fr;gap:12px}.stat{min-height:120px;padding:16px}.stat-value{font-size:26px}.toolbar{align-items:stretch;flex-direction:column}.search{max-width:none}.form-grid{grid-template-columns:1fr}.field.full,.form-actions{grid-column:auto}.form-actions{flex-direction:column-reverse}.form-actions .btn{width:100%}.top-actions .btn-secondary{display:none}.notice{flex-direction:column}.table th,.table td{padding:12px}.setup-form{padding:32px 20px}.toast-region{left:14px;right:14px;bottom:14px}.toast{min-width:0}.order-meta{gap:14px}.split.mobile-stack{align-items:flex-start;flex-direction:column}}
     @media(max-width:430px){.stats{grid-template-columns:1fr}.crumb{display:none}.card-pad{padding:17px}.page-head h1{font-size:31px}}
     
-    /* CSS ATUALIZADO PARA EXPORTAÇÃO DE PDF MANTENDO O LAYOUT */
     @media print{
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       body>*:not(dialog[open]){display:none!important}
@@ -259,8 +258,8 @@
     "use strict";
     if("scrollRestoration" in history)history.scrollRestoration="manual";
     
-    // CONFIGURAÇÃO FIREBASE
-    firebase.initializeApp({ databaseURL: "https://a-fonte-43744-default-rtdb.firebaseio.com/" });
+    // CONFIGURAÇÃO FIREBASE CORRIGIDA (com a sua URL)
+    firebase.initializeApp({ databaseURL: "https://oficlaro-a632c-default-rtdb.firebaseio.com/" });
     const db = firebase.database();
 
     const STATUS={RECEIVED:"Veículo recebido",DIAGNOSING:"Em diagnóstico",DIAGNOSED:"Diagnóstico concluído",AWAITING_APPROVAL:"Aguardando aprovação",WAITING_PARTS:"Aguardando peça",IN_PROGRESS:"Serviço em execução",FINAL_TESTS:"Testes finais",READY:"Veículo pronto",DELIVERED:"Entregue",CANCELLED:"Cancelado"};
@@ -271,13 +270,11 @@
     let state=fresh(),view="dashboard",selectedOrder=null,search="";
     const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 
-    // LÓGICA REFEITA PARA O FIREBASE
     async function load(){
       try{
         const snap = await db.ref('oficlaro_state').once('value');
         const value = snap.val();
         if(value && value.version===1){
-          // Restaura arrays vazios (o Firebase os remove nativamente)
           value.clients = value.clients || [];
           value.vehicles = value.vehicles || [];
           value.orders = value.orders || [];
@@ -289,14 +286,16 @@
           return value;
         }
         return fresh();
-      }catch{
+      }catch(e){
+        console.error("Erro ao ler do Firebase:", e);
+        toast("Erro ao ler dados: Verifique as regras de segurança.", "error");
         return fresh();
       }
     }
     
-    function save(){
+    async function save(){
       state.updatedAt=Date.now();
-      return db.ref('oficlaro_state').set(state); // Retorna a promise para aguardarmos onde for necessário
+      return db.ref('oficlaro_state').set(state); 
     }
 
     function id(prefix){return prefix+"_"+crypto.randomUUID().replaceAll("-","").slice(0,16)}
@@ -314,7 +313,6 @@
     function closeModal(){const d=$("#modal");if(d.open)d.close()}
     function navigate(next,idValue=null){view=next;selectedOrder=idValue;search="";document.body.classList.remove("menu-open");render();$("#main").focus()}
     
-    // ATUALIZADO PARA AGUARDAR O LOAD DO FIREBASE
     async function start(){
       state = await load();
       if(!state.workshop){$("#setup").classList.remove("hidden");return}
@@ -388,7 +386,6 @@
 
     function renderClients(){const term=search.toLowerCase(),items=state.clients.filter(c=>!term||`${c.name} ${c.phone} ${c.email}`.toLowerCase().includes(term));$("#main").innerHTML=`${pageHead("Relacionamento","Clientes","Cadastre contatos e mantenha o histórico ligado às ordens.","new-client","+ Novo cliente")}<div class="toolbar"><label class="field search"><span class="field-label">Buscar</span><input id="search" type="search" value="${esc(search)}" placeholder="Nome, telefone ou e-mail"></label><span class="help">${items.length} cliente(s)</span></div><section class="card">${items.length?`<div class="table-wrap"><table class="table"><thead><tr><th>Cliente</th><th>Telefone</th><th>E-mail</th><th>Cadastro</th><th></th></tr></thead><tbody>${items.map(c=>`<tr><td class="strong">${esc(c.name)}</td><td>${esc(c.phone)}</td><td>${esc(c.email||"—")}</td><td>${date(c.createdAt)}</td><td><button class="btn btn-secondary btn-sm" data-action="edit-client" data-id="${c.id}">Editar</button></td></tr>`).join("")}</tbody></table></div>`:empty("Nenhum cliente encontrado","Cadastre uma pessoa para vincular veículos e ordens.","new-client","Cadastrar cliente")}</section>`;bindSearch()}
     
-    // ATUALIZADO: Assistente de Preenchimento para Cliente
     function clientForm(item={}){
       const aiField = !item.id ? `<div class="field full notice" style="flex-direction:column;align-items:start;gap:8px;background:#f5faff"><label>⚡ Assistente de Preenchimento Rápido</label><textarea id="smart-text-client" placeholder="Cole a mensagem do cliente aqui... (ex: Oi, sou o João e meu tel é 11999999999)"></textarea><button type="button" class="btn btn-secondary btn-sm" data-action="smart-fill-client">Analisar e Preencher</button></div>` : "";
       modal(item.id?"Editar cliente":"Novo cliente",`${aiField}<form id="client-form" class="form-grid" data-id="${item.id||""}"><div class="field full"><label>Nome completo</label><input name="name" required maxlength="100" value="${esc(item.name||"")}"></div><div class="field"><label>Telefone / WhatsApp</label><input name="phone" required maxlength="20" value="${esc(item.phone||"")}"></div><div class="field"><label>E-mail</label><input name="email" type="email" maxlength="120" value="${esc(item.email||"")}"></div><div class="field full"><label>CPF ou CNPJ <span class="help">(opcional)</span></label><input name="document" maxlength="18" value="${esc(item.document||"")}"></div><div class="field full"><label>Observações</label><textarea name="notes" maxlength="1000">${esc(item.notes||"")}</textarea></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Salvar cliente</button></div></form>`)
@@ -396,7 +393,6 @@
 
     function renderVehicles(){const term=search.toLowerCase(),items=state.vehicles.filter(v=>!term||`${v.brand} ${v.model} ${v.plate}`.toLowerCase().includes(term));$("#main").innerHTML=`${pageHead("Prontuário digital","Veículos","Cada veículo fica ligado ao seu proprietário e às ordens anteriores.","new-vehicle","+ Novo veículo")}<div class="toolbar"><label class="field search"><span class="field-label">Buscar</span><input id="search" type="search" value="${esc(search)}" placeholder="Marca, modelo ou placa"></label><span class="help">${items.length} veículo(s)</span></div><section class="card">${items.length?`<div class="table-wrap"><table class="table"><thead><tr><th>Veículo</th><th>Placa</th><th>Proprietário</th><th>Quilometragem</th><th></th></tr></thead><tbody>${items.map(v=>`<tr><td class="strong">${esc(`${v.brand} ${v.model}`)}<br><span class="help">${esc(v.year||"")}</span></td><td>${esc(v.plate)}</td><td>${esc(clientOf(v.clientId)?.name||"—")}</td><td>${Number(v.mileage||0).toLocaleString("pt-BR")} km</td><td><button class="btn btn-secondary btn-sm" data-action="edit-vehicle" data-id="${v.id}">Editar</button></td></tr>`).join("")}</tbody></table></div>`:empty("Nenhum veículo encontrado",state.clients.length?"Cadastre o primeiro veículo da oficina.":"Cadastre um cliente antes de adicionar o veículo.",state.clients.length?"new-vehicle":"new-client",state.clients.length?"Cadastrar veículo":"Cadastrar cliente")}</section>`;bindSearch()}
     
-    // ATUALIZADO: Assistente de Preenchimento para Veículo
     function vehicleForm(item={}){
       if(!state.clients.length){toast("Cadastre um cliente antes do veículo.","error");clientForm();return}
       const aiField = !item.id ? `<div class="field full notice" style="flex-direction:column;align-items:start;gap:8px;background:#f5faff"><label>⚡ Assistente de Preenchimento Rápido</label><textarea id="smart-text-vehicle" placeholder="Cole a mensagem aqui (ex: Civic placa ABC1234)"></textarea><button type="button" class="btn btn-secondary btn-sm" data-action="smart-fill-vehicle">Analisar e Preencher</button></div>` : "";
@@ -406,7 +402,7 @@
     function renderOrders(){const term=search.toLowerCase(),items=state.orders.filter(o=>{const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId);return !term||`${o.number} ${c?.name} ${v?.brand} ${v?.model} ${v?.plate}`.toLowerCase().includes(term)}).sort((a,b)=>b.updatedAt-a.updatedAt);$("#main").innerHTML=`${pageHead("Acompanhamento completo","Ordens de serviço","Registre cada etapa e mantenha um histórico confiável.","new-order","+ Nova ordem")}<div class="toolbar"><label class="field search"><span class="field-label">Buscar</span><input id="search" type="search" value="${esc(search)}" placeholder="OS, cliente, veículo ou placa"></label><span class="help">${items.length} ordem(ns)</span></div><section class="card">${items.length?ordersTable(items):empty("Nenhuma ordem encontrada","Abra a primeira ordem de serviço para iniciar o fluxo.","new-order","Criar ordem")}</section>`;bindSearch()}
     function orderForm(){if(!state.clients.length||!state.vehicles.length){toast("Cadastre cliente e veículo antes da ordem.","error");navigate(!state.clients.length?"clients":"vehicles");return}modal("Nova ordem de serviço",`<form id="order-form" class="form-grid"><div class="field"><label>Cliente</label><select id="order-client" name="clientId" required><option value="">Selecione</option>${state.clients.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")}</select></div><div class="field"><label>Veículo</label><select id="order-vehicle" name="vehicleId" required><option value="">Selecione o cliente</option></select></div><div class="field"><label>Quilometragem de entrada</label><input name="mileage" type="number" min="0" required></div><div class="field"><label>Previsão de conclusão</label><input name="expectedAt" type="date"></div><div class="field full"><label>Relato do cliente</label><textarea name="complaint" required minlength="3" maxlength="1200" placeholder="Descreva o motivo da visita"></textarea></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Criar ordem</button></div></form>`);$("#order-client").addEventListener("change",e=>{const options=state.vehicles.filter(v=>v.clientId===e.target.value);$("#order-vehicle").innerHTML=`<option value="">Selecione</option>${options.map(v=>`<option value="${v.id}">${esc(`${v.brand} ${v.model} · ${v.plate}`)}</option>`).join("")}`})}
 
-    function renderOrderDetail(){const o=orderOf(selectedOrder);if(!o){navigate("orders");return}const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId),items=o.estimate?.items||[],subtotal=items.reduce((s,i)=>s+i.qty*i.unitCents,0),paid=(o.payments||[]).reduce((s,p)=>s+p.amountCents,0);$("#main").innerHTML=`${pageHead("Ordem de serviço",esc(o.number),"Diagnóstico, orçamento, pagamentos e histórico em um só lugar.","customer-view","Visualizar como cliente")}<section class="grid detail-grid"><div class="stack"><article class="order-hero"><span class="eyebrow" style="color:#9dc0ff">${esc(state.workshop.name)}</span><h1>${esc(v?`${v.brand} ${v.model}`:"Veículo")}</h1><p>${esc(c?.name||"Cliente")} · ${esc(v?.plate||"")}</p><div class="order-meta"><span>Status<strong>${esc(STATUS[o.status])}</strong></span><span>Entrada<strong>${date(o.createdAt,true)}</strong></span><span>Quilometragem<strong>${Number(o.mileage).toLocaleString("pt-BR")} km</strong></span><span>Previsão<strong>${date(o.expectedAt)}</strong></span></div></article><article class="card"><div class="card-head"><div><h2>Andamento</h2><p>Atualize o status visível no acompanhamento</p></div></div><div class="card-pad"><form id="status-form" class="form-grid"><div class="field full"><label>Status atual</label><select name="status">${Object.entries(STATUS).map(([key,label])=>`<option value="${key}" ${o.status===key?"selected":""}>${label}</option>`).join("")}</select></div><div class="field full"><label>Observação da atualização</label><input name="note" maxlength="240" placeholder="Ex.: Peças solicitadas ao fornecedor"></div><div class="form-actions"><button class="btn btn-primary" type="submit">Atualizar andamento</button></div></form></div></article><article class="card"><div class="card-head"><div><h2>Diagnóstico</h2><p>Explique o problema de forma clara para o cliente</p></div></div><div class="card-pad"><form id="diagnosis-form" class="form-grid"><div class="field full"><label>Título</label><input name="title" maxlength="120" value="${esc(o.diagnosis?.title||"")}" placeholder="Ex.: Desgaste do sistema de freios"></div><div class="field full"><label>Descrição para o cliente</label><textarea name="description" maxlength="1600">${esc(o.diagnosis?.description||"")}</textarea></div><div class="field full"><label>Notas internas da oficina</label><textarea name="internal" maxlength="1600" placeholder="Isto não aparece na visão do cliente">${esc(o.diagnosis?.internal||"")}</textarea><span class="help">“Interno” significa visível somente para a oficina.</span></div><div class="form-actions"><button class="btn btn-primary" type="submit">Salvar diagnóstico</button></div></form></div></article><article class="card"><div class="card-head"><div><h2>Orçamento</h2><p>Peças e serviços em valores transparentes</p></div><button class="btn btn-secondary btn-sm" data-action="new-item">+ Item</button></div><div class="card-pad">${items.length?items.map(i=>`<div class="item-row split mobile-stack"><div><strong>${esc(i.description)}</strong><p>${i.qty} × ${money(i.unitCents)} · ${esc(i.type)}</p></div><div style="text-align:right"><strong>${money(i.qty*i.unitCents)}</strong><div><select class="item-decision" data-id="${i.id}" aria-label="Decisão do item"><option value="PENDING" ${i.decision==="PENDING"?"selected":""}>Pendente</option><option value="APPROVED" ${i.decision==="APPROVED"?"selected":""}>Aprovado</option><option value="REJECTED" ${i.decision==="REJECTED"?"selected":""}>Recusado</option></select></div></div></div>`).join("")+`<div class="total-box split"><span>Total do orçamento</span><strong>${money(subtotal)}</strong></div>`:empty("Orçamento vazio","Adicione peças e serviços para apresentar ao cliente.","new-item","Adicionar item")}</div></article></div><aside class="stack"><article class="card"><div class="card-head"><div><h2>Resumo financeiro</h2><p>Controle simples de recebimentos</p></div></div><div class="card-pad stack"><div class="split"><span>Orçamento</span><strong>${money(subtotal)}</strong></div><div class="split"><span>Recebido</span><strong style="color:var(--success)">${money(paid)}</strong></div><div class="split"><span>Saldo</span><strong>${money(Math.max(0,subtotal-paid))}</strong></div><button class="btn btn-primary" data-action="new-payment">Registrar pagamento</button></div></article><article class="card"><div class="card-head"><div><h2>Linha do tempo</h2><p>Histórico desta ordem</p></div></div><div class="card-pad"><ol class="timeline">${[...(o.timeline||[])].sort((a,b)=>b.at-a.at).map(e=>`<li><strong>${esc(e.text)}</strong><time>${date(e.at,true)}</time></li>`).join("")}</ol></div></article><button class="btn btn-secondary" data-view="orders">← Voltar para ordens</button></aside></section>`;$$('.item-decision').forEach(s=>s.addEventListener("change",e=>{const item=items.find(i=>i.id===e.target.dataset.id);item.decision=e.target.value;o.updatedAt=Date.now();save();toast("Decisão atualizada.")}))}
+    function renderOrderDetail(){const o=orderOf(selectedOrder);if(!o){navigate("orders");return}const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId),items=o.estimate?.items||[],subtotal=items.reduce((s,i)=>s+i.qty*i.unitCents,0),paid=(o.payments||[]).reduce((s,p)=>s+p.amountCents,0);$("#main").innerHTML=`${pageHead("Ordem de serviço",esc(o.number),"Diagnóstico, orçamento, pagamentos e histórico em um só lugar.","customer-view","Visualizar como cliente")}<section class="grid detail-grid"><div class="stack"><article class="order-hero"><span class="eyebrow" style="color:#9dc0ff">${esc(state.workshop.name)}</span><h1>${esc(v?`${v.brand} ${v.model}`:"Veículo")}</h1><p>${esc(c?.name||"Cliente")} · ${esc(v?.plate||"")}</p><div class="order-meta"><span>Status<strong>${esc(STATUS[o.status])}</strong></span><span>Entrada<strong>${date(o.createdAt,true)}</strong></span><span>Quilometragem<strong>${Number(o.mileage).toLocaleString("pt-BR")} km</strong></span><span>Previsão<strong>${date(o.expectedAt)}</strong></span></div></article><article class="card"><div class="card-head"><div><h2>Andamento</h2><p>Atualize o status visível no acompanhamento</p></div></div><div class="card-pad"><form id="status-form" class="form-grid"><div class="field full"><label>Status atual</label><select name="status">${Object.entries(STATUS).map(([key,label])=>`<option value="${key}" ${o.status===key?"selected":""}>${label}</option>`).join("")}</select></div><div class="field full"><label>Observação da atualização</label><input name="note" maxlength="240" placeholder="Ex.: Peças solicitadas ao fornecedor"></div><div class="form-actions"><button class="btn btn-primary" type="submit">Atualizar andamento</button></div></form></div></article><article class="card"><div class="card-head"><div><h2>Diagnóstico</h2><p>Explique o problema de forma clara para o cliente</p></div></div><div class="card-pad"><form id="diagnosis-form" class="form-grid"><div class="field full"><label>Título</label><input name="title" maxlength="120" value="${esc(o.diagnosis?.title||"")}" placeholder="Ex.: Desgaste do sistema de freios"></div><div class="field full"><label>Descrição para o cliente</label><textarea name="description" maxlength="1600">${esc(o.diagnosis?.description||"")}</textarea></div><div class="field full"><label>Notas internas da oficina</label><textarea name="internal" maxlength="1600" placeholder="Isto não aparece na visão do cliente">${esc(o.diagnosis?.internal||"")}</textarea><span class="help">“Interno” significa visível somente para a oficina.</span></div><div class="form-actions"><button class="btn btn-primary" type="submit">Salvar diagnóstico</button></div></form></div></article><article class="card"><div class="card-head"><div><h2>Orçamento</h2><p>Peças e serviços em valores transparentes</p></div><button class="btn btn-secondary btn-sm" data-action="new-item">+ Item</button></div><div class="card-pad">${items.length?items.map(i=>`<div class="item-row split mobile-stack"><div><strong>${esc(i.description)}</strong><p>${i.qty} × ${money(i.unitCents)} · ${esc(i.type)}</p></div><div style="text-align:right"><strong>${money(i.qty*i.unitCents)}</strong><div><select class="item-decision" data-id="${i.id}" aria-label="Decisão do item"><option value="PENDING" ${i.decision==="PENDING"?"selected":""}>Pendente</option><option value="APPROVED" ${i.decision==="APPROVED"?"selected":""}>Aprovado</option><option value="REJECTED" ${i.decision==="REJECTED"?"selected":""}>Recusado</option></select></div></div></div>`).join("")+`<div class="total-box split"><span>Total do orçamento</span><strong>${money(subtotal)}</strong></div>`:empty("Orçamento vazio","Adicione peças e serviços para apresentar ao cliente.","new-item","Adicionar item")}</div></article></div><aside class="stack"><article class="card"><div class="card-head"><div><h2>Resumo financeiro</h2><p>Controle simples de recebimentos</p></div></div><div class="card-pad stack"><div class="split"><span>Orçamento</span><strong>${money(subtotal)}</strong></div><div class="split"><span>Recebido</span><strong style="color:var(--success)">${money(paid)}</strong></div><div class="split"><span>Saldo</span><strong>${money(Math.max(0,subtotal-paid))}</strong></div><button class="btn btn-primary" data-action="new-payment">Registrar pagamento</button></div></article><article class="card"><div class="card-head"><div><h2>Linha do tempo</h2><p>Histórico desta ordem</p></div></div><div class="card-pad"><ol class="timeline">${[...(o.timeline||[])].sort((a,b)=>b.at-a.at).map(e=>`<li><strong>${esc(e.text)}</strong><time>${date(e.at,true)}</time></li>`).join("")}</ol></div></article><button class="btn btn-secondary" data-view="orders">← Voltar para ordens</button></aside></section>`;$$('.item-decision').forEach(s=>s.addEventListener("change",async e=>{const item=items.find(i=>i.id===e.target.dataset.id);item.decision=e.target.value;o.updatedAt=Date.now();await save();toast("Decisão atualizada.")}))}
     function itemForm(){modal("Adicionar item ao orçamento",`<form id="item-form" class="form-grid"><div class="field full"><label>Descrição</label><input name="description" required maxlength="140" placeholder="Ex.: Troca das pastilhas dianteiras"></div><div class="field"><label>Tipo</label><select name="type"><option>Serviço</option><option>Peça</option><option>Mão de obra</option></select></div><div class="field"><label>Quantidade</label><input name="qty" type="number" min="1" value="1" required></div><div class="field full"><label>Valor unitário (R$)</label><input name="price" inputmode="decimal" required placeholder="0,00"></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Adicionar item</button></div></form>`)}
     function paymentForm(){modal("Registrar pagamento",`<form id="payment-form" class="form-grid"><div class="field"><label>Valor recebido (R$)</label><input name="amount" inputmode="decimal" required placeholder="0,00"></div><div class="field"><label>Forma</label><select name="method"><option>Pix</option><option>Dinheiro</option><option>Cartão</option><option>Transferência</option><option>Outro</option></select></div><div class="field full"><label>Observação</label><input name="note" maxlength="120"></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Registrar</button></div></form>`)}
     function customerView(){const o=orderOf(selectedOrder),c=clientOf(o.clientId),v=vehicleOf(o.vehicleId),items=o.estimate?.items||[],total=items.reduce((s,i)=>s+i.qty*i.unitCents,0);modal("Acompanhamento do cliente",`<article class="customer-sheet"><div class="customer-cover"><span class="eyebrow" style="color:#a8c7ff">${esc(state.workshop.name)}</span><h2>${esc(STATUS[o.status])}</h2><p>${esc(`${v?.brand||""} ${v?.model||""} · ${v?.plate||""}`)} — ${esc(o.number)}</p></div><section class="customer-section"><span class="eyebrow">Cliente</span><h3>${esc(c?.name||"")}</h3><p>${esc(o.complaint)}</p></section>${o.diagnosis?.description?`<section class="customer-section"><span class="eyebrow">Diagnóstico</span><h3>${esc(o.diagnosis.title||"Diagnóstico da oficina")}</h3><p>${esc(o.diagnosis.description)}</p></section>`:""}<section class="customer-section"><div class="split"><h3>Orçamento</h3><strong>${money(total)}</strong></div>${items.length?items.map(i=>`<div class="item-row split"><span>${esc(i.description)} <small>(${esc(DECISION[i.decision]||i.decision)})</small></span><strong>${money(i.qty*i.unitCents)}</strong></div>`).join(""):"<p>Orçamento ainda não informado.</p>"}</section><section class="customer-section"><span class="eyebrow">Atualizações</span><ol class="timeline">${[...(o.timeline||[])].sort((a,b)=>b.at-a.at).map(e=>`<li><strong>${esc(e.text)}</strong><time>${date(e.at,true)}</time></li>`).join("")}</ol></section><section class="customer-section"><strong>${esc(state.workshop.name)}</strong><p>${esc(state.workshop.phone)}</p></section></article><div class="dialog-actions"><button class="btn btn-secondary" data-action="close">Fechar</button><button class="btn btn-primary" data-action="print">Imprimir / salvar PDF</button></div>`,true)}
@@ -416,7 +412,6 @@
     function bindSearch(){const input=$("#search");input?.addEventListener("input",e=>{search=e.target.value;render()})}
     function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`oficlaro-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Backup exportado com sucesso.")}
 
-    // LISTENER DE CLIQUES ATUALIZADO (INCLUI AS AÇÕES SMART-FILL)
     document.addEventListener("click",e=>{const viewButton=e.target.closest("[data-view]");if(viewButton){navigate(viewButton.dataset.view);return}const action=e.target.closest("[data-action]")?.dataset.action,idValue=e.target.closest("[data-id]")?.dataset.id;if(!action)return;({
       close:closeModal,"close-menu":()=>document.body.classList.remove("menu-open"),
       "new-client":()=>clientForm(),"edit-client":()=>clientForm(state.clients.find(x=>x.id===idValue)),
@@ -424,7 +419,6 @@
       "new-order":orderForm,"open-order":()=>navigate("order-detail",idValue),"new-item":itemForm,
       "new-payment":paymentForm,"customer-view":customerView,print:()=>window.print(),
       export:exportData,import:()=>$("#import-file").click(),"edit-workshop":workshopForm,
-      // AÇÃO: Assistente Cliente
       "smart-fill-client": () => {
           const txt = $("#smart-text-client").value;
           if (!txt) return;
@@ -435,7 +429,6 @@
           if (nameMatch) form.elements.name.value = nameMatch[1].trim();
           toast("Análise concluída.");
       },
-      // AÇÃO: Assistente Veículo
       "smart-fill-vehicle": () => {
           const txt = $("#smart-text-vehicle").value;
           if (!txt) return;
@@ -444,11 +437,10 @@
           if (plateMatch) form.elements.plate.value = plateMatch[0].replace(/[-\s]/g, '').toUpperCase();
           toast("Análise concluída.");
       },
-      // AÇÃO: RESET NA NUVEM
       reset: async ()=>{
         if(confirm("Apagar definitivamente todos os dados da nuvem do Oficlaro?")){
-          await db.ref('oficlaro_state').remove();
-          location.reload();
+          try{ await db.ref('oficlaro_state').remove(); location.reload(); }
+          catch(err){ toast("Erro de permissão no Firebase","error"); }
         }
       }
     })[action]?.()});
@@ -457,31 +449,39 @@
     $("#modal").addEventListener("click",e=>{if(e.target===$("#modal"))closeModal()});
     document.addEventListener("keydown",e=>{if(e.key==="Escape")document.body.classList.remove("menu-open")});
     
-    // LISTENER DE FORMS
     document.addEventListener("submit", async e=>{e.preventDefault();const f=e.target,d=Object.fromEntries(new FormData(f));
-      if(f.id==="setup-form"){state.workshop={ownerName:d.ownerName.trim(),name:d.workshopName.trim(),phone:d.phone.trim()};await save();location.reload()}
-      if(f.id==="client-form"){const current=state.clients.find(x=>x.id===f.dataset.id),item={id:current?.id||id("cli"),name:d.name.trim(),phone:d.phone.trim(),email:d.email.trim(),document:d.document.trim(),notes:d.notes.trim(),createdAt:current?.createdAt||Date.now(),updatedAt:Date.now()};current?Object.assign(current,item):state.clients.push(item);save();closeModal();render();toast("Cliente salvo.")}
-      if(f.id==="vehicle-form"){const current=state.vehicles.find(x=>x.id===f.dataset.id),item={id:current?.id||id("vei"),clientId:d.clientId,plate:d.plate.toUpperCase().replace(/[^A-Z0-9]/g,""),year:d.year,brand:d.brand.trim(),model:d.model.trim(),color:d.color.trim(),mileage:Number(d.mileage||0),notes:d.notes.trim(),createdAt:current?.createdAt||Date.now(),updatedAt:Date.now()};current?Object.assign(current,item):state.vehicles.push(item);save();closeModal();render();toast("Veículo salvo.")}
-      if(f.id==="order-form"){state.counter++;const now=Date.now(),o={id:id("os"),number:`OS-${String(state.counter).padStart(6,"0")}`,clientId:d.clientId,vehicleId:d.vehicleId,mileage:Number(d.mileage),expectedAt:d.expectedAt?new Date(d.expectedAt+"T12:00:00").getTime():null,complaint:d.complaint.trim(),status:"RECEIVED",diagnosis:null,estimate:{items:[]},payments:[],timeline:[{id:id("evt"),text:"Veículo recebido pela oficina",at:now}],createdAt:now,updatedAt:now};state.orders.push(o);save();closeModal();navigate("order-detail",o.id);toast("Ordem criada.")}
       
-      // LÓGICA ATUALIZADA: STATUS UPDATE + SMART WHATSAPP
+      // SALVANDO A CONFIGURAÇÃO COM TRY CATCH PARA O FEEDBACK DE ERRO
+      if(f.id==="setup-form"){
+        state.workshop={ownerName:d.ownerName.trim(),name:d.workshopName.trim(),phone:d.phone.trim()};
+        try {
+          await save();
+          location.reload();
+        } catch (error) {
+          toast("Erro: Firebase bloqueou a gravação. Verifique as 'Regras' no console.", "error");
+          console.error(error);
+        }
+      }
+      
+      if(f.id==="client-form"){const current=state.clients.find(x=>x.id===f.dataset.id),item={id:current?.id||id("cli"),name:d.name.trim(),phone:d.phone.trim(),email:d.email.trim(),document:d.document.trim(),notes:d.notes.trim(),createdAt:current?.createdAt||Date.now(),updatedAt:Date.now()};current?Object.assign(current,item):state.clients.push(item);await save();closeModal();render();toast("Cliente salvo.")}
+      if(f.id==="vehicle-form"){const current=state.vehicles.find(x=>x.id===f.dataset.id),item={id:current?.id||id("vei"),clientId:d.clientId,plate:d.plate.toUpperCase().replace(/[^A-Z0-9]/g,""),year:d.year,brand:d.brand.trim(),model:d.model.trim(),color:d.color.trim(),mileage:Number(d.mileage||0),notes:d.notes.trim(),createdAt:current?.createdAt||Date.now(),updatedAt:Date.now()};current?Object.assign(current,item):state.vehicles.push(item);await save();closeModal();render();toast("Veículo salvo.")}
+      if(f.id==="order-form"){state.counter++;const now=Date.now(),o={id:id("os"),number:`OS-${String(state.counter).padStart(6,"0")}`,clientId:d.clientId,vehicleId:d.vehicleId,mileage:Number(d.mileage),expectedAt:d.expectedAt?new Date(d.expectedAt+"T12:00:00").getTime():null,complaint:d.complaint.trim(),status:"RECEIVED",diagnosis:null,estimate:{items:[]},payments:[],timeline:[{id:id("evt"),text:"Veículo recebido pela oficina",at:now}],createdAt:now,updatedAt:now};state.orders.push(o);await save();closeModal();navigate("order-detail",o.id);toast("Ordem criada.")}
+      
       if(f.id==="status-form"){
         const o=orderOf(selectedOrder);
         const oldStatus = o.status;
         o.status=d.status;
         o.updatedAt=Date.now();
         o.timeline.push({id:id("evt"),text:d.note.trim()||STATUS[d.status],at:o.updatedAt});
-        save();
+        await save();
         render();
         toast("Andamento atualizado.");
 
-        // Dispara o prompt do WhatsApp se o status realmente mudou
         if (oldStatus !== d.status) {
             const c = clientOf(o.clientId);
             if (c && c.phone) {
                 if (confirm("Deseja avisar o cliente no WhatsApp sobre a mudança de status?")) {
                     let cleanPhone = phone(c.phone);
-                    // Adiciona DDI 55 (Brasil) caso falte
                     if (cleanPhone.length <= 11) cleanPhone = "55" + cleanPhone;
                     const msg = `Olá, ${c.name.split(' ')[0]}! O status da sua ordem de serviço (${o.number}) mudou para: *${STATUS[o.status]}*. Acompanhe seu atendimento aqui: https://oficlaro.com/os/${o.id}`;
                     window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
@@ -490,15 +490,14 @@
         }
       }
       
-      if(f.id==="diagnosis-form"){const o=orderOf(selectedOrder);o.diagnosis={title:d.title.trim(),description:d.description.trim(),internal:d.internal.trim(),updatedAt:Date.now()};o.updatedAt=Date.now();save();render();toast("Diagnóstico salvo.")}
-      if(f.id==="item-form"){const o=orderOf(selectedOrder);o.estimate.items.push({id:id("item"),description:d.description.trim(),type:d.type,qty:Math.max(1,Number(d.qty)),unitCents:cents(d.price),decision:"PENDING"});o.updatedAt=Date.now();save();closeModal();render();toast("Item adicionado.")}
-      if(f.id==="payment-form"){const value=cents(d.amount);if(!value){toast("Informe um valor maior que zero.","error");return}const o=orderOf(selectedOrder);o.payments.push({id:id("pay"),amountCents:value,method:d.method,note:d.note.trim(),at:Date.now()});o.timeline.push({id:id("evt"),text:`Pagamento registrado: ${money(value)}`,at:Date.now()});o.updatedAt=Date.now();save();closeModal();render();toast("Pagamento registrado.")}
-      if(f.id==="workshop-form"){Object.assign(state.workshop,{ownerName:d.ownerName.trim(),name:d.name.trim(),phone:d.phone.trim()});save();$("#side-workshop").textContent=state.workshop.name;$("#side-owner").textContent=state.workshop.ownerName;closeModal();render();toast("Oficina atualizada.")}
+      if(f.id==="diagnosis-form"){const o=orderOf(selectedOrder);o.diagnosis={title:d.title.trim(),description:d.description.trim(),internal:d.internal.trim(),updatedAt:Date.now()};o.updatedAt=Date.now();await save();render();toast("Diagnóstico salvo.")}
+      if(f.id==="item-form"){const o=orderOf(selectedOrder);o.estimate.items.push({id:id("item"),description:d.description.trim(),type:d.type,qty:Math.max(1,Number(d.qty)),unitCents:cents(d.price),decision:"PENDING"});o.updatedAt=Date.now();await save();closeModal();render();toast("Item adicionado.")}
+      if(f.id==="payment-form"){const value=cents(d.amount);if(!value){toast("Informe um valor maior que zero.","error");return}const o=orderOf(selectedOrder);o.payments.push({id:id("pay"),amountCents:value,method:d.method,note:d.note.trim(),at:Date.now()});o.timeline.push({id:id("evt"),text:`Pagamento registrado: ${money(value)}`,at:Date.now()});o.updatedAt=Date.now();await save();closeModal();render();toast("Pagamento registrado.")}
+      if(f.id==="workshop-form"){Object.assign(state.workshop,{ownerName:d.ownerName.trim(),name:d.name.trim(),phone:d.phone.trim()});await save();$("#side-workshop").textContent=state.workshop.name;$("#side-owner").textContent=state.workshop.ownerName;closeModal();render();toast("Oficina atualizada.")}
     });
 
     $("#import-file").addEventListener("change",async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(data.version!==1||!data.workshop||!Array.isArray(data.clients)||!Array.isArray(data.orders))throw new Error();if(!confirm("Substituir os dados atuais pelo backup selecionado?"))return;state=data;await save();location.reload()}catch{toast("Este arquivo não é um backup válido do Oficlaro.","error")}finally{e.target.value=""}});
     
-    // Inicia a aplicação aguardando os dados do Firebase
     start();
   </script>
 </body>
