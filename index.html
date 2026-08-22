@@ -1729,7 +1729,8 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       if(act==="print-qr"){
         const win = window.open('', '_blank');
         const img = $("#qr-canvas").toDataURL("image/png");
-        win.document.write(`<html><body style="text-align:center;font-family:sans-serif;margin-top:50px"><h1>Check-in da Oficina</h1><img src="${img}" style="width:300px;height:300px;margin:20px 0;"><p>Aponte a câmera do celular para preencher seus dados.</p><script>window.onload=function(){window.print();}</script></body></html>`);
+        // A barra invertida impede que o parser HTML encerre este script principal.
+        win.document.write(`<html><body style="text-align:center;font-family:sans-serif;margin-top:50px"><h1>Check-in da Oficina</h1><img src="${img}" style="width:300px;height:300px;margin:20px 0;"><p>Aponte a câmera do celular para preencher seus dados.</p><script>window.onload=function(){window.print();}<\/script></body></html>`);
         win.document.close();
       }
       if(act==="remove-logo"){
