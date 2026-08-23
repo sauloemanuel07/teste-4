@@ -7,8 +7,6 @@
   <meta name="description" content="Oficlaro é a plataforma de gestão que organiza clientes, veículos, ordens de serviço e o acompanhamento da sua oficina.">
   <title>Oficlaro — Gestão inteligente para oficinas</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231f5fd1'/%3E%3Cpath d='M43 17a18 18 0 1 0 0 30' fill='none' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3Cpath d='M43 26h-8a6 6 0 1 0 0 12h8' fill='none' stroke='%23b9d4ff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
-  <link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231f5fd1'/%3E%3Cpath d='M43 17a18 18 0 1 0 0 30' fill='none' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3Cpath d='M43 26h-8a6 6 0 1 0 0 12h8' fill='none' stroke='%23b9d4ff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231f5fd1'/%3E%3Cpath d='M43 17a18 18 0 1 0 0 30' fill='none' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3Cpath d='M43 26h-8a6 6 0 1 0 0 12h8' fill='none' stroke='%23b9d4ff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
   
   <!-- Scripts do Firebase (CDN) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -16,8 +14,9 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
-  <!-- Biblioteca leve para QR Code -->
+  <!-- Bibliotecas externas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
 /* Design Tokens */
@@ -54,7 +53,7 @@ svg{display:block}
 .skip{position:fixed;top:8px;left:8px;z-index:200;padding:10px 14px;background:#fff;border-radius:8px;transform:translateY(-150%);box-shadow:var(--shadow-md)}
 .skip:focus{transform:none}
 
-/* Layout */
+/* Layout Principal */
 .app{min-height:100vh;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);transition:grid-template-columns var(--motion-base) var(--ease)}
 .shell{min-width:0;display:flex;flex-direction:column}
 .main{width:min(100%,1500px);margin:0 auto;padding:clamp(24px,3.2vw,46px);flex:1;min-width:0}
@@ -62,7 +61,7 @@ svg{display:block}
 .stack{display:grid;gap:var(--space-5)}
 .split{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)}
 .mobile-brand,.mobile-dock{display:none}
-.menu-scrim{display:none; pointer-events:none;}
+.menu-scrim{display:none; pointer-events:none;} 
 body.menu-open .menu-scrim{display:block; pointer-events:auto;}
 
 /* Brand */
@@ -128,11 +127,6 @@ body.menu-open .menu-scrim{display:block; pointer-events:auto;}
   body.sidebar-collapsed .nav-icon { margin: 0; }
   body.sidebar-collapsed .profile-card { justify-content: center; padding: 10px 0; background: transparent; }
   body.sidebar-collapsed .sidebar > .brand { padding: 0 0 22px; justify-content: center; }
-  body.sidebar-collapsed .nav button:hover::after {
-    content: attr(data-tooltip); position:absolute; left: 100%; top:50%; transform:translateY(-50%);
-    margin-left:12px; background:var(--brand-950); color:#fff; padding:6px 10px; border-radius:6px;
-    font-size:11px; white-space:nowrap; z-index:100; box-shadow:var(--shadow-md);
-  }
 }
 
 /* Topbar */
@@ -368,7 +362,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
 .dialog-body{padding:20px}
 .dialog-actions{margin:20px -20px -20px;padding:14px 20px;border-top:1px solid var(--border);background:var(--surface-secondary);display:flex;justify-content:flex-end;gap:9px}
 @keyframes modal-in{from{opacity:0;transform:translateY(10px) scale(.985)}}
-.toast-region{position:fixed;right:20px;bottom:20px;z-index:200;display:grid;gap:8px; pointer-events:none;}
+.toast-region{position:fixed;right:20px;bottom:20px;z-index:200;display:grid;gap:8px; pointer-events:none;} 
 .toast{min-width:260px;max-width:390px;padding:12px 14px;border:1px solid var(--border);border-left:3px solid var(--brand);border-radius:10px;background:#fff;color:var(--text-secondary);box-shadow:var(--shadow-md);font-size:12px;animation:toast-in var(--motion-base) var(--ease); pointer-events:auto;}
 .toast.success{border-left-color:var(--success)}
 .toast.error{border-left-color:var(--danger)}
@@ -423,35 +417,51 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
 .pix-key{display:inline-block;padding:8px 12px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:monospace;font-size:14px;font-weight:700;letter-spacing:0.05em;margin-bottom:12px;word-break:break-all}
 .decision-actions{display:flex;gap:6px;margin-top:8px}
 
-/* Mechanic Módulo UI (Mobile First) */
-.mechanic-app{min-height:100vh;background:var(--background);color:var(--text-primary);display:flex;flex-direction:column}
-.mech-header{background:var(--brand-950);color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.mech-header h1{margin:0;font-size:18px;font-weight:680}
-.mech-header .mech-logout{color:#a9b9cb;background:transparent;border:0;padding:8px;font-size:12px;font-weight:600}
-.mech-body{padding:20px;flex:1}
-.mech-section-title{font-size:14px;color:var(--text-secondary);font-weight:700;margin:24px 0 12px;border-bottom:1px solid var(--border);padding-bottom:6px}
-.mech-section-title:first-child{margin-top:0}
-.mech-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow-xs);display:block;text-decoration:none;color:inherit;position:relative}
-.mech-card:active{background:var(--surface-secondary)}
-.mech-card h3{margin:0 0 4px;font-size:16px;color:var(--brand-900)}
-.mech-card p{margin:0;font-size:12px;color:var(--text-muted)}
-.mech-status-badge{display:inline-block;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:700;margin-bottom:8px}
-.mech-btn{width:100%;min-height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:700;border:1px solid transparent;background:var(--brand);color:#fff;margin-top:12px}
-.mech-btn-secondary{background:var(--surface);border-color:var(--border-strong);color:var(--text-secondary)}
-.mech-btn:disabled{opacity:0.6;cursor:not-allowed}
-.mech-form-field{margin-bottom:16px}
-.mech-form-field label{display:block;font-size:12px;font-weight:680;color:var(--text-secondary);margin-bottom:6px}
-.mech-form-field input, .mech-form-field textarea{width:100%;padding:12px;border-radius:8px;border:1px solid var(--border-strong);font-size:14px;background:#fff}
-.mech-photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:10px;margin-top:12px}
-.mech-photo-item{aspect-ratio:1;border-radius:8px;background:var(--surface-secondary);border:1px solid var(--border);overflow:hidden}
-.mech-photo-item img{width:100%;height:100%;object-fit:cover}
-.mech-tech-note{padding:12px;border-radius:8px;background:var(--brand-soft);border:1px solid #cedcf0;margin-bottom:8px;font-size:13px}
-.mech-tech-note small{display:block;color:var(--text-muted);font-size:10px;margin-top:4px}
-.mech-recommendation-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px}
-.mech-recommendation-item div{font-size:13px}
-.mech-recommendation-item span{font-size:11px;color:var(--text-muted)}
+/* MECHANIC UI APP (MÓDULO DOS MECÂNICOS) */
+#mechanic-app {
+  background:#f4f6f9; min-height:100vh;
+}
+.mechanic-header {
+  background:var(--brand-950); color:#fff; padding:16px; position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between; box-shadow:var(--shadow-sm);
+}
+.mechanic-header .brand-name { font-size:18px; }
+.mechanic-content { padding:16px; max-width:800px; margin:0 auto; padding-bottom:100px; }
+.mechanic-card {
+  background:#fff; border-radius:12px; padding:16px; margin-bottom:16px;
+  box-shadow:var(--shadow-xs); border:1px solid var(--border);
+}
+.mechanic-os-number { color:var(--brand); font-weight:700; font-size:12px; display:block; margin-bottom:4px; }
+.mechanic-vehicle-name { font-size:18px; font-weight:720; margin:0 0 4px; }
+.mechanic-plate {
+  display:inline-block; background:var(--surface-secondary); padding:4px 8px;
+  border-radius:6px; border:1px solid var(--border-strong); font-family:monospace; font-weight:700;
+  font-size:12px; margin-bottom:12px;
+}
+.mechanic-status {
+  padding:6px 10px; border-radius:6px; display:inline-block; font-size:11px; font-weight:700;
+}
+.mechanic-status.pendente { background:var(--warning-soft); color:var(--warning); }
+.mechanic-status.em_progresso { background:var(--info-soft); color:var(--info); }
+.mechanic-status.concluido { background:var(--success-soft); color:var(--success); }
+.btn-mechanic {
+  width:100%; min-height:52px; font-size:15px; border-radius:12px; margin-top:8px;
+}
+.photo-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr)); gap:10px; margin-top:12px; }
+.photo-thumb { width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px; border:1px solid var(--border); }
 
-/* Responsive */
+/* QR Scanner Overlay */
+#qr-scanner-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+#qr-reader { width:100%; max-width:500px; background:#000; }
+.scanner-close {
+  position:absolute; top:20px; right:20px; background:#fff; color:#000; border:none;
+  padding:10px 16px; border-radius:8px; font-weight:bold; z-index:10000;
+}
+
+/* Responsive Overrides existing */
 @media(max-width:1120px){
   .stats{grid-template-columns:repeat(2,1fr)}
   .dashboard-grid,.detail-grid{grid-template-columns:1fr}
@@ -534,7 +544,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
 @media print{
   @page{size:A4;margin:14mm}
   body{-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#fff;color:#000}
-  body>*:not(#public-view){display:none!important}
+  body>*:not(#public-view):not(.qr-print-only){display:none!important}
   #public-view{display:block!important;padding:0;background:#fff}
   .public-brand{margin-bottom:10px}
   .public-card{max-width:100%;border:0;border-radius:0;box-shadow:none}
@@ -544,12 +554,16 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
   .progress-track,.progress-caption,.public-actions{display:none}
   .public-body{padding:0}
   .public-section{break-inside:avoid;padding-bottom:16px;margin-bottom:16px}
+  
+  /* Print mechanics QR */
+  .qr-print-only { display:block !important; text-align:center; margin-top:50px; }
+  .qr-print-only img { width:300px; height:300px; }
 }
   </style>
 </head>
 <body>
 
-  <!-- TELA DE AUTENTICAÇÃO -->
+  <!-- TELA DE AUTENTICAÇÃO (ADMIN E MECÂNICO NORMAL) -->
   <section id="auth-view" class="setup hidden">
     <div class="setup-form">
       <a class="brand brand-dark" href="." aria-label="Oficlaro — página inicial" id="auth-brand">
@@ -565,13 +579,13 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         </div>
         <div class="form-actions auth-actions">
           <button class="btn btn-primary" type="submit" id="auth-submit">Entrar no Oficlaro</button>
-          <div class="auth-switch">
+          <div class="auth-switch" id="auth-switch-container">
             <span id="auth-toggle-text">Ainda não tem uma conta?</span> <a href="#" id="auth-toggle-link">Criar conta</a>
           </div>
         </div>
       </form>
     </div>
-    <aside class="setup-aside">
+    <aside class="setup-aside" id="auth-aside">
       <div class="setup-aside-content"><span class="eyebrow">Operação sob controle</span><h2>Clareza para sua oficina. Confiança para seus clientes.</h2>
       <p>Centralize atendimentos, acompanhe cada etapa e mantenha seus clientes informados em uma experiência profissional.</p>
       <div class="setup-points"><div class="setup-point"><strong>Uma visão</strong><span>Toda a operação</span></div><div class="setup-point"><strong>Em tempo real</strong><span>Dados sincronizados</span></div><div class="setup-point"><strong>Mais confiança</strong><span>Acompanhamento público</span></div></div></div>
@@ -603,7 +617,27 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     </div>
   </main>
 
-  <!-- APLICAÇÃO PRINCIPAL (OFICINA - ADMIN) -->
+  <!-- APP DO MECÂNICO (MÓDULO DOS MECÂNICOS) -->
+  <main id="mechanic-app" class="hidden">
+    <header class="mechanic-header">
+      <div>
+        <span class="brand-name">Área do Mecânico</span>
+        <div style="font-size:10px; color:#a9b9cb" id="mechanic-workshop-name">Oficina</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" style="color:#fff" data-action="logout-mechanic">Sair</button>
+    </header>
+    <div class="mechanic-content" id="mechanic-content-area">
+      <!-- Injetado por JS (Dashboard ou OS View) -->
+    </div>
+  </main>
+
+  <!-- OVERLAY DE SCANNER QR (USADO PELO MECÂNICO) -->
+  <div id="qr-scanner-overlay" class="hidden">
+    <button class="scanner-close" id="btn-close-scanner">Fechar Câmera</button>
+    <div id="qr-reader"></div>
+  </div>
+
+  <!-- APLICAÇÃO PRINCIPAL (OFICINA - GESTOR) -->
   <div id="app" class="app hidden">
     <a class="skip" href="#main">Ir para o conteúdo principal</a>
     <button class="menu-scrim" data-action="close-menu" aria-label="Fechar menu"></button>
@@ -618,7 +652,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         <button data-view="clients" data-tooltip="Clientes"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 20v-1.5a4.5 4.5 0 0 0-4.5-4.5h-3A4.5 4.5 0 0 0 4 18.5V20M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7-1a3 3 0 0 1 0 6m2.5 5v-1a4 4 0 0 0-2.7-3.8"/></svg></span><span>Clientes</span></button>
         <button data-view="vehicles" data-tooltip="Veículos"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 11 1.6-4.2A2 2 0 0 1 8.5 5h7a2 2 0 0 1 1.9 1.4L19 11m-15 0h16a1 1 0 0 1 1 1v5H3v-5a1 1 0 0 1 1-1Zm2 6v2m12-2v2M7 14h.01M17 14h.01"/></svg></span><span>Veículos</span></button>
         <button data-view="orders" data-tooltip="Ordens de serviço"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5h10v16H5V5h4Zm0 0V3h6v2M8 10h8M8 14h8M8 18h5"/></svg></span><span>Ordens de serviço</span></button>
-        <button data-view="team" data-tooltip="Equipe"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span>Equipe</span></button>
+        <button data-view="team" data-tooltip="Equipe"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span>Equipe (Mecânicos)</span></button>
         <button data-view="backup" data-tooltip="Configurações"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg></span><span>Configurações</span></button>
       </nav>
       <div class="sidebar-bottom">
@@ -639,50 +673,16 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     </section>
   </div>
   
-  <!-- TELA DO MECÂNICO (ACESSO E APP) -->
-  <section id="mechanic-login-view" class="setup hidden">
-    <div class="setup-form" style="margin:auto; min-height:auto; max-width:440px; padding:40px 20px;">
-      <div style="text-align:center; margin-bottom:30px">
-        <div class="empty-icon" style="background:var(--brand-950); color:#fff; width:64px; height:64px; margin:0 auto 16px"><svg viewBox="0 0 24 24" style="width:28px;height:28px" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
-        <h1 style="font-size:24px">Área do Mecânico</h1>
-        <p id="mech-login-workshop" style="color:var(--text-muted); font-size:14px; margin-top:4px">Oficina</p>
-      </div>
-      <form id="mechanic-login-form" class="form-grid stack">
-        <input type="hidden" id="mech-login-email" name="email">
-        <div class="field full">
-          <label for="mech-login-pin" style="text-align:center">Digite seu PIN de acesso (6 dígitos)</label>
-          <input id="mech-login-pin" type="password" name="pin" required minlength="6" maxlength="6" inputmode="numeric" placeholder="******" style="text-align:center; font-size:24px; letter-spacing:8px">
-        </div>
-        <div class="form-actions" style="justify-content:center; margin-top:10px">
-          <button class="btn btn-primary" type="submit" style="width:100%; min-height:54px; font-size:16px">Entrar</button>
-        </div>
-      </form>
-    </div>
-  </section>
-
-  <main id="mechanic-app" class="mechanic-app hidden">
-    <header class="mech-header">
-      <div>
-        <h1>Área do Mecânico</h1>
-        <div style="font-size:12px; color:#a9b9cb" id="mech-user-name">Carregando...</div>
-      </div>
-      <button class="mech-logout" data-action="mechanic-logout">Sair</button>
-    </header>
-    <div id="mech-main" class="mech-body">
-      <!-- Injetado por JS (Dashboard ou OS) -->
-    </div>
-  </main>
-
   <dialog id="modal" aria-modal="true"></dialog>
   <input id="import-file" type="file" accept="application/json,.json" hidden>
   <input id="logo-upload" type="file" accept="image/png, image/jpeg, image/webp" hidden>
-  <input id="mech-photo-upload" type="file" accept="image/*" capture="environment" hidden>
   <div id="toasts" class="toast-region" aria-live="polite"></div>
 
   <script>
     "use strict";
     if("scrollRestoration" in history) history.scrollRestoration="manual";
     
+    // Configuração de Menu Recolhido (Desktop)
     if(localStorage.getItem("oficlaroSidebarCollapsed") === "true") {
       document.body.classList.add("sidebar-collapsed");
     }
@@ -709,25 +709,26 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     // ---------------------------------------------------------
     const STATUS={RECEIVED:"Veículo recebido",DIAGNOSING:"Em diagnóstico",DIAGNOSED:"Diagnóstico concluído",AWAITING_APPROVAL:"Aguardando aprovação",WAITING_PARTS:"Aguardando peça",IN_PROGRESS:"Serviço em execução",FINAL_TESTS:"Testes finais",READY:"Veículo pronto",DELIVERED:"Entregue",CANCELLED:"Cancelado"};
     const STATUS_TONE={RECEIVED:"info",DIAGNOSING:"warning",DIAGNOSED:"info",AWAITING_APPROVAL:"warning",WAITING_PARTS:"warning",IN_PROGRESS:"info",FINAL_TESTS:"info",READY:"success",DELIVERED:"success",CANCELLED:"danger"};
-    const TECH_STATUS={PENDING:"Aguardando diagnóstico", IN_DIAGNOSIS:"Em diagnóstico", DIAGNOSIS_DONE:"Diagnóstico concluído", IN_SERVICE:"Em execução", FINAL_TESTS:"Testes finais", TECHNICALLY_DONE:"Concluído tecnicamente"};
-    const TECH_STATUS_TONE={PENDING:"warning", IN_DIAGNOSIS:"info", DIAGNOSIS_DONE:"success", IN_SERVICE:"info", FINAL_TESTS:"warning", TECHNICALLY_DONE:"success"};
+    
+    // Novos status técnicos para o Mecânico
+    const TECH_STATUS={PENDING:"Aguardando diagnóstico",IN_DIAGNOSIS:"Em diagnóstico",DIAGNOSIS_DONE:"Diagnóstico enviado",RETURNED:"Devolvido para revisão",IN_SERVICE:"Em serviço",TECHNICAL_TEST:"Testes finais",TECHNICALLY_DONE:"Concluído tecnicamente"};
+    const PAYMENT_METHODS={PIX:"PIX",CASH:"Dinheiro",DEBIT_CARD:"Cartão de débito",CREDIT_CARD:"Cartão de crédito",TRANSFER:"Transferência",OTHER:"Outro"};
+
     const DECISION={PENDING:"Pendente",APPROVED:"Aprovado",REJECTED:"Recusado"};
-    const TITLES={dashboard:"Visão geral",clients:"Clientes",vehicles:"Veículos",orders:"Ordens de serviço",team:"Equipe",backup:"Configurações","order-detail":"Detalhes da ordem"};
-    const fresh=()=>({version:2,workshop:{},clients:[],vehicles:[],orders:[],mechanics:[],counter:0,updatedAt:Date.now()});
+    const TITLES={dashboard:"Visão geral",clients:"Clientes",vehicles:"Veículos",orders:"Ordens de serviço",team:"Equipe (Mecânicos)",backup:"Configurações","order-detail":"Detalhes da ordem"};
+    const fresh=()=>({version:3,workshop:{pix:{type:"",key:"",holderName:""}},clients:[],vehicles:[],orders:[],mechanics:[],counter:0,updatedAt:0});
     
     let state=fresh(), view="dashboard", selectedOrder=null, search="", searchOwner="", currentUser=null, pendingCheckins=[];
     let clientFilter = "ALL", osFilter = "ALL", vehicleFilter = "ACTIVE";
     let activeOrderListener = null;
-    let adminEventsListener = null;
+    let mechanicSignalListener = null;
+    let checkinListener = null;
+    let mechanicOrdersListener = null;
+    let publicListener = null;
+    let authContextNonce = 0;
+    let requiresProjectionSync = false;
     let knownCheckins = new Set();
     
-    // Variáveis Módulo Mecânico
-    let isMechanicMode = false;
-    let mechanicAdminUid = null;
-    let mechanicActiveOrders = {};
-    let mechanicIndexListener = null;
-    let mechanicOrdersListeners = {};
-
     const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
     const uid=()=>currentUser?.uid;
 
@@ -751,22 +752,21 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       edit:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16-.5 4.5L8 20l11-11-4-4L4 16ZM13.5 6.5l4 4"/></svg>',
       close:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>',
       qr:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h7v7h-7zM14 17h7M17 14v7"/></svg>',
-      pen:'<svg class="icon" viewBox="0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
-      camera:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
-      wrench:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>'
+      pen:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+      camera:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'
     };
     const icon=name=>ICONS[name]||"";
     
     function getLogoHTML(workshop, dark=false){
-      const name = workshop?.name || "Oficlaro";
-      if(workshop?.logoUrl) {
-        return `<span class="brand ${dark?"brand-dark":""}"><span class="logo-mark"><img src="${esc(workshop.logoUrl)}" alt="Logo ${esc(name)}"></span><span class="brand-copy"><span class="brand-name">${esc(name)}</span><span class="brand-tagline">Powered by Oficlaro</span></span></span>`;
+      const name = workshop?.name || workshop?.workshopName || "Oficlaro", logoUrl=workshop?.logoUrl||workshop?.workshopLogo||"";
+      if(logoUrl) {
+        return `<span class="brand ${dark?"brand-dark":""}"><span class="logo-mark"><img src="${esc(logoUrl)}" alt="Logo ${esc(name)}"></span><span class="brand-copy"><span class="brand-name">${esc(name)}</span><span class="brand-tagline">Powered by Oficlaro</span></span></span>`;
       }
       return `<span class="brand ${dark?"brand-dark":""}"><span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M22.5 7.5a10.5 10.5 0 1 0 0 17" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M23 12.5h-5.2a4.5 4.5 0 1 0 0 9H23" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" opacity=".55"/></svg></span><span class="brand-copy"><span class="brand-name">${esc(name==="Oficlaro"?"Oficlaro":name)}</span><span class="brand-tagline">${name==="Oficlaro"?"Gestão para oficinas":"Powered by Oficlaro"}</span></span></span>`;
     }
 
     function generateToken(){
-      if(typeof crypto!=="undefined"&&crypto.randomUUID) return crypto.randomUUID();
+      if(typeof crypto!=="undefined"&&crypto.randomUUID) return crypto.randomUUID().replace(/-/g,'');
       if(typeof crypto!=="undefined"&&crypto.getRandomValues){const bytes=new Uint8Array(24);crypto.getRandomValues(bytes);return "pub_"+[...bytes].map(b=>b.toString(16).padStart(2,"0")).join("");}
       return "pub_"+Math.random().toString(36).substring(2,15)+Date.now().toString(36);
     }
@@ -779,7 +779,8 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     function toast(m,t="success"){ const n=document.createElement("div");n.className=`toast ${t}`;n.textContent=m;$("#toasts").append(n);setTimeout(()=>n.remove(),4200); }
     function getPublicLink(token){const url=new URL(window.location.href);url.search="";url.hash="";url.searchParams.set("acompanhar",token);return url.toString();}
     function getCheckinLink(token){const url=new URL(window.location.href);url.search="";url.hash="";url.searchParams.set("checkin",token);return url.toString();}
-    function getOSQRLink(orderId){const url=new URL(window.location.href);url.search="";url.hash="";url.searchParams.set("os_qr",orderId);return url.toString();}
+    function getMechanicInviteLink(token){const url=new URL(window.location.href);url.search="";url.hash="";url.searchParams.set("invite",token);return url.toString();}
+    function getMechanicOSLink(osId){const url=new URL(window.location.href);url.search="";url.hash="";url.searchParams.set("os",osId);return url.toString();}
     function initials(name=""){return name.trim().split(/\s+/).slice(0,2).map(part=>part[0]).join("").toUpperCase()||"OF";}
     function vehicleName(v){return v?[v.brand,v.model].filter(Boolean).join(" ")||"Veículo":"Veículo removido";}
     function statusStep(status){const groups=[['RECEIVED'],['DIAGNOSING','DIAGNOSED'],['AWAITING_APPROVAL','WAITING_PARTS'],['IN_PROGRESS','FINAL_TESTS'],['READY','DELIVERED']];const found=groups.findIndex(group=>group.includes(status));return status==='CANCELLED'?0:Math.max(0,found);}
@@ -788,138 +789,151 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     function clientOf(id){return state.clients.find(x=>x.id===id)} 
     function vehicleOf(id){return state.vehicles.find(x=>x.id===id)} 
     function orderOf(id){return state.orders.find(x=>x.id===id)}
+    function mechanicOf(id){return state.mechanics.find(x=>x.id===id)}
+
+    function normalizeState(raw){
+      const base=fresh(), source=raw&&typeof raw==="object"?raw:{};
+      const normalized={...base,...source,version:3};
+      normalized.workshop={...base.workshop,...(source.workshop||{})};
+      normalized.workshop.pix={...base.workshop.pix,...(source.workshop?.pix||{})};
+      normalized.clients=(Array.isArray(source.clients)?source.clients:Object.values(source.clients||{})).filter(Boolean);
+      normalized.vehicles=(Array.isArray(source.vehicles)?source.vehicles:Object.values(source.vehicles||{})).filter(Boolean).map(v=>({...v,brand:v.brand||"",model:v.model||"",year:v.year||"",mileage:Number(v.mileage||0)}));
+      normalized.mechanics=(Array.isArray(source.mechanics)?source.mechanics:Object.values(source.mechanics||{})).filter(Boolean).map(m=>({...m,active:m.active!==false}));
+      normalized.orders=(Array.isArray(source.orders)?source.orders:Object.values(source.orders||{})).filter(Boolean).map(o=>{
+        const items=(Array.isArray(o.estimate?.items)?o.estimate.items:Object.values(o.estimate?.items||{})).filter(Boolean).map(i=>({...i,id:i.id||id("itm"),qty:Math.max(1,Number(i.qty||1)),unitCents:Number(i.unitCents??i.price??0),decision:i.decision||"PENDING"}));
+        const timeline=(Array.isArray(o.timeline)?o.timeline:Object.values(o.timeline||{})).filter(Boolean).map(t=>({...t,id:t.id||id("evt"),visibility:t.visibility||"PUBLIC"}));
+        const diagnosis=o.diagnosis?{status:o.diagnosis.status||(o.technicalStatus==="DIAGNOSIS_DONE"?"PENDING_REVIEW":"DRAFT"),...o.diagnosis}:null;
+        return {...o,publicToken:o.publicToken||generateToken(),osToken:o.osToken||generateToken(),estimate:{...(o.estimate||{}),items},payments:(Array.isArray(o.payments)?o.payments:Object.values(o.payments||{})).filter(Boolean),timeline,mechanicIds:(o.mechanicIds||[]).filter(Boolean),technicalNotes:(o.technicalNotes||[]).filter(Boolean),diagnosticMedia:(o.diagnosticMedia||[]).filter(Boolean),technicalRecommendations:(o.technicalRecommendations||[]).filter(Boolean),technicalStatus:o.technicalStatus||"PENDING",showPix:o.showPix===true,diagnosis};
+      });
+      normalized.counter=Number(normalized.counter||0);
+      return normalized;
+    }
+
+    function firebaseErrorMessage(err){
+      const messages={"auth/invalid-email":"Informe um e-mail válido.","auth/user-not-found":"Conta não encontrada.","auth/wrong-password":"E-mail ou senha incorretos.","auth/invalid-login-credentials":"E-mail ou senha incorretos.","auth/too-many-requests":"Muitas tentativas. Aguarde e tente novamente.","auth/network-request-failed":"Falha de conexão. Verifique sua internet.","auth/email-already-in-use":"Este e-mail já possui uma conta.","auth/weak-password":"Use uma senha com pelo menos 6 caracteres.","auth/operation-not-allowed":"Este método de acesso não está habilitado."};
+      return messages[err?.code]||"Não foi possível concluir. Tente novamente.";
+    }
+
+    function orderServiceAt(o){return Number(o?.createdAt||0)}
+    function getClientLastService(clientId){return state.orders.filter(o=>o.clientId===clientId).sort((a,b)=>orderServiceAt(b)-orderServiceAt(a))[0]||null}
+    function pushTimeline(o,text,visibility="INTERNAL"){o.timeline=o.timeline||[];o.timeline.push({id:id("evt"),text,at:Date.now(),visibility});}
+    function cleanupAdminListeners(){cleanupOrderListener();if(checkinListener){checkinListener.ref.off("value",checkinListener.cb);checkinListener=null;}if(mechanicSignalListener){mechanicSignalListener.ref.off("child_added",mechanicSignalListener.cb);mechanicSignalListener=null;}knownCheckins.clear();}
+    function cleanupMechanicListeners(){if(mechanicOrdersListener){mechanicOrdersListener.ref.off("value",mechanicOrdersListener.cb);mechanicOrdersListener=null;}}
+    function cleanupPublicListeners(){if(publicListener){publicListener.forEach(x=>x.ref.off("value",x.cb));publicListener=null;}}
+    function cleanupAllListeners(){cleanupAdminListeners();cleanupMechanicListeners();cleanupPublicListeners();}
     
     function cleanupOrderListener() {
         if(activeOrderListener) {
-            db.ref(`publicOrders/${activeOrderListener.token}/items`).off('value', activeOrderListener.cb);
+            activeOrderListener.ref.off('value', activeOrderListener.cb);
             activeOrderListener = null;
         }
     }
 
     // ---------------------------------------------------------
-    // PERSISTÊNCIA E SINCRONIZAÇÃO DA OFICINA
+    // PERSISTÊNCIA E SINCRONIZAÇÃO
     // ---------------------------------------------------------
-    async function loadState(){
-      if(!uid()) return fresh();
-      try {
-        const snap = await db.ref(`workshops/${uid()}`).once('value');
-        const val = snap.val();
-        if(val && val.version >= 1){
-          val.clients = (val.clients || []).filter(Boolean);
-          val.vehicles = (val.vehicles || []).filter(Boolean).map(v=>({...v,brand:v.brand||"",model:v.model||"",year:v.year||"",mileage:Number(v.mileage||0)}));
-          val.mechanics = (val.mechanics || []).filter(Boolean);
-          val.orders = (val.orders || []).filter(Boolean);
-          val.orders.forEach(o => {
-            o.mechanicIds = o.mechanicIds || [];
-            o.techStatus = o.techStatus || 'PENDING';
-            o.technicalNotes = o.technicalNotes || [];
-            o.diagnosticMedia = o.diagnosticMedia || [];
-            o.recommendedItems = o.recommendedItems || [];
-            o.payments = o.payments || [];
-            o.timeline = o.timeline || [];
-            o.estimate = o.estimate || {items:[]};
-            o.estimate.items = o.estimate.items || [];
-            o.showPix = Boolean(o.showPix);
-            if(!o.publicToken) o.publicToken = generateToken();
-          });
-          val.workshop = val.workshop || {};
-          val.workshop.pix = val.workshop.pix || {type:"", key:"", holderName:""};
-          if(!val.workshop.publicCheckinToken) {
-            val.workshop.publicCheckinToken = generateToken();
-          }
-          return val;
-        }
-        return fresh();
-      } catch(e) {
-        toast("Erro ao ler dados. Verifique sua conexão.", "error");
-        console.error(e);
-        return fresh();
-      }
+    async function loadState(uidParam){
+      const u=uidParam||uid();if(!u)return fresh();
+      try{const raw=(await db.ref(`workshops/${u}`).once("value")).val();requiresProjectionSync=Boolean(raw&&(Number(raw.version||0)<3||Object.values(raw.orders||{}).some(o=>o&&!o.osToken)));return normalizeState(raw);}
+      catch(e){console.error(e);toast("Erro ao ler dados. Verifique sua conexão.","error");return fresh();}
     }
-    
-    async function saveState(){
-      if(!uid()) return;
-      state.updatedAt = Date.now();
-      await db.ref(`workshops/${uid()}`).set(state);
-      
-      // Sincronizar dados para a área dos mecânicos
-      const mechanicSyncUpdates = {};
-      const mechanicIndexUpdates = {};
-      state.mechanics.forEach(m => mechanicIndexUpdates[m.id] = {});
-      
-      state.orders.forEach(o => {
-        if(!['DELIVERED','CANCELLED'].includes(o.status) && o.mechanicIds?.length > 0) {
-          const c = clientOf(o.clientId);
-          const v = vehicleOf(o.vehicleId);
-          mechanicSyncUpdates[o.id] = {
-            id: o.id, number: o.number, status: o.status, techStatus: o.techStatus,
-            complaint: o.complaint, diagnosis: o.diagnosis || null,
-            recommendedItems: o.recommendedItems || [],
-            diagnosticMedia: o.diagnosticMedia || [],
-            technicalNotes: o.technicalNotes || [],
-            mechanicIds: o.mechanicIds,
-            clientName: c ? c.name : 'Cliente',
-            vehicle: v ? {plate: v.plate, brand: v.brand, model: v.model, year: v.year, mileage: v.mileage} : null
-          };
-          o.mechanicIds.forEach(mId => {
-            if(mechanicIndexUpdates[mId]) mechanicIndexUpdates[mId][o.id] = true;
-          });
-        } else {
-          mechanicSyncUpdates[o.id] = null; // Remove se estiver concluída ou sem mecânico
-        }
-      });
-      await db.ref(`mechanic_orders/${uid()}`).update(mechanicSyncUpdates);
-      await db.ref(`mechanic_indexes/${uid()}`).set(mechanicIndexUpdates);
+
+    async function saveState(uidParam){
+      const u=uidParam||uid();if(!u||isMechanicMode)throw new Error("unauthorized_state_write");
+      state.updatedAt=Date.now();state.version=3;
+      await db.ref(`workshops/${u}`).update(state);
     }
+
+    async function persistOrder(o){
+      const index=state.orders.findIndex(x=>x.id===o.id);if(index<0)throw new Error("order_not_found");
+      o.updatedAt=Date.now();state.updatedAt=o.updatedAt;
+      await db.ref(`workshops/${uid()}`).update({[`orders/${index}`]:o,updatedAt:state.updatedAt,version:3});
+      await Promise.all([syncPublicOrder(o.id),publishMechanicOrder(o)]);
+    }
+
+    async function persistCollectionItem(collection,item){
+      const list=state[collection],index=list.findIndex(x=>x.id===item.id);if(index<0)throw new Error("item_not_found");
+      state.updatedAt=Date.now();
+      await db.ref(`workshops/${uid()}`).update({[`${collection}/${index}`]:item,updatedAt:state.updatedAt,version:3});
+    }
+
+    async function persistWorkshop(){state.updatedAt=Date.now();await db.ref(`workshops/${uid()}`).update({workshop:state.workshop,updatedAt:state.updatedAt,version:3});}
+    async function persistNewOrderData(client,vehicle,order){state.updatedAt=Date.now();const ci=state.clients.findIndex(x=>x.id===client.id),vi=state.vehicles.findIndex(x=>x.id===vehicle.id),oi=state.orders.findIndex(x=>x.id===order.id);await db.ref(`workshops/${uid()}`).update({[`clients/${ci}`]:client,[`vehicles/${vi}`]:vehicle,[`orders/${oi}`]:order,counter:state.counter,updatedAt:state.updatedAt,version:3});}
+
+    function mechanicProjection(o){
+      const v=vehicleOf(o.vehicleId),assigned=(o.mechanicIds||[]).map(mechanicOf).filter(m=>m?.active&&m.authUid);
+      return {orderId:o.id,osToken:o.osToken,number:o.number,workshopId:uid(),workshopName:state.workshop.name||"Oficina",assignedUids:Object.fromEntries(assigned.map(m=>[m.authUid,true])),vehicle:{name:vehicleName(v),plate:v?.plate||"",year:v?.year||"",mileage:Number(o.mileage||v?.mileage||0)},complaint:o.complaint||"",status:o.status,technicalStatus:o.technicalStatus||"PENDING",diagnosis:o.diagnosis||null,technicalNotes:o.technicalNotes||[],technicalRecommendations:o.technicalRecommendations||[],diagnosticMedia:o.diagnosticMedia||[],updatedAt:o.updatedAt||Date.now()};
+    }
+
+    async function publishMechanicOrder(o){if(!uid()||isMechanicMode)return;const projection=mechanicProjection(o),baseRef=db.ref(`mechanicOrders/${uid()}/${o.id}`),previous=(await baseRef.child("assignedUids").once("value")).val()||{},updates={};for(const userUid of new Set([...Object.keys(previous),...Object.keys(projection.assignedUids)]))updates[`mechanicInbox/${uid()}/${userUid}/${o.id}`]=projection.assignedUids[userUid]&&!['DELIVERED','CANCELLED'].includes(o.status)?projection:null;updates[`mechanicOrders/${uid()}/${o.id}`]=projection;updates[`mechanicOrderTokens/${o.osToken}`]={workshopId:uid(),orderId:o.id,active:!['DELIVERED','CANCELLED'].includes(o.status)};await db.ref().update(updates);}
 
     async function syncPublicOrder(orderId){
-      const o = orderOf(orderId);
-      if(!o || !o.publicToken) return;
-      const c = clientOf(o.clientId);
-      const v = vehicleOf(o.vehicleId);
-      const diagnosisPublic = (o.diagnosis && o.diagnosis.status === 'APPROVED') ? { title: o.diagnosis.title||'Diagnóstico', description: o.diagnosis.description } : null;
-      
-      const publicData = {
-        ownerUid: uid(),
-        workshopName: state.workshop.name,
-        workshopPhone: state.workshop.phone,
-        workshopLogo: state.workshop.logoUrl || null,
-        pix: (o.showPix && state.workshop.pix?.key) ? state.workshop.pix : null,
-        customerFirstName: c ? c.name.split(' ')[0] : 'Cliente',
-        orderNumber: o.number,
-        vehicleStr: v ? vehicleName(v) : 'Veículo',
-        plateMasked: v && v.plate ? `${v.plate.slice(0,3)}${"•".repeat(Math.max(2,v.plate.length-5))}${v.plate.slice(-2)}` : '•••••••',
-        status: o.status,
-        expectedAt: o.expectedAt || null,
-        complaint: o.complaint,
-        diagnosis: diagnosisPublic,
-        items: (o.estimate?.items||[]).map((i, idx)=>({ idx, desc:i.description, qty:i.qty, price:i.unitCents, decision:i.decision })),
-        timeline: (o.timeline||[]).map(t=>({ text:t.text, at:t.at })),
-        updatedAt: o.updatedAt
-      };
-      await db.ref(`publicOrders/${o.publicToken}`).set(publicData);
+      if(isMechanicMode)return;
+      const o=orderOf(orderId);if(!o?.publicToken)return;
+      const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId);
+      const publicData={workshopName:state.workshop.name||"Oficina",workshopPhone:state.workshop.phone||"",workshopLogo:state.workshop.logoUrl||null,pix:o.showPix===true&&state.workshop.pix?.key?state.workshop.pix:null,customerFirstName:c?.name?.split(" ")[0]||"Cliente",orderNumber:o.number,vehicleStr:vehicleName(v),plateMasked:v?.plate?`${v.plate.slice(0,3)}${"•".repeat(Math.max(2,v.plate.length-5))}${v.plate.slice(-2)}`:"•••••••",status:o.status,expectedAt:o.expectedAt||null,complaint:o.complaint||"",diagnosis:o.diagnosis?.status==="APPROVED"&&o.diagnosis.clientDescription?{title:o.diagnosis.title||"Diagnóstico",description:o.diagnosis.clientDescription}:null,items:Object.fromEntries((o.estimate?.items||[]).map(i=>[i.id,{itemId:i.id,desc:i.description,qty:i.qty,price:i.unitCents}])),timeline:Object.fromEntries((o.timeline||[]).filter(t=>t.visibility==="PUBLIC").map(t=>[t.id,{text:t.text,at:t.at}])),updatedAt:o.updatedAt||Date.now()};
+      await db.ref(`publicOrderOwners/${o.publicToken}`).set(uid());
+      await db.ref(`publicOrders/${o.publicToken}`).update(publicData);
     }
 
-    function setupCheckinListener() {
-      if(!state.workshop?.publicCheckinToken) return;
-      db.ref(`publicCheckins/${state.workshop.publicCheckinToken}`).on('value', snap => {
-        pendingCheckins = [];
-        let newlyArrived = false;
-        snap.forEach(child => {
-          const val = {id: child.key, ...child.val()};
-          pendingCheckins.push(val);
-          if(!knownCheckins.has(child.key)) {
-            knownCheckins.add(child.key);
-            newlyArrived = true;
-          }
-        });
-        if(newlyArrived && state.updatedAt) toast("Novo check-in recebido na recepção!", "info");
-        if(view === 'dashboard') render();
+    async function applyMechanicEvent(eventId,event){
+      if(event.type==="MECHANIC_CLAIMED"){
+        const m=mechanicOf(event.mechanicId);if(m&&!m.authUid){m.authUid=event.userUid;m.updatedAt=Date.now();await persistCollectionItem("mechanics",m);for(const o of state.orders.filter(x=>(x.mechanicIds||[]).includes(m.id)))await publishMechanicOrder(o);}
+        await db.ref(`mechanic_events/${uid()}/${eventId}`).update({processedAt:Date.now()});return;
+      }
+      const index=state.orders.findIndex(o=>o.id===event.orderId);if(index<0)return;
+      const ref=db.ref(`workshops/${uid()}/orders/${index}`);
+      let applied=false;
+      await ref.transaction(raw=>{
+        if(!raw||raw.appliedEventIds?.[eventId])return;
+        const o=normalizeState({orders:[raw]}).orders[0];o.appliedEventIds={...(o.appliedEventIds||{}),[eventId]:true};
+        const p=event.payload||{},at=Number(event.at||Date.now());
+        if(event.type==="TECH_STATUS"&&["IN_DIAGNOSIS","IN_SERVICE","TECHNICAL_TEST","TECHNICALLY_DONE"].includes(p.status)){o.technicalStatus=p.status;pushTimeline(o,`Status técnico: ${TECH_STATUS[p.status]}`,"INTERNAL");}
+        if(event.type==="DIAGNOSIS_SAVE"){o.diagnosis={...(o.diagnosis||{}),...p,status:p.finalize?"PENDING_REVIEW":"DRAFT",mechanicId:event.mechanicId,updatedAt:at};if(p.finalize)o.technicalStatus="DIAGNOSIS_DONE";pushTimeline(o,p.finalize?"Diagnóstico enviado para revisão":"Rascunho técnico atualizado","INTERNAL");}
+        if(event.type==="NOTE_ADD"&&!o.technicalNotes.some(n=>n.id===p.id))o.technicalNotes.push({...p,mechanicId:event.mechanicId,at});
+        if(event.type==="RECOMMENDATION_ADD"&&!o.technicalRecommendations.some(r=>r.id===p.id))o.technicalRecommendations.push({...p,mechanicId:event.mechanicId,addedAt:at});
+        if(event.type==="PHOTO_ADD"&&!o.diagnosticMedia.some(m=>m.id===p.id))o.diagnosticMedia.push({...p,mechanicId:event.mechanicId,at,isPublic:false});
+        o.updatedAt=at;applied=true;return o;
       });
+      await db.ref(`mechanic_events/${uid()}/${eventId}`).update({processedAt:Date.now()});
+      if(applied){state=await loadState();const o=orderOf(event.orderId);if(o){await Promise.all([syncPublicOrder(o.id),publishMechanicOrder(o)]);}toast("Atualização técnica recebida.","info");if(view!=="order-detail")render();}
+    }
+
+    function setupAdminEventsListener(){
+      if(mechanicSignalListener||!uid())return;const ref=db.ref(`mechanic_events/${uid()}`).orderByChild("at").startAt(Date.now()-30*24*60*60*1000);
+      const cb=snap=>{const event=snap.val();if(event&&!event.processedAt)applyMechanicEvent(snap.key,event).catch(console.error);};ref.on("child_added",cb);mechanicSignalListener={ref,cb};
+    }
+
+    function setupCheckinListener(){
+      cleanupAdminListeners();setupAdminEventsListener();const token=state.workshop?.publicCheckinToken;if(!token)return;const ref=db.ref(`publicCheckins/${token}`);let initialized=false;
+      const cb=snap=>{const next=[];snap.forEach(child=>next.push({id:child.key,...child.val()}));const nextIds=new Set(next.map(x=>x.id));if(initialized&&next.some(x=>!knownCheckins.has(x.id)))toast("Novo check-in recebido na recepção!","info");pendingCheckins=next;knownCheckins=nextIds;initialized=true;if(view==="dashboard"&&currentUser)render();};ref.on("value",cb);checkinListener={ref,cb};
+    }
+
+    // Comprometimento de Imagens do Mecânico
+    function compressImage(file, callback) {
+      const reader = new FileReader();
+      reader.onload = e => {
+          const img = new Image();
+          img.onload = () => {
+              const canvas = document.createElement('canvas');
+              const MAX_WIDTH = 1000; // Limite razoável para evidências
+              let scaleSize = 1;
+              if (img.width > MAX_WIDTH) {
+                  scaleSize = MAX_WIDTH / img.width;
+              }
+              canvas.width = img.width * scaleSize;
+              canvas.height = img.height * scaleSize;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              canvas.toBlob(callback, 'image/jpeg', 0.8);
+          };
+          img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
 
     // ---------------------------------------------------------
-    // ROTEAMENTO E AUTH
+    // ROTEAMENTO INICIAL E AUTH
     // ---------------------------------------------------------
     let isLoginMode = true;
     function toggleAuthMode(e){
@@ -932,9 +946,10 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       $("#auth-toggle-link").textContent = isLoginMode ? "Criar conta" : "Fazer login";
       $("#auth-password").setAttribute("autocomplete",isLoginMode?"current-password":"new-password");
     }
-    $("#auth-toggle-link").addEventListener("click", toggleAuthMode);
+    $("#auth-toggle-link")?.addEventListener("click", toggleAuthMode);
+    function initMechanicLoginUI(){isLoginMode=true;const form=$("#auth-form, #mechanic-login-form");if(!form)return;form.id="mechanic-login-form";$("#auth-title").textContent="Área do Mecânico";$("#auth-desc").textContent="Entre com o e-mail e a senha ativados pelo convite da oficina.";$("#auth-submit").textContent="Entrar na área técnica";$("#auth-switch-container").classList.add("hidden");}
 
-    $("#auth-forgot").addEventListener("click", async (e) => {
+    $("#auth-forgot")?.addEventListener("click", async (e) => {
         e.preventDefault();
         const email = $("#auth-email").value.trim();
         if(!email) return toast("Preencha seu e-mail acima para recuperar a senha.", "warning");
@@ -952,89 +967,70 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         }
     });
 
+    // Variáveis globais do mecânico
+    let isMechanicMode = false;
+    let currentMechanicInfo = null;
+    let mechanicSelectedOrder = null;
+
     auth.onAuthStateChanged(async (user) => {
+      const nonce=++authContextNonce;cleanupAllListeners();
       const urlParams = new URLSearchParams(window.location.search);
       const isPublicTracking = urlParams.has('acompanhar');
       const isPublicCheckin = urlParams.has('checkin');
-      const isMechanicLoginUrl = urlParams.has('mecanico_login');
-      const isOSQR = urlParams.has('os_qr');
+      const inviteToken = urlParams.has('invite');
+      const mechanicLogin = urlParams.has('equipe');
       
-      if (isPublicTracking) {
-        initPublicTracking(urlParams.get('acompanhar'));
-        return;
-      }
-      if (isPublicCheckin) {
-        initPublicCheckin(urlParams.get('checkin'));
-        return;
-      }
-      if (isMechanicLoginUrl && !user) {
-        initMechanicLoginUI(urlParams);
-        return;
-      }
+      if (isPublicTracking) { initPublicTracking(urlParams.get('acompanhar')); return; }
+      if (isPublicCheckin) { initPublicCheckin(urlParams.get('checkin')); return; }
+      if (inviteToken) { initMechanicInvite(urlParams.get('invite'),user); return; }
       
       if (user) {
         currentUser = user;
-        
-        // Verifica se é Mecânico (pela convenção do e-mail criado)
-        if (user.email && user.email.startsWith('mechanic_')) {
-            isMechanicMode = true;
-            $("#auth-view").classList.add("hidden");
-            $("#mechanic-login-view").classList.add("hidden");
-            try {
-                const snap = await db.ref(`mechanic_workshop_map/${user.uid}`).once('value');
-                mechanicAdminUid = snap.val();
-                if(!mechanicAdminUid) throw new Error("Oficina não encontrada.");
-                initMechanicApp(isOSQR ? urlParams.get('os_qr') : null);
-            } catch(e) {
-                toast("Erro ao carregar acesso. Contate o gestor.", "error");
-                auth.signOut();
-            }
-            return;
-        }
-
-        // Se for ADMIN
-        isMechanicMode = false;
         $("#auth-view").classList.add("hidden");
-        $("#mechanic-login-view").classList.add("hidden");
-        state = await loadState();
-        if(!state.workshop?.name) {
-          $("#setup").classList.remove("hidden");
+        
+        let userDoc=(await db.ref(`userRoles/${user.uid}`).once('value')).val();
+        if(nonce!==authContextNonce)return;
+        if(!userDoc){userDoc={role:"ADMIN",workshopId:user.uid,active:true,createdAt:Date.now()};await db.ref(`userRoles/${user.uid}`).set(userDoc);}
+
+        if (userDoc.role === 'MECHANIC' && userDoc.active !== false) {
+          isMechanicMode = true;
+          currentMechanicInfo = userDoc;
+          initMechanicApp();
+        } else if(userDoc.role === "ADMIN" && userDoc.workshopId===user.uid && userDoc.active!==false) {
+          isMechanicMode = false;
+          state = await loadState();
+          if(!state.workshop?.name) {
+            $("#setup").classList.remove("hidden");
+          } else {
+            if(!state.workshop.publicCheckinToken) {
+              state.workshop.publicCheckinToken = generateToken();
+              await persistWorkshop();
+            }
+            $("#app").classList.remove("hidden");
+            $("#side-workshop").textContent = state.workshop.name;
+            $("#side-owner").textContent = state.workshop.ownerName;
+            updateSidebarAvatar();
+            $$("#auth-brand, #main-brand").forEach(el => el.innerHTML = getLogoHTML(state.workshop, true));
+            await syncWorkshopPublicIndex();
+            if(requiresProjectionSync){await saveState();for(const order of state.orders)await Promise.all([syncPublicOrder(order.id),publishMechanicOrder(order)]);requiresProjectionSync=false;}
+            setupCheckinListener();
+            render();
+          }
         } else {
-          if(!state.workshop.publicCheckinToken) {
-            state.workshop.publicCheckinToken = generateToken();
-            await saveState();
-          }
-          $("#app").classList.remove("hidden");
-          $("#side-workshop").textContent = state.workshop.name;
-          $("#side-owner").textContent = state.workshop.ownerName;
-          updateSidebarAvatar();
-          $$("#auth-brand, #main-brand").forEach(el => el.innerHTML = getLogoHTML(state.workshop, true));
-          setupCheckinListener();
-          setupAdminEventsListener();
-          
-          if(isOSQR) {
-            // Admin escaneou QR de OS.
-            const targetOs = orderOf(urlParams.get('os_qr'));
-            if(targetOs) { view = "order-detail"; selectedOrder = targetOs.id; }
-          }
-          
-          render();
+          await auth.signOut();toast("Este acesso está inativo ou não possui permissão.","error");
         }
       } else {
+        cleanupAllListeners();
+        isMechanicMode=false;currentMechanicInfo=null;state=fresh();
         currentUser = null;
-        cleanupOrderListener();
-        if(adminEventsListener) { db.ref(`mechanic_events/${uid()}`).off('child_added', adminEventsListener); adminEventsListener=null; }
-        if(mechanicIndexListener && mechanicAdminUid) { db.ref(`mechanic_indexes/${mechanicAdminUid}/${currentUser?.uid}`).off('value', mechanicIndexListener); mechanicIndexListener=null; }
-        
         $("#app").classList.add("hidden");
-        $("#setup").classList.add("hidden");
         $("#mechanic-app").classList.add("hidden");
+        $("#setup").classList.add("hidden");
         
-        if (isMechanicLoginUrl) {
-           initMechanicLoginUI(urlParams);
-        } else {
-           $("#auth-view").classList.remove("hidden");
-           $("#auth-brand").innerHTML = getLogoHTML(null, true);
+        if (!inviteToken) {
+          $("#auth-view").classList.remove("hidden");
+          $("#auth-brand").innerHTML = getLogoHTML(null, true);
+          if(mechanicLogin)initMechanicLoginUI();
         }
       }
     });
@@ -1049,41 +1045,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     }
 
     // ---------------------------------------------------------
-    // EVENTOS DOS MECÂNICOS -> ADMIN
-    // ---------------------------------------------------------
-    function setupAdminEventsListener() {
-        if(!uid()) return;
-        if(adminEventsListener) db.ref(`mechanic_events/${uid()}`).off('child_added', adminEventsListener);
-        adminEventsListener = async snap => {
-            const ev = snap.val();
-            const o = orderOf(ev.orderId);
-            if(o) {
-                let updated = false;
-                if(ev.type === 'TECH_STATUS') { o.techStatus = ev.status; updated = true; }
-                if(ev.type === 'ADD_NOTE') { o.technicalNotes.push({id: id('note'), text: ev.text, mechanicId: ev.mechanicId, at: ev.at}); updated = true; }
-                if(ev.type === 'ADD_RECOMMENDATION') { o.recommendedItems.push({id: id('rec'), ...ev.item, at: ev.at}); updated = true; }
-                if(ev.type === 'ADD_PHOTO') { o.diagnosticMedia.push({id: id('media'), url: ev.url, authorId: ev.mechanicId, at: ev.at, isPublic: false}); updated = true; }
-                if(ev.type === 'FINISH_DIAGNOSIS') {
-                    o.diagnosis = { ...ev.diagnosis, status: 'PENDING_REVIEW' };
-                    o.techStatus = 'DIAGNOSIS_DONE';
-                    toast(`Diagnóstico concluído: OS-${o.number}`);
-                    updated = true;
-                }
-                if (updated) {
-                    o.timeline.push({id: id('evt'), text: ev.timelineText || 'Atualização técnica (Mecânico)', at: ev.at});
-                    o.updatedAt = Date.now();
-                    await saveState(); // Re-sync state and mechanic views
-                    if(view === 'order-detail' && selectedOrder === o.id) renderOrderDetail(true);
-                    if(view === 'dashboard' || view === 'team') render();
-                }
-            }
-            snap.ref.remove();
-        };
-        db.ref(`mechanic_events/${uid()}`).on('child_added', adminEventsListener);
-    }
-
-    // ---------------------------------------------------------
-    // VISÃO PÚBLICA (CLIENTE E CHECK-IN)
+    // VISÃO PÚBLICA (CLIENTE E CHECK-IN) - Mantido Original
     // ---------------------------------------------------------
     async function initPublicTracking(token) {
       $("#auth-view").classList.add("hidden");
@@ -1095,11 +1057,13 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       content.innerHTML = `<div class="public-error" role="status">${getLogoHTML(null, true)}<h2>Carregando acompanhamento</h2><p>Estamos buscando as informações mais recentes.</p></div>`;
       
       try {
-        const snap = await db.ref(`publicOrders/${token}`).once('value');
+        const [snap,decisionSnap] = await Promise.all([db.ref(`publicOrders/${token}`).once('value'),db.ref(`publicOrderDecisions/${token}`).once('value')]);
         const pub = snap.val();
         if(!pub) throw new Error("not_found");
-        
-        const total = (pub.items||[]).reduce((acc, i) => acc + (i.qty * i.price), 0);
+        const decisions=decisionSnap.val()||{};
+        const publicItems=Object.values(pub.items||{}).filter(Boolean).map(i=>({...i,decision:decisions[i.itemId]?.decision||i.decision||"PENDING"}));
+        const publicTimeline=Object.values(pub.timeline||{}).filter(Boolean);
+        const total = publicItems.reduce((acc, i) => acc + (i.qty * i.price), 0);
         const step = statusStep(pub.status);
         let phoneLink = phone(pub.workshopPhone);
         if(phoneLink.length <= 11) phoneLink = "55" + phoneLink;
@@ -1118,12 +1082,12 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
           `;
         }
 
-        window.updateItemDecision = async (idx, decision) => {
-          const item = pub.items[idx];
+        window.updateItemDecision = async (itemId, decision) => {
+          const item = publicItems.find(i=>i.itemId===itemId);
           if(!item || item.decision !== 'PENDING') return toast("Decisão já registrada.");
           try {
-            await db.ref(`publicOrders/${token}/items/${idx}`).update({decision, decidedAt: Date.now(), decisionSource: "CUSTOMER"});
-            initPublicTracking(token);
+            const result=await db.ref(`publicOrderDecisions/${token}/${itemId}`).transaction(current=>current||{decision, decidedAt: Date.now(), decisionSource: "CUSTOMER"});
+            if(!result.committed)return toast("Decisão já registrada.","warning");
             toast(decision === 'APPROVED' ? "Item aprovado!" : "Item recusado.");
           } catch(e) {
             toast("Erro ao atualizar decisão.", "error");
@@ -1133,7 +1097,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         const renderItem = (i) => {
           let actionHTML = `<span class="badge ${i.decision==='APPROVED'?'success':i.decision==='REJECTED'?'danger':''}">${esc(DECISION[i.decision]||"Pendente")}</span>`;
           if (i.decision === 'PENDING') {
-            actionHTML = `<div class="decision-actions"><button type="button" class="btn btn-secondary btn-sm" onclick="updateItemDecision(${i.idx}, 'APPROVED')">Aprovar</button><button type="button" class="btn btn-ghost btn-sm" onclick="updateItemDecision(${i.idx}, 'REJECTED')">Recusar</button></div>`;
+            actionHTML = `<div class="decision-actions"><button type="button" class="btn btn-secondary btn-sm" data-public-item="${esc(i.itemId)}" data-public-decision="APPROVED">Aprovar</button><button type="button" class="btn btn-ghost btn-sm" data-public-item="${esc(i.itemId)}" data-public-decision="REJECTED">Recusar</button></div>`;
           }
           return `<li><div><span>${i.qty} × ${esc(i.desc)}</span>${actionHTML}</div><strong>${money(i.qty * i.price)}</strong></li>`;
         };
@@ -1167,9 +1131,9 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
             </section>` : ''}
             <section class="public-section">
               <h2>Orçamento e serviços</h2>
-              ${(pub.items||[]).length > 0 ? `
+              ${publicItems.length > 0 ? `
               <ul class="public-list">
-                ${pub.items.map(renderItem).join('')}
+                ${publicItems.map(renderItem).join('')}
               </ul>
               <div class="public-total"><span>Total</span><span>${money(total)}</span></div>
               ${pixHTML}
@@ -1178,7 +1142,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
             <section class="public-section">
               <h2>Histórico</h2>
               <ul class="public-list public-timeline">
-                ${[...(pub.timeline||[])].sort((a,b)=>b.at-a.at).map(t => `<li><span>${esc(t.text)}</span><time datetime="${new Date(t.at).toISOString()}">${date(t.at,true)}</time></li>`).join('')}
+                ${publicTimeline.sort((a,b)=>b.at-a.at).map(t => `<li><span>${esc(t.text)}</span><time datetime="${new Date(t.at).toISOString()}">${date(t.at,true)}</time></li>`).join('')}
               </ul>
             </section>
           </div>
@@ -1189,25 +1153,40 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
           </article>
           </div>
         `;
-        $("[data-public-print]")?.addEventListener("click",()=>window.print());
+        $("[data-public-print]")?.addEventListener("click",()=>{
+           $("#public-content").classList.add("qr-print-only");
+           window.print();
+           $("#public-content").classList.remove("qr-print-only");
+        });
+        $$('[data-public-decision]').forEach(btn=>btn.addEventListener('click',()=>window.updateItemDecision(btn.dataset.publicItem,btn.dataset.publicDecision)));
+        cleanupPublicListeners();let initialEvents=2;
+        const pubRef=db.ref(`publicOrders/${token}`),decRef=db.ref(`publicOrderDecisions/${token}`);
+        const refresh=()=>{if(initialEvents-->0)return;cleanupPublicListeners();initPublicTracking(token);};
+        pubRef.on('value',refresh);decRef.on('value',refresh);publicListener=[{ref:pubRef,cb:refresh},{ref:decRef,cb:refresh}];
       } catch(e) {
         content.innerHTML = `<div class="public-shell"><div class="public-brand">${getLogoHTML(null, true)}</div><article class="public-card"><div class="public-error"><span class="public-error-icon">${icon("alert")}</span><h2>Atendimento indisponível</h2><p>Este link é inválido ou a ordem de serviço não está mais disponível. Entre em contato com a oficina.</p></div></article></div>`;
       }
     }
 
-    function initPublicCheckin(token) {
+    async function initPublicCheckin(token) {
       $("#auth-view").classList.add("hidden");
       $("#app").classList.add("hidden");
       $("#public-view").classList.remove("hidden");
       document.title = "Recepção — Oficlaro";
       
       const content = $("#public-content");
+      let checkinInfo=null;
+      try{checkinInfo=(await db.ref(`publicWorkshopCheckins/${token}`).once("value")).val();}catch(e){console.error(e);}
+      if(!checkinInfo?.active){content.innerHTML=`<div class="public-shell"><div class="public-brand">${getLogoHTML(null,true)}</div><article class="public-card"><div class="public-error"><h2>Check-in indisponível</h2><p>Este QR Code não está ativo. Solicite o link atual à oficina.</p></div></article></div>`;return;}
+      const checkinBrand={name:checkinInfo.workshopName||"Oficina",logoUrl:checkinInfo.logoUrl||""};
+      
       content.innerHTML = `
         <div class="public-shell">
-          <div class="public-brand">${getLogoHTML(null, true)}</div>
+          <div class="public-brand">${getLogoHTML(checkinBrand, true)}</div>
           <article class="public-card">
             <header class="public-header">
-              <h1>Check-in da Oficina</h1>
+              <p class="public-workshop">${esc(checkinInfo.workshopName||"Oficina")}</p>
+              <h1>Check-in da oficina</h1>
               <p>Preencha os dados abaixo para adiantar seu atendimento.</p>
             </header>
             <div class="public-body">
@@ -1218,9 +1197,9 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
                 <div class="field full"><label>E-mail <span class="help">(opcional)</span></label><input name="email" type="email" maxlength="120"></div>
                 
                 <div class="form-section-title">Veículo e Atendimento</div>
-                <div class="field"><label>Placa</label><input name="plate" required maxlength="8"></div>
-                <div class="field"><label>Marca</label><input name="brand" required maxlength="60"></div>
-                <div class="field"><label>Modelo</label><input name="model" required maxlength="60"></div>
+                <div class="field"><label>Placa</label><input name="plate" required maxlength="8" placeholder="ABC1D23"></div>
+                <div class="field"><label>Marca</label><input name="brand" required maxlength="60" placeholder="Honda"></div>
+                <div class="field"><label>Modelo</label><input name="model" required maxlength="60" placeholder="Civic"></div>
                 <div class="field"><label>Ano</label><input name="year" type="number" required min="1900" max="2100"></div>
                 <div class="field full"><label>Quilometragem <span class="help">(opcional)</span></label><input name="mileage" type="number" min="0"></div>
                 <div class="field full"><label>Motivo da visita / Relato do problema</label><textarea name="complaint" required maxlength="1200" placeholder="Descreva o que está acontecendo com o veículo ou o serviço desejado"></textarea></div>
@@ -1252,7 +1231,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
           await db.ref(`publicCheckins/${token}`).push(payload);
           content.innerHTML = `
             <div class="public-shell">
-              <div class="public-brand">${getLogoHTML(null, true)}</div>
+              <div class="public-brand">${getLogoHTML(checkinBrand, true)}</div>
               <article class="public-card">
                 <div class="public-body empty">
                   <div class="empty-icon">${icon("check")}</div>
@@ -1269,6 +1248,72 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         }
       });
     }
+
+    // ---------------------------------------------------------
+    // MÓDULO DOS MECÂNICOS - CONVITE E AUTENTICAÇÃO
+    // ---------------------------------------------------------
+    async function initMechanicInvite(inviteToken,existingUser=null) {
+      $("#auth-view").classList.remove("hidden");
+      $("#app").classList.add("hidden");
+      $("#mechanic-app").classList.add("hidden");
+      document.title = "Acesso do Mecânico — Oficlaro";
+
+      $("#auth-title").textContent = "Acesso da Equipe Técnica";
+      $("#auth-desc").textContent = "Entre ou crie sua senha pessoal para ativar o convite.";
+      $("#auth-submit").textContent = "Ativar acesso";
+      $("#auth-switch-container").classList.add("hidden");
+      $("#auth-aside").classList.add("hidden"); // Remove painel grande no mobile
+      
+      const form = $("#auth-form");
+      
+      try {
+        const snap = await db.ref(`mechanicInvites/${inviteToken}`).once('value');
+        const inviteData = snap.val();
+        if(!inviteData||inviteData.active!==true||inviteData.usedAt||inviteData.revokedAt||(inviteData.expiresAt&&inviteData.expiresAt<Date.now()))throw new Error("not_found");
+        $("#auth-desc").textContent=`Convite de ${inviteData.workshopName||"uma oficina"} para ${inviteData.mechanicName||"a equipe técnica"}.`;
+        if(existingUser){const role=(await db.ref(`userRoles/${existingUser.uid}`).once("value")).val();if(role?.role==="ADMIN"){throw new Error("admin_session");}}
+
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          const email = $("#auth-email").value.trim();
+          const password = $("#auth-password").value;
+          const btn = $("#auth-submit");
+          btn.disabled = true; btn.textContent = "Criando acesso...";
+
+          try {
+            let userCredential={user:existingUser};
+            if(!existingUser){try{userCredential=await auth.createUserWithEmailAndPassword(email,password);}catch(authErr){if(authErr.code==='auth/email-already-in-use')userCredential=await auth.signInWithEmailAndPassword(email,password);else throw authErr;}}
+            const claimedAt=Date.now(),eventId=id("evt");
+            await db.ref().update({
+              [`userRoles/${userCredential.user.uid}`]:{role:'MECHANIC',workshopId:inviteData.workshopId,workshopName:inviteData.workshopName||"Oficina",mechanicId:inviteData.mechanicId,mechanicName:inviteData.mechanicName||"Mecânico",active:true,inviteToken,createdAt:claimedAt},
+              [`mechanicAccess/${inviteData.workshopId}/${userCredential.user.uid}`]:{mechanicId:inviteData.mechanicId,active:true,inviteToken,claimedAt},
+              [`mechanicInvites/${inviteToken}/active`]:false,
+              [`mechanicInvites/${inviteToken}/usedAt`]:claimedAt,
+              [`mechanicInvites/${inviteToken}/usedBy`]:userCredential.user.uid,
+              [`mechanic_events/${inviteData.workshopId}/${eventId}`]:{type:"MECHANIC_CLAIMED",mechanicId:inviteData.mechanicId,userUid:userCredential.user.uid,inviteToken,orderId:"_claim",at:claimedAt}
+            });
+
+            toast("Acesso configurado com sucesso!");
+            window.history.replaceState({}, document.title, window.location.pathname);
+            location.reload();
+            
+          } catch(err) {
+            toast(firebaseErrorMessage(err), "error");
+            btn.disabled = false; btn.textContent = "Definir senha e Acessar";
+          }
+        };
+
+      } catch(e) {
+        $("#auth-view").innerHTML = `
+          <div class="setup-form" style="text-align:center">
+            ${getLogoHTML(null, true)}
+            <h2 style="margin-top:20px">${e.message==="admin_session"?"Sessão administrativa ativa":"Convite inválido"}</h2>
+            <p>${e.message==="admin_session"?"Abra este convite em uma janela anônima ou saia da conta administrativa antes de ativá-lo.":"Este link expirou, já foi usado ou foi cancelado pelo gestor."}</p>
+          </div>
+        `;
+      }
+    }
+
 
     // ---------------------------------------------------------
     // ESCOLHA DE NOVA ORDEM
@@ -1295,7 +1340,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     }
 
     // ---------------------------------------------------------
-    // ASSISTENTE DE CADASTRO
+    // ASSISTENTE DE CADASTRO (EXTRAÇÃO SIMPLES)
     // ---------------------------------------------------------
     function extractSmartData(text) {
       const data = { phone:"", name:"", plate:"", mileage:"", brand:"", model:"", year:"", color:"", complaint: text };
@@ -1454,10 +1499,11 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     }
 
     // ---------------------------------------------------------
-    // RENDERIZAÇÃO ADMIN
+    // RENDERIZAÇÃO E NAVEGAÇÃO DA OFICINA (GESTOR)
     // ---------------------------------------------------------
-    function modal(title,body,wide=false){const d=$("#modal");d.classList.toggle("dialog-wide",wide);d.innerHTML=`<div class="dialog-head"><h2>${esc(title)}</h2><button class="icon-btn" data-action="close" aria-label="Fechar modal">${icon("close")}</button></div><div class="dialog-body">${body}</div>`;wireLabels(d);d.showModal()}
-    function closeModal(){const d=$("#modal");if(d.open)d.close();d.classList.remove("dialog-wide")}
+    let modalReturnFocus=null;
+    function modal(title,body,wide=false){const d=$("#modal");modalReturnFocus=document.activeElement;if(d.open)d.close();d.classList.toggle("dialog-wide",wide);d.innerHTML=`<div class="dialog-head"><h2>${esc(title)}</h2><button class="icon-btn" data-action="close" aria-label="Fechar modal">${icon("close")}</button></div><div class="dialog-body">${body}</div>`;wireLabels(d);d.showModal();requestAnimationFrame(()=>d.querySelector('input:not([type="hidden"]),select,textarea,button')?.focus())}
+    function closeModal(){const d=$("#modal");if(d.open)d.close();d.classList.remove("dialog-wide");if(modalReturnFocus?.isConnected)modalReturnFocus.focus();modalReturnFocus=null}
     function wireLabels(root){$$('.field',root).forEach(f=>{const l=$('label',f),c=$('input,select,textarea',f);if(l&&c&&!c.getAttribute('aria-label'))c.setAttribute('aria-label',l.textContent.replace(/\s+/g,' ').trim())})}
     function pageHead(eyebrow,title,description,action="",label=""){return `<header class="page-head"><div><span class="eyebrow">${esc(eyebrow)}</span><h1>${title}</h1><p>${esc(description)}</p></div>${action?`<button class="btn btn-primary" data-action="${action}">${icon("plus")}${esc(label)}</button>`:""}</header>`}
     function empty(title,desc,action,label){return `<div class="empty"><div class="empty-icon">${icon("file")}</div><h3>${esc(title)}</h3><p>${esc(desc)}</p>${action?`<button class="btn btn-primary" data-action="${action}">${icon("plus")}${esc(label)}</button>`:""}</div>`}
@@ -1466,7 +1512,6 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     function navigate(next,idValue=null){cleanupOrderListener();view=next;selectedOrder=idValue;search="";searchOwner="";setMenuOpen(false);render();$("#main").focus()}
     
     function render(){
-      if(isMechanicMode) return;
       const active=view==="order-detail"?"orders":view;
       $$('[data-view]').forEach(b=>b.setAttribute("aria-current",b.dataset.view===active?"page":"false"));
       $("#crumb").textContent=TITLES[view]||"Oficlaro";
@@ -1501,8 +1546,25 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         `;
       }
       
+      // Diagnósticos pendentes de revisão do Mecânico
+      let diagnosticsReviewAlert = "";
+      const pendingDiagnostics = state.orders.filter(o => (o.diagnosis?.status === 'PENDING_REVIEW' || o.technicalStatus === 'DIAGNOSIS_DONE') && o.status !== 'DELIVERED' && o.status !== 'CANCELLED');
+      if (pendingDiagnostics.length > 0) {
+        diagnosticsReviewAlert = `
+          <div class="notice warning" style="cursor:pointer; align-items:center" data-view="orders">
+            ${icon("alert")}
+            <div>
+              <strong>${pendingDiagnostics.length} diagnóstico(s) aguardando revisão</strong><br>
+              <span>Sua equipe técnica finalizou diagnósticos. Revise para enviar orçamentos aos clientes.</span>
+            </div>
+            <button class="btn btn-ghost btn-sm" style="margin-left:auto; pointer-events:none">Ver Ordens ${icon("arrow")}</button>
+          </div>
+        `;
+      }
+
       $("#main").innerHTML=`
         ${checkinsAlert}
+        ${diagnosticsReviewAlert}
         <section class="dashboard-intro" aria-labelledby="dashboard-title">
           <div><span class="eyebrow">Central da oficina</span><h1 id="dashboard-title">${greeting}, <span>${firstName}.</span></h1><p>Veja o que precisa da sua atenção e mantenha cada atendimento em movimento.</p></div>
           <div class="dashboard-actions"><button class="btn btn-primary" data-action="new-order-choice">${icon("plus")} Nova ordem</button><button class="btn btn-secondary" data-view="orders">Ver todas as ordens</button></div>
@@ -1529,12 +1591,140 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     }
 
     function ordersTable(items){
-      return `<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Ordem</th><th>Cliente</th><th>Veículo</th><th>Placa</th><th>Status</th><th>Atualização</th><th></th></tr></thead><tbody>${items.map(o=>{
+      return `<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Ordem</th><th>Cliente</th><th>Veículo</th><th>Placa</th><th>Status</th><th>Mecânico</th><th></th></tr></thead><tbody>${items.map(o=>{
         const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId);
-        return `<tr><td data-label="Ordem" class="strong">${esc(o.number)}</td><td data-label="Cliente">${esc(c?.name||"Cliente removido")}</td><td data-label="Veículo">${esc(vehicleName(v))}</td><td data-label="Placa"><span class="plate">${esc(v?.plate||"—")}</span></td><td data-label="Status">${badge(o.status)}</td><td data-label="Atualização">${date(o.updatedAt,true)}</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="open-order" data-id="${o.id}">Abrir ordem ${icon("arrow")}</button></td></tr>`
+        const mechNames = (o.mechanicIds || []).map(id => mechanicOf(id)?.name || '').filter(Boolean).join(', ') || 'Nenhum';
+        return `<tr><td data-label="Ordem" class="strong">${esc(o.number)}</td><td data-label="Cliente">${esc(c?.name||"Cliente removido")}</td><td data-label="Veículo">${esc(vehicleName(v))}</td><td data-label="Placa"><span class="plate">${esc(v?.plate||"—")}</span></td><td data-label="Status">${badge(o.status)}</td><td data-label="Mecânico" style="font-size:10px">${esc(mechNames)}</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="open-order" data-id="${o.id}">Abrir ordem ${icon("arrow")}</button></td></tr>`
       }).join("")}</tbody></table></div>`;
     }
 
+    // ---------------------------------------------------------
+    // EQUIPE (MECÂNICOS)
+    // ---------------------------------------------------------
+    function renderTeam() {
+      const items = state.mechanics || [];
+      $("#main").innerHTML=`${pageHead("Gestão de Oficina","Equipe Técnica","Cadastre seus mecânicos, gere acessos seguros e acompanhe atribuições.","new-mechanic","Novo Mecânico")}
+      <section class="card">${items.length?`<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Mecânico</th><th>Contato</th><th>Status</th><th>Ordens Ativas</th><th></th></tr></thead><tbody>${items.map(m=>{
+        const activeOrders = state.orders.filter(o => (o.mechanicIds || []).includes(m.id) && o.status !== 'DELIVERED' && o.status !== 'CANCELLED');
+        const isActiveStr = m.active ? '<span style="color:var(--success);font-weight:bold">Ativo</span>' : '<span style="color:var(--danger)">Inativo</span>';
+        return `<tr>
+          <td data-label="Mecânico"><div class="entity-cell"><span class="avatar">${icon("users")}</span><span class="entity-copy"><strong>${esc(m.name)}</strong><span>Adicionado em ${date(m.createdAt)}</span></span></div></td>
+          <td data-label="Contato"><span class="entity-copy"><strong>${esc(m.phone)}</strong><span>${esc(m.email)}</span></span></td>
+          <td data-label="Status">${isActiveStr}</td>
+          <td data-label="Ordens Ativas"><strong>${activeOrders.length}</strong> veículos</td>
+          <td data-label="Ação">
+            <div style="display:flex;gap:4px">
+              <button class="btn btn-ghost btn-sm" data-action="show-mechanic-qr" data-id="${m.id}" title="Gerar Acesso">${icon("qr")}</button>
+              <button class="btn btn-secondary btn-sm" data-action="edit-mechanic" data-id="${m.id}">Editar</button>
+            </div>
+          </td>
+        </tr>`
+      }).join("")}</tbody></table></div>`:empty("Nenhum mecânico cadastrado","Adicione membros à equipe para atribuir serviços a eles.","new-mechanic","Adicionar Mecânico")}</section>`;
+    }
+
+    function mechanicForm(item={}){
+      modal(item.id?"Editar Mecânico":"Novo Mecânico",`
+      <form id="mechanic-form" class="form-grid" data-id="${item.id||""}">
+        <div class="field full"><label>Nome do Mecânico</label><input name="name" required maxlength="100" value="${esc(item.name||"")}"></div>
+        <div class="field"><label>Telefone / WhatsApp</label><input name="phone" required maxlength="20" inputmode="tel" value="${esc(item.phone||"")}"></div>
+        <div class="field"><label>E-mail de Acesso</label><input name="email" type="email" required maxlength="120" value="${esc(item.email||"")}" placeholder="mecanico@oficina.com.br"></div>
+        <div class="field full" style="margin-top:10px">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" name="active" ${(!item.id || item.active) ? "checked" : ""} style="width:auto;min-height:auto">
+            Acesso ativo (Permite entrar no sistema)
+          </label>
+        </div>
+        <div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Salvar</button></div>
+      </form>`);
+    }
+
+    async function showMechanicQR(m) {
+      if(!m?.active)return toast("Ative o mecânico antes de gerar um convite.","warning");
+      if(!m.inviteToken) {
+        m.inviteToken = generateToken();
+        await persistCollectionItem("mechanics",m);
+      }
+      const invite={workshopId:uid(),mechanicId:m.id,mechanicName:m.name,workshopName:state.workshop.name,active:true,createdAt:Date.now(),expiresAt:Date.now()+7*24*60*60*1000};
+      await db.ref(`mechanicInvites/${m.inviteToken}`).update(invite);
+      
+      const link = getMechanicInviteLink(m.inviteToken);
+      modal("Acesso do Mecânico", `
+        <div class="qr-preview">
+          <canvas id="qr-mechanic-canvas"></canvas>
+          <div class="communication-link" style="width:100%;text-align:center;margin-bottom:0">${esc(link)}</div>
+        </div>
+        <div class="notice" style="margin-top:16px">${icon("info")}<span>Peça para <strong>${esc(m.name)}</strong> escanear este QR Code com o próprio celular para definir a senha e acessar o sistema.</span></div>
+        <div class="dialog-actions" style="margin-top:16px">
+           <button class="btn btn-secondary" data-action="copy-mechanic-invite" data-link="${link}">${icon("copy")} Copiar Link</button>
+           <button class="btn btn-secondary" data-action="print-mechanic-invite" data-name="${esc(m.name)}">${icon("file")} Imprimir</button>
+           <button class="btn btn-secondary" data-action="download-mechanic-invite" data-name="${esc(m.name)}">Baixar QR</button>
+           <button class="btn btn-ghost" style="color:var(--danger)" data-action="revoke-mechanic-invite" data-id="${m.id}">Gerar Novo Acesso (Revoga anterior)</button>
+        </div>
+      `);
+      
+      requestAnimationFrame(() => {
+        new QRious({element: document.getElementById('qr-mechanic-canvas'), value: link, size: 220, level: 'H'});
+      });
+    }
+
+    document.addEventListener("click", async e => {
+       const act = e.target.closest("[data-action]")?.dataset.action;
+       const idV = e.target.closest("[data-id]")?.dataset.id;
+       if(act==="new-mechanic") mechanicForm();
+       if(act==="edit-mechanic") mechanicForm(mechanicOf(idV));
+       if(act==="show-mechanic-qr") await showMechanicQR(mechanicOf(idV));
+       if(act==="copy-mechanic-invite") {
+         try{await navigator.clipboard.writeText(e.target.closest("[data-link]").dataset.link);toast("Link copiado.");}
+         catch{toast("Erro ao copiar.","error");}
+       }
+       if(act==="revoke-mechanic-invite") {
+         if(!confirm("Isso invalidará o convite atual. O mecânico precisará escanear o novo QR. Continuar?")) return;
+         const m = mechanicOf(idV);
+          if(m.inviteToken) await db.ref(`mechanicInvites/${m.inviteToken}`).update({active:false,revokedAt:Date.now()});
+          m.inviteToken = generateToken();
+          await persistCollectionItem("mechanics",m);
+         toast("Novo acesso gerado.");
+          await showMechanicQR(m);
+       }
+    });
+
+    document.addEventListener("submit", async e => {
+      if(e.target.id === "mechanic-form") {
+        e.preventDefault();
+        const restore=setButtonBusy(e.target);
+        try {
+        const d = Object.fromEntries(new FormData(e.target));
+        const current = mechanicOf(e.target.dataset.id);
+        const now = Date.now();
+        const item = {
+           id: current?.id || id("mec"),
+           name: d.name.trim(),
+           phone: d.phone.trim(),
+           email: d.email.trim(),
+           active: !!e.target.elements.active.checked,
+           inviteToken: current?.inviteToken || null,
+           authUid: current?.authUid || null,
+           createdAt: current?.createdAt || now,
+           updatedAt: now
+        };
+        current ? Object.assign(current, item) : state.mechanics.push(item);
+        
+        // Se inativou, revoga o invite ativo
+        if(!item.active && item.inviteToken) {
+           await db.ref(`mechanicInvites/${item.inviteToken}`).update({active:false,revokedAt:Date.now()});
+           item.inviteToken = null;
+         }
+        if(item.authUid)await db.ref().update({[`userRoles/${item.authUid}/active`]:item.active,[`mechanicAccess/${uid()}/${item.authUid}/active`]:item.active});
+        await persistCollectionItem("mechanics",item);
+        closeModal(); render(); toast("Mecânico salvo.");
+        } catch(err) { console.error(err); toast("Não foi possível salvar o mecânico.","error"); }
+        finally { restore(); }
+      }
+    });
+
+    // ---------------------------------------------------------
+    // OUTRAS TELAS ADMINISTRATIVAS
+    // ---------------------------------------------------------
     function renderClients(){
       const term=search.toLowerCase();
       const now = Date.now();
@@ -1547,13 +1737,13 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       if(clientFilter === 'OLD') items = items.sort((a,b) => a.createdAt - b.createdAt);
       if(clientFilter === 'RECENT' || clientFilter === 'LONG_TIME') {
          items = items.filter(c => {
-            const lastOrder = state.orders.filter(o => o.clientId === c.id).sort((a,b)=>b.updatedAt-a.updatedAt)[0];
+            const lastOrder = state.orders.filter(o => o.clientId === c.id).sort((a,b)=>orderServiceAt(b)-orderServiceAt(a))[0];
             if(!lastOrder) return false;
-            const timeSince = now - lastOrder.updatedAt;
+             const timeSince = now - orderServiceAt(lastOrder);
             return clientFilter === 'RECENT' ? timeSince < thirtyDays : timeSince > ninetyDays;
          });
       }
-      if(clientFilter !== 'OLD') items.sort((a,b) => b.updatedAt - a.updatedAt);
+      if(clientFilter !== 'OLD') items.sort((a,b) => (b.updatedAt||b.createdAt||0) - (a.updatedAt||a.createdAt||0));
 
       $("#main").innerHTML=`${pageHead("Relacionamento","Clientes","Uma visão clara dos contatos, veículos e histórico de atendimento.","new-client","Novo cliente")}
       <div class="chip-group">
@@ -1563,7 +1753,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         <button class="chip ${clientFilter==='RECENT'?'active':''}" data-client-filter="RECENT">Atendimento recente</button>
         <button class="chip ${clientFilter==='LONG_TIME'?'active':''}" data-client-filter="LONG_TIME">Mais tempo sem atendimento</button>
       </div>
-      <div class="toolbar"><label class="field search"><span class="field-label">Buscar clientes</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Nome, telefone ou e-mail"></label><span class="toolbar-meta">${items.length} cliente${items.length===1?"":"s"}</span></div><section class="card">${items.length?`<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Cliente</th><th>Contato</th><th>Veículos</th><th>Ordens</th><th>Último atendimento</th><th></th></tr></thead><tbody>${items.map(c=>{const vehicles=state.vehicles.filter(v=>v.clientId===c.id);const orders=state.orders.filter(o=>o.clientId===c.id).sort((a,b)=>b.updatedAt-a.updatedAt);return `<tr><td data-label="Cliente"><div class="entity-cell"><span class="avatar">${esc(initials(c.name))}</span><span class="entity-copy"><strong>${esc(c.name)}</strong><span>Desde ${date(c.createdAt)}</span></span></div></td><td data-label="Contato"><span class="entity-copy"><strong>${esc(c.phone)}</strong><span>${esc(c.email||"E-mail não informado")}</span></span></td><td data-label="Veículos">${vehicles.length}</td><td data-label="Ordens">${orders.length}</td><td data-label="Último atendimento">${orders.length?date(orders[0].updatedAt):"—"}</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="view-client" data-id="${c.id}">Abrir perfil</button></td></tr>`}).join("")}</tbody></table></div>`:empty("Nenhum cliente encontrado","Mude os filtros ou cadastre um novo cliente.","new-client","Cadastrar cliente")}</section>`;
+      <div class="toolbar"><label class="field search"><span class="field-label">Buscar clientes</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Nome, telefone ou e-mail"></label><span class="toolbar-meta">${items.length} cliente${items.length===1?"":"s"}</span></div><section class="card">${items.length?`<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Cliente</th><th>Contato</th><th>Veículos</th><th>Ordens</th><th>Último atendimento</th><th></th></tr></thead><tbody>${items.map(c=>{const vehicles=state.vehicles.filter(v=>v.clientId===c.id);const orders=state.orders.filter(o=>o.clientId===c.id).sort((a,b)=>orderServiceAt(b)-orderServiceAt(a));return `<tr><td data-label="Cliente"><div class="entity-cell"><span class="avatar">${esc(initials(c.name))}</span><span class="entity-copy"><strong>${esc(c.name)}</strong><span>Desde ${date(c.createdAt)}</span></span></div></td><td data-label="Contato"><span class="entity-copy"><strong>${esc(c.phone)}</strong><span>${esc(c.email||"E-mail não informado")}</span></span></td><td data-label="Veículos">${vehicles.length}</td><td data-label="Ordens">${orders.length}</td><td data-label="Último atendimento">${orders.length?date(orderServiceAt(orders[0])):"—"}</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="view-client" data-id="${c.id}">Abrir perfil</button></td></tr>`}).join("")}</tbody></table></div>`:empty("Nenhum cliente encontrado","Mude os filtros ou cadastre um novo cliente.","new-client","Cadastrar cliente")}</section>`;
       bindSearch();
       $$("[data-client-filter]").forEach(btn => btn.addEventListener('click', e => {
         clientFilter = e.target.dataset.clientFilter;
@@ -1601,7 +1791,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       </div><section class="card">${items.length?`<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Veículo</th><th>Placa</th><th>Ano</th><th>Proprietário</th><th>Quilometragem</th><th></th></tr></thead><tbody>${items.map(v=>{
         const c = clientOf(v.clientId);
         const activeOS = state.orders.find(o => o.vehicleId === v.id && !['DELIVERED','CANCELLED'].includes(o.status));
-        return `<tr><td data-label="Veículo"><div class="entity-cell"><span class="avatar">${icon("car")}</span><span class="entity-copy"><strong>${esc(vehicleName(v))}</strong><span>${activeOS ? 'Atualmente na oficina' : (esc(v.color||"Cor não informada"))}</span></span></div></td><td data-label="Placa"><span class="plate">${esc(v.plate)}</span></td><td data-label="Ano">${esc(v.year||"—")}</td><td data-label="Proprietário">${esc(c?.name||"Cliente removido")}</td><td data-label="Quilometragem">${Number(v.mileage||0).toLocaleString("pt-BR")} km</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="edit-vehicle" data-id="${v.id}">${icon("edit")} Editar</button></td></tr>`
+        return `<tr><td data-label="Veículo"><div class="entity-cell"><span class="avatar">${icon("car")}</span><span class="entity-copy"><strong>${esc(vehicleName(v))}</strong><span>${activeOS ? esc(STATUS[activeOS.status]||activeOS.status) : esc(v.color||"Cor não informada")}</span></span></div></td><td data-label="Placa"><span class="plate">${esc(v.plate)}</span></td><td data-label="Ano">${esc(v.year||"—")}</td><td data-label="Proprietário">${esc(c?.name||"Cliente removido")}</td><td data-label="Quilometragem">${Number(v.mileage||0).toLocaleString("pt-BR")} km</td><td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="edit-vehicle" data-id="${v.id}">${icon("edit")} Editar</button></td></tr>`
       }).join("")}</tbody></table></div>`:empty("Nenhum veículo encontrado",state.clients.length?"Cadastre o primeiro veículo ou altere a busca.":"Cadastre um cliente antes de adicionar o primeiro veículo.",state.clients.length?"new-vehicle":"new-client",state.clients.length?"Cadastrar veículo":"Cadastrar cliente")}</section>`;
       bindSearch();
       $$("[data-vehicle-filter]").forEach(btn => btn.addEventListener('click', e => {
@@ -1657,26 +1847,9 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       }));
     }
 
-    function renderTeam(){
-      const term=search.toLowerCase();
-      let items=state.mechanics.filter(m=>!term||m.name.toLowerCase().includes(term));
-      
-      $("#main").innerHTML=`${pageHead("Corpo técnico","Equipe (Mecânicos)","Gerencie os acessos e visualize os serviços atribuídos a cada profissional.","new-mechanic","Novo mecânico")}
-      <div class="toolbar"><label class="field search"><span class="field-label">Buscar</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Nome do mecânico"></label><span class="toolbar-meta">${items.length} mecânico${items.length===1?"":"s"}</span></div>
-      <section class="card">${items.length?`<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Mecânico</th><th>Status</th><th>Atribuições Ativas</th><th></th></tr></thead><tbody>${items.map(m=>{
-        const activeOS = state.orders.filter(o => o.mechanicIds?.includes(m.id) && !['DELIVERED','CANCELLED'].includes(o.status));
-        return `<tr>
-          <td data-label="Mecânico"><div class="entity-cell"><span class="avatar">${esc(initials(m.name))}</span><span class="entity-copy"><strong>${esc(m.name)}</strong><span>${esc(m.phone)}</span></span></div></td>
-          <td data-label="Status">${m.active ? '<span class="badge success">Ativo</span>' : '<span class="badge danger">Inativo</span>'}</td>
-          <td data-label="Atribuições">${activeOS.length} OS</td>
-          <td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="view-mechanic-qr" data-id="${m.id}">${icon("qr")} QR de Acesso</button> <button class="btn btn-ghost btn-sm" data-action="edit-mechanic" data-id="${m.id}">${icon("edit")}</button></td>
-        </tr>`
-      }).join("")}</tbody></table></div>`:empty("Nenhum profissional cadastrado","Crie acessos para que a equipe utilize o Módulo dos Mecânicos via celular.","new-mechanic","Cadastrar mecânico")}</section>
-      <div class="notice" style="margin-top:20px">${icon("info")}<span>Como o Firebase Auth restringe alterações de senha pelo cliente sem relogar, caso o profissional esqueça o PIN, desative-o e crie um novo acesso.</span></div>
-      `;
-      bindSearch();
-    }
-
+    // ---------------------------------------------------------
+    // DETALHES DA ORDEM (ADMINISTRADOR) COM ÁREA DO MECÂNICO
+    // ---------------------------------------------------------
     async function renderOrderDetail(silent = false){
       const o=orderOf(selectedOrder);if(!o){navigate("orders");return;}
       const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId);
@@ -1684,204 +1857,202 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       const items=o.estimate?.items||[],subtotal=items.reduce((s,i)=>s+i.qty*i.unitCents,0),paid=(o.payments||[]).reduce((s,p)=>s+p.amountCents,0);
       const balance=subtotal-paid;
       const link = getPublicLink(o.publicToken);
-      const qrLink = getOSQRLink(o.id);
 
-      const isDiagnosisPending = o.diagnosis && o.diagnosis.status === 'PENDING_REVIEW';
+      // Render Mechanic Selection
+      const activeMechanics = state.mechanics.filter(m => m.active);
+      let mechanicOptions = activeMechanics.map(m => `<option value="${m.id}" ${(o.mechanicIds||[]).includes(m.id) ? "selected" : ""}>${esc(m.name)}</option>`).join("");
       
-      let recommendationsHTML = "";
-      if (o.recommendedItems && o.recommendedItems.length > 0) {
-        recommendationsHTML = `
-          <div class="card-head" style="border-top:1px solid var(--border); margin-top:20px; background:var(--surface-secondary)">
-            <div><h2>Recomendações Técnicas</h2><p>Serviços e peças sugeridos pelo mecânico</p></div>
-          </div>
-          <div class="card-pad" style="background:var(--warning-soft)">
-            ${o.recommendedItems.map(rec => `
-              <div class="item-row split mobile-stack" style="border-color:#e0d0b0">
-                <div><strong>${esc(rec.description)}</strong><p>${esc(rec.type)} · Qtde: ${rec.qty} ${rec.note ? `· Obs: ${esc(rec.note)}` : ''}</p></div>
-                <button class="btn btn-secondary btn-sm" data-action="convert-rec" data-rec-id="${rec.id}">${icon("plus")} Orçar item</button>
-              </div>
-            `).join('')}
-          </div>
-        `;
-      }
-
-      let diagnosticMediaHTML = "";
-      if (o.diagnosticMedia && o.diagnosticMedia.length > 0) {
-        diagnosticMediaHTML = `
-          <div style="margin-top:20px">
-            <span class="field-label" style="display:block;margin-bottom:8px">Evidências (Fotos Internas)</span>
-            <div style="display:flex;gap:10px;flex-wrap:wrap">
-              ${o.diagnosticMedia.map(m => `<a href="${esc(m.url)}" target="_blank" style="display:block;width:80px;height:80px;border-radius:8px;overflow:hidden;border:1px solid var(--border)"><img src="${esc(m.url)}" style="width:100%;height:100%;object-fit:cover"></a>`).join('')}
+      // Review of Technical Diagnosis
+      let reviewHTML = "";
+      if (o.technicalStatus === 'DIAGNOSIS_DONE') {
+        reviewHTML = `
+          <div class="notice warning">
+            ${icon("alert")}
+            <div>
+              <strong>Diagnóstico Técnico Concluído</strong><br>
+              <span>A equipe técnica finalizou o diagnóstico. Revise e aprove o texto para enviar ao cliente.</span>
+              <button class="btn btn-secondary btn-sm" style="margin-top:8px" data-action="return-diagnosis" data-id="${o.id}">Devolver para revisão</button>
             </div>
           </div>
         `;
       }
 
+      // Technical Recommendations from Mechanic
+      let recommendationsHTML = "";
+      if ((o.technicalRecommendations||[]).length > 0) {
+         recommendationsHTML = `
+           <div class="card-pad" style="border-top:1px solid var(--border); padding-top:16px; margin-top:16px;">
+              <h3 style="font-size:13px; margin:0 0 10px;">Recomendações Técnicas (Mecânico)</h3>
+              ${o.technicalRecommendations.map(r => `
+                <div class="item-row split mobile-stack">
+                  <div><strong>${esc(r.description)}</strong><p>${r.qty}x ${r.type}</p></div>
+                  <button class="btn btn-secondary btn-sm" data-action="convert-recommendation" data-id="${o.id}" data-rec="${r.id}">${icon("plus")} Adicionar ao orçamento</button>
+                </div>
+              `).join('')}
+           </div>
+         `;
+      }
+
+      // Photos from Mechanic
+      let photosHTML = "";
+      if ((o.diagnosticMedia||[]).length > 0) {
+         photosHTML = `
+           <div class="card-pad" style="border-top:1px solid var(--border); padding-top:16px; margin-top:16px;">
+              <h3 style="font-size:13px; margin:0 0 10px;">Evidências (Fotos)</h3>
+              <div class="photo-grid">
+                ${o.diagnosticMedia.map((m, idx) => `
+                  <div style="position:relative">
+                    <a href="${esc(m.url)}" target="_blank"><img src="${esc(m.url)}" class="photo-thumb"></a>
+                    <label style="display:block; font-size:9px; text-align:center; margin-top:4px; cursor:pointer">
+                      <input type="checkbox" data-photo-public="${idx}" ${m.isPublic?'checked':''}> Exibir ao cliente
+                    </label>
+                  </div>
+                `).join('')}
+              </div>
+           </div>
+         `;
+      }
+
       $("#main").innerHTML=`
       <section class="order-summary" aria-labelledby="order-title">
-        <div class="order-summary-top">
-          <div><span class="order-number">${esc(o.number)}</span><h1 id="order-title">${esc(vehicleName(v))}</h1><p class="order-summary-subtitle">${esc(v?.year||"Ano não informado")} · ${esc(v?.plate||"Sem placa")} · ${esc(c?.name||"Cliente removido")}</p></div>
-          <div style="text-align:right">
-            ${badge(o.status)}
-            <br><span class="badge ${TECH_STATUS_TONE[o.techStatus]}" style="margin-top:6px">${esc(TECH_STATUS[o.techStatus])}</span>
-          </div>
-        </div>
+        <div class="order-summary-top"><div><span class="order-number">${esc(o.number)}</span><h1 id="order-title">${esc(vehicleName(v))}</h1><p class="order-summary-subtitle">${esc(v?.year||"Ano não informado")} · ${esc(v?.plate||"Sem placa")} · ${esc(c?.name||"Cliente removido")}</p></div>${badge(o.status)}</div>
         <div class="order-summary-grid">
           <div><span>Cliente</span><strong>${esc(c?.name||"—")}</strong></div>
           <div><span>Quilometragem</span><strong>${Number(o.mileage||v?.mileage||0).toLocaleString("pt-BR")} km</strong></div>
           <div><span>Aberta em</span><strong>${date(o.createdAt)}</strong></div>
           <div><span>Previsão</span><strong>${date(o.expectedAt)}</strong></div>
-          <div><span>Última atualização</span><strong>${date(o.updatedAt,true)}</strong></div>
+          <div><span>Status Técnico</span><strong>${TECH_STATUS[o.technicalStatus||'PENDING']}</strong></div>
         </div>
       </section>
       
       <section class="grid detail-grid">
         <div class="stack">
+          ${reviewHTML}
           
           <article class="card section-card">
-            <div class="card-head"><div><h2>Equipe Técnica</h2><p>Profissional atribuído para diagnóstico e serviço</p></div><button class="btn btn-secondary btn-sm" data-action="print-os-qr" data-id="${o.id}">${icon("qr")} Imprimir QR da OS</button></div>
+            <div class="card-head"><div><h2>Atribuição Técnica</h2><p>Mecânicos responsáveis por esta ordem</p></div></div>
             <div class="card-pad">
-              <div class="field">
-                <label>Mecânico responsável</label>
-                <div style="display:flex; gap:10px">
-                  <select id="os-mechanic-select" style="flex:1">
-                    <option value="">Nenhum mecânico atribuído</option>
-                    ${state.mechanics.filter(m=>m.active).map(m=>`<option value="${m.id}" ${o.mechanicIds?.includes(m.id)?'selected':''}>${esc(m.name)}</option>`).join('')}
-                  </select>
-                  <button class="btn btn-primary" id="btn-assign-mechanic">Atribuir</button>
-                </div>
-              </div>
+               <div class="field full">
+                 <select id="assign-mechanic" style="margin-bottom:8px">
+                   <option value="">Adicionar mecânico...</option>
+                   ${mechanicOptions}
+                 </select>
+               </div>
+               <div class="chip-group" id="assigned-mechanics-list">
+                  ${(o.mechanicIds||[]).map(id => {
+                     const m = mechanicOf(id);
+                     return m ? `<span class="chip active">${esc(m.name)} <button data-action="remove-mechanic" data-mec-id="${id}" style="background:transparent;border:0;color:#fff;margin-left:6px;cursor:pointer">&times;</button></span>` : '';
+                  }).join('')}
+               </div>
             </div>
           </article>
 
-          <article class="card section-card">
-            <div class="card-head"><div><h2>Atendimento</h2><p>Relato registrado na abertura da ordem</p></div></div>
-            <div class="card-pad"><p class="public-text">${esc(o.complaint||"Relato não informado.")}</p></div>
-          </article>
+          <article class="card section-card"><div class="card-head"><div><h2>Andamento</h2><p>Atualize o que o cliente verá no acompanhamento</p></div>${badge(o.status)}</div><div class="card-pad"><form id="status-form" class="form-grid"><div class="field full"><label for="order-status">Status atual</label><select id="order-status" name="status">${Object.entries(STATUS).map(([key,label])=>`<option value="${key}" ${o.status===key?"selected":""}>${label}</option>`).join("")}</select></div><div class="field full"><label for="status-note">Observação pública</label><input id="status-note" name="note" maxlength="240" placeholder="Ex.: Peças solicitadas ao fornecedor"><span class="help">Essa observação entra no histórico que o cliente acompanha.</span></div><div class="form-actions"><button class="btn btn-primary" type="submit">${icon("check")} Atualizar andamento</button></div></form></div></article>
           
           <article class="card section-card">
-            <div class="card-head"><div><h2>Andamento e Diagnóstico</h2><p>Gerencie o status e o laudo técnico</p></div></div>
+            <div class="card-head"><div><h2>Diagnóstico</h2><p>Revisão do laudo técnico e anotações internas</p></div></div>
             <div class="card-pad">
-              <form id="status-form" class="form-grid">
-                <div class="field"><label for="order-status">Status (Cliente)</label><select id="order-status" name="status">${Object.entries(STATUS).map(([key,label])=>`<option value="${key}" ${o.status===key?"selected":""}>${label}</option>`).join("")}</select></div>
-                <div class="field"><label for="tech-status">Status Técnico (Interno)</label><select id="tech-status" name="techStatus">${Object.entries(TECH_STATUS).map(([key,label])=>`<option value="${key}" ${o.techStatus===key?"selected":""}>${label}</option>`).join("")}</select></div>
-                <div class="field full"><label for="status-note">Observação pública</label><input id="status-note" name="note" maxlength="240" placeholder="Ex.: Peças solicitadas ao fornecedor"><span class="help">Essa observação entra no histórico que o cliente acompanha.</span></div>
-                <div class="form-actions"><button class="btn btn-primary" type="submit">${icon("check")} Atualizar andamento</button></div>
-              </form>
-              
-              <hr style="border:0; border-top:1px solid var(--border); margin:24px 0">
-              
-              ${isDiagnosisPending ? `<div class="notice warning">${icon("alert")}<span>Diagnóstico preenchido pelo mecânico aguardando sua revisão e aprovação.</span></div>` : ''}
               <form id="diagnosis-form" class="form-grid">
-                <div class="field full"><label for="diagnosis-title">Título do Diagnóstico</label><input id="diagnosis-title" name="title" maxlength="120" value="${esc(o.diagnosis?.title||"")}" placeholder="Ex.: Desgaste no sistema de freios"></div>
-                <div class="field full"><label for="diagnosis-description">Descrição para o cliente</label><textarea id="diagnosis-description" name="description" maxlength="1600" placeholder="Explique o diagnóstico em linguagem clara">${esc(o.diagnosis?.description||"")}</textarea></div>
-                <div class="field full"><label for="diagnosis-internal">Notas internas da oficina</label><textarea id="diagnosis-internal" name="internal" maxlength="1600" placeholder="Informações técnicas (não aparecem para cliente)">${esc(o.diagnosis?.internal||"")}</textarea></div>
-                <div class="form-actions">
-                  ${isDiagnosisPending ? `<button type="button" class="btn btn-secondary" data-action="return-diagnosis">Devolver (Revisar)</button>` : ''}
-                  <button class="btn btn-primary" type="submit">${isDiagnosisPending ? icon("check")+" Aprovar e Salvar" : "Salvar diagnóstico"}</button>
-                </div>
+                <div class="field full"><label for="diagnosis-title">Título</label><input id="diagnosis-title" name="title" maxlength="120" value="${esc(o.diagnosis?.title||"")}" placeholder="Ex.: Desgaste no sistema de freios"></div>
+                <div class="field full"><label for="diagnosis-description">Descrição técnica</label><textarea id="diagnosis-description" name="description" maxlength="2000">${esc(o.diagnosis?.description||"")}</textarea></div>
+                <div class="field"><label>Causa provável</label><textarea name="probableCause" maxlength="1200">${esc(o.diagnosis?.probableCause||"")}</textarea></div>
+                <div class="field"><label>Recomendação</label><textarea name="recommendation" maxlength="1200">${esc(o.diagnosis?.recommendation||"")}</textarea></div>
+                <div class="field full"><label for="diagnosis-client">Descrição para o cliente</label><textarea id="diagnosis-client" name="clientDescription" maxlength="1600" required placeholder="Explique o diagnóstico em linguagem clara">${esc(o.diagnosis?.clientDescription||o.diagnosis?.description||"")}</textarea></div>
+                <div class="field full"><label for="diagnosis-internal">Notas internas da oficina</label><textarea id="diagnosis-internal" name="internal" maxlength="1600" placeholder="Informações que não aparecem na página pública">${esc(o.diagnosis?.internal||"")}</textarea></div>
+                <div class="form-actions"><button class="btn btn-primary" type="submit">Aprovar e Salvar diagnóstico</button></div>
               </form>
-              
-              ${diagnosticMediaHTML}
-
             </div>
+            ${recommendationsHTML}
+            ${photosHTML}
           </article>
           
-          <article class="card section-card">
-            <div class="card-head"><div><h2>Orçamento</h2><p>Peças, serviços e decisões do cliente</p></div><button class="btn btn-secondary btn-sm" data-action="new-item">${icon("plus")} Adicionar item</button></div>
-            ${recommendationsHTML}
-            <div class="card-pad">${items.length?items.map(i=>`<div class="item-row split mobile-stack"><div><strong>${esc(i.description)}</strong><p>${esc(i.type||"Serviço")} · ${i.qty} × ${money(i.unitCents)}</p></div><div class="item-price"><strong>${money(i.qty*i.unitCents)}</strong><select class="decision-control item-decision" data-id="${i.id}" aria-label="Decisão para ${esc(i.description)}"><option value="PENDING" ${i.decision==="PENDING"?"selected":""}>Pendente</option><option value="APPROVED" ${i.decision==="APPROVED"?"selected":""}>Aprovado</option><option value="REJECTED" ${i.decision==="REJECTED"?"selected":""}>Recusado</option></select></div></div>`).join("")+`<div class="total-box split"><span>Total do orçamento</span><strong>${money(subtotal)}</strong></div>`:empty("Orçamento em branco","Adicione peças e serviços para apresentar ao cliente.","new-item","Adicionar item")}</div>
-          </article>
+          <article class="card section-card"><div class="card-head"><div><h2>Orçamento</h2><p>Peças, serviços e decisões do cliente</p></div><button class="btn btn-secondary btn-sm" data-action="new-item">${icon("plus")} Adicionar item</button></div><div class="card-pad">${items.length?items.map(i=>`<div class="item-row split mobile-stack"><div><strong>${esc(i.description)}</strong><p>${esc(i.type||"Serviço")} · ${i.qty} × ${money(i.unitCents)}</p></div><div class="item-price"><strong>${money(i.qty*i.unitCents)}</strong><select class="decision-control item-decision" data-id="${i.id}" aria-label="Decisão para ${esc(i.description)}"><option value="PENDING" ${i.decision==="PENDING"?"selected":""}>Pendente</option><option value="APPROVED" ${i.decision==="APPROVED"?"selected":""}>Aprovado</option><option value="REJECTED" ${i.decision==="REJECTED"?"selected":""}>Recusado</option></select></div></div>`).join("")+`<div class="total-box split"><span>Total do orçamento</span><strong>${money(subtotal)}</strong></div>`:empty("Orçamento em branco","Adicione peças e serviços para apresentar ao cliente.","new-item","Adicionar item")}</div></article>
         </div>
-        
         <aside class="stack">
           <section class="communication-card" aria-labelledby="communication-title">
             <h2 id="communication-title">Comunicação com o cliente</h2><p>Compartilhe um acesso simples e sempre atualizado.</p>
             <div class="communication-link" title="${esc(link)}">${esc(link)}</div>
-            <div class="communication-actions"><a href="${esc(link)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">${icon("external")} Abrir</a><button class="btn btn-secondary btn-sm" data-action="copy-public" data-id="${o.id}">${icon("copy")} Copiar</button><button class="btn btn-whatsapp btn-sm" data-action="send-whatsapp-status" data-id="${o.id}">${icon("whatsapp")} WhatsApp</button></div>
-            <p>Sincronizado em ${date(o.updatedAt,true)}</p>
+            <div class="communication-actions">
+              <a href="${esc(link)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">${icon("external")} Abrir</a>
+              <button class="btn btn-secondary btn-sm" data-action="copy-public" data-id="${o.id}">${icon("copy")} Copiar</button>
+              <button class="btn btn-whatsapp btn-sm" data-action="send-whatsapp-status" data-id="${o.id}">${icon("whatsapp")} WhatsApp</button>
+            </div>
+            <div style="margin-top:16px; border-top:1px solid #cbdcf4; padding-top:16px;">
+              <p style="margin:0 0 8px;font-weight:600">Acesso Rápido na Oficina</p>
+              <button class="btn btn-secondary btn-sm" style="width:100%" data-action="print-os-qr" data-id="${o.id}">${icon("qr")} Imprimir QR da OS</button>
+            </div>
           </section>
           
-          <article class="card"><div class="card-head"><div><h2>Financeiro</h2><p>Informação privada da oficina</p></div></div>
-            <div class="card-pad finance-grid">
-              <div class="finance-row"><span>Total da OS</span><strong>${money(subtotal)}</strong></div>
-              <div class="finance-row"><span>Recebido</span><strong>${money(paid)}</strong></div>
-              ${(o.payments||[]).map(p => `<div class="finance-row"><span>${esc(p.method)}${p.installments ? ` · ${p.installments}x` : ''}</span><span>${money(p.amountCents)}</span></div>`).join('')}
-              <div class="finance-row balance"><span>Saldo pendente</span><strong>${money(Math.max(0,balance))}</strong></div>${balance<=0&&subtotal>0?`<div class="paid-state">Pagamento concluído</div>`:""}
-              <div class="field" style="margin-top:8px">
-                <label class="split" style="align-items:center; cursor:pointer; background:var(--surface-secondary); padding:10px 12px; border-radius:8px; border:1px solid var(--border)">
-                  <span>Mostrar PIX no acompanhamento</span>
-                  <input type="checkbox" id="toggle-pix" ${o.showPix ? 'checked' : ''} style="width:auto; min-height:auto; transform:scale(1.2)">
-                </label>
-              </div>
-              <button class="btn btn-primary" data-action="new-payment">${icon("plus")} Registrar pagamento</button>
+          <article class="card"><div class="card-head"><div><h2>Financeiro</h2><p>Informação privada da oficina</p></div></div><div class="card-pad finance-grid">
+            <div class="finance-row"><span>Total da OS</span><strong>${money(subtotal)}</strong></div>
+            <div class="finance-row"><span>Recebido</span><strong>${money(paid)}</strong></div>
+            ${(o.payments||[]).map(p => `<div class="finance-row"><span>${esc(PAYMENT_METHODS[p.method]||p.method)}${p.installments ? ` · ${p.installments}x` : ''}</span><span>${money(p.amountCents)}</span></div>`).join('')}
+            <div class="finance-row balance"><span>Saldo pendente</span><strong>${money(Math.max(0,balance))}</strong></div>${balance<=0&&subtotal>0?`<div class="paid-state">Pagamento concluído</div>`:""}
+            <div class="field" style="margin-top:8px">
+              <label class="split" style="align-items:center; cursor:pointer; background:var(--surface-secondary); padding:10px 12px; border-radius:8px; border:1px solid var(--border)">
+                <span>Mostrar PIX no acompanhamento do cliente</span>
+                <input type="checkbox" id="toggle-pix" ${o.showPix ? 'checked' : ''} style="width:auto; min-height:auto; transform:scale(1.2)">
+              </label>
             </div>
-          </article>
-          
-          <article class="card"><div class="card-head"><div><h2>Histórico e Notas</h2><p>Eventos e andamento</p></div></div>
-            <div class="card-pad">
-              <ol class="timeline">
-                ${[...(o.timeline||[]), ...(o.technicalNotes||[]).map(n=>({text: `Nota Técnica: ${n.text}`, at: n.at, isTech: true}))].sort((a,b)=>b.at-a.at).map(e=>`<li><strong style="${e.isTech?'color:var(--brand)':''}">${esc(e.text)}</strong><time datetime="${new Date(e.at).toISOString()}">${date(e.at,true)}</time></li>`).join("")}
-              </ol>
-            </div>
-          </article>
-          
+            <button class="btn btn-primary" data-action="new-payment">${icon("plus")} Registrar pagamento</button>
+          </div></article>
+          <article class="card"><div class="card-head"><div><h2>Histórico</h2><p>Eventos mais recentes primeiro</p></div></div><div class="card-pad"><ol class="timeline">${[...(o.timeline||[])].sort((a,b)=>b.at-a.at).map(e=>`<li><strong>${esc(e.text)}</strong><time datetime="${new Date(e.at).toISOString()}">${date(e.at,true)}</time></li>`).join("")}</ol></div></article>
           <button class="btn btn-secondary back-link" data-view="orders">${icon("back")} Voltar para ordens</button>
         </aside>
       </section>`;
       
-      $("#btn-assign-mechanic")?.addEventListener("click", async () => {
-        const val = $("#os-mechanic-select").value;
-        o.mechanicIds = val ? [val] : [];
-        const mechanic = state.mechanics.find(m => m.id === val);
-        if(mechanic) o.timeline.push({id: id('evt'), text: `Atribuído ao mecânico ${mechanic.name}`, at: Date.now()});
-        o.updatedAt = Date.now();
-        await saveState();
-        toast("Atribuição atualizada.");
-      });
-
-      $("[data-action='return-diagnosis']")?.addEventListener("click", async () => {
-        if(o.diagnosis) {
-           o.diagnosis.status = 'RETURNED';
-           o.timeline.push({id: id('evt'), text: `Diagnóstico devolvido ao mecânico para revisão.`, at: Date.now()});
-           o.updatedAt = Date.now();
-           await saveState();
-           renderOrderDetail();
-           toast("Diagnóstico devolvido para revisão da equipe técnica.");
-        }
-      });
-
+      // Events for order details
       $$('.item-decision').forEach(s=>s.addEventListener("change",async e=>{
         const item=items.find(i=>i.id===e.target.dataset.id);
         item.decision=e.target.value; o.updatedAt=Date.now();
-        await saveState(); await syncPublicOrder(o.id);
+        await persistOrder(o);
         toast("Decisão atualizada.");
       }));
 
       $("#toggle-pix")?.addEventListener("change", async e => {
         o.showPix = e.target.checked;
-        await saveState(); await syncPublicOrder(o.id);
+        await persistOrder(o);
         toast(o.showPix ? "PIX visível para o cliente." : "PIX oculto.");
       });
 
-      // Ativar Listener em tempo real para orçamentos apenas quando estamos nesta view
+      // Assign mechanic
+      $("#assign-mechanic")?.addEventListener("change", async e => {
+         const mecId = e.target.value;
+         if(!mecId) return;
+         if(!o.mechanicIds) o.mechanicIds = [];
+         if(!o.mechanicIds.includes(mecId)) {
+            o.mechanicIds.push(mecId);
+            o.timeline.push({id:id("evt"), text:`Mecânico ${mechanicOf(mecId)?.name} atribuído`, at:Date.now()});
+             await persistOrder(o); render(); toast("Mecânico atribuído.");
+         }
+      });
+      
+      $$("[data-photo-public]")?.forEach(chk => chk.addEventListener("change", async e => {
+         const idx = parseInt(e.target.dataset.photoPublic);
+         o.diagnosticMedia[idx].isPublic = e.target.checked;
+          await persistOrder(o);
+         toast(e.target.checked ? "Foto visível para o cliente." : "Foto oculta.");
+      }));
+
+      // Ativar Listener em tempo real para orçamentos
       cleanupOrderListener();
+      const decisionRef=db.ref(`publicOrderDecisions/${o.publicToken}`);
       activeOrderListener = {
-          token: o.publicToken,
+          ref:decisionRef,
           cb: async (snap) => {
-              const pubItems = snap.val();
-              if(!pubItems) return;
-              let changed = false;
-              (o.estimate.items || []).forEach((item, idx) => {
-                const pItem = pubItems[idx];
+              const pubItems = snap.val()||{};
+              let changed = false;const updates={},orderIndex=state.orders.findIndex(x=>x.id===o.id);
+              (o.estimate.items || []).forEach((item,itemIndex) => {
+                const pItem = pubItems[item.id];
                 if(pItem && pItem.decision !== item.decision) {
-                  item.decision = pItem.decision;
+                  item.decision = pItem.decision;item.decidedAt=pItem.decidedAt;item.decisionSource=pItem.decisionSource;
+                  const event={id:id("evt"),text:`Cliente ${pItem.decision==="APPROVED"?"aprovou":"recusou"}: ${item.description}`,at:Date.now(),visibility:"PUBLIC"};o.timeline.push(event);
+                  updates[`orders/${orderIndex}/estimate/items/${itemIndex}/decision`]=item.decision;updates[`orders/${orderIndex}/estimate/items/${itemIndex}/decidedAt`]=item.decidedAt;updates[`orders/${orderIndex}/estimate/items/${itemIndex}/decisionSource`]=item.decisionSource;updates[`orders/${orderIndex}/timeline/${o.timeline.length-1}`]=event;
                   changed = true;
                 }
               });
               if(changed) {
-                  o.updatedAt = Date.now();
-                  await saveState();
+                  o.updatedAt=Date.now();updates[`orders/${orderIndex}/updatedAt`]=o.updatedAt;updates.updatedAt=o.updatedAt;await db.ref(`workshops/${uid()}`).update(updates);await syncPublicOrder(o.id);
                   if(view === 'order-detail' && selectedOrder === o.id) {
                      toast("O cliente respondeu ao orçamento!", "info");
                      renderOrderDetail(true); 
@@ -1889,7 +2060,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
               }
           }
       };
-      db.ref(`publicOrders/${o.publicToken}/items`).on('value', activeOrderListener.cb);
+      decisionRef.on('value', activeOrderListener.cb);
     }
 
     function renderBackup(){
@@ -1972,12 +2143,12 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     function viewClientModal(c) {
       if(!c) return;
       const vehicles=state.vehicles.filter(v=>v.clientId===c.id);
-      const orders=state.orders.filter(o=>o.clientId===c.id).sort((a,b)=>b.updatedAt-a.updatedAt);
+      const orders=state.orders.filter(o=>o.clientId===c.id).sort((a,b)=>orderServiceAt(b)-orderServiceAt(a));
       const now = Date.now();
       
       let alertHTML = "";
       if (orders.length > 0) {
-        const timeSince = now - orders[0].updatedAt;
+        const timeSince = now - orderServiceAt(orders[0]);
         const days = Math.floor(timeSince / (1000 * 60 * 60 * 24));
         if (days >= 90) {
           alertHTML = `
@@ -2013,7 +2184,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
           <div class="stack">
             <div class="client-section">
               <h3>Histórico de Ordens (${orders.length})</h3>
-              ${orders.length ? `<ul class="timeline" style="margin-top:10px">`+orders.map(o=>`<li style="padding-bottom:12px"><strong>OS ${esc(o.number)}</strong><time>${date(o.updatedAt)} · ${esc(STATUS[o.status]||o.status)} <button class="btn btn-ghost btn-sm" style="padding:0; min-height:auto; display:inline-block; margin-left:8px;" data-action="open-order" data-id="${o.id}">Ver OS</button></time></li>`).join('')+`</ul>` : '<p class="help">Nenhum atendimento realizado.</p>'}
+              ${orders.length ? `<ul class="timeline" style="margin-top:10px">`+orders.map(o=>{const v=vehicleOf(o.vehicleId),approved=(o.estimate?.items||[]).filter(i=>i.decision==="APPROVED"),value=approved.reduce((s,i)=>s+i.qty*i.unitCents,0);return `<li style="padding-bottom:12px"><strong>OS ${esc(o.number)} · ${esc(vehicleName(v))}</strong><time>${date(o.createdAt)} · ${esc(STATUS[o.status]||o.status)} · ${Number(o.mileage||v?.mileage||0).toLocaleString("pt-BR")} km</time><p>${esc(o.complaint||"Sem relato")}${o.diagnosis?.title?` · Diagnóstico: ${esc(o.diagnosis.title)}`:""}${approved.length?` · ${approved.length} item(ns) aprovado(s) · ${money(value)}`:""}</p><button class="btn btn-ghost btn-sm" data-action="open-order" data-id="${o.id}">Ver OS</button></li>`}).join('')+`</ul>` : '<p class="help">Nenhum atendimento realizado.</p>'}
             </div>
           </div>
         </div>
@@ -2063,61 +2234,6 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       `).join('');
       modal("Check-ins da Recepção", `<p>Os clientes abaixo preencheram os dados via QR Code.</p>${listHTML}`, true);
     }
-    
-    function mechanicForm(item={}){
-      modal(item.id?"Editar Mecânico":"Novo Mecânico", `
-        <form id="mechanic-form" class="form-grid" data-id="${item.id||""}">
-          <div class="field full"><label>Nome do profissional</label><input name="name" required maxlength="100" value="${esc(item.name||"")}"></div>
-          <div class="field full"><label>Telefone / WhatsApp</label><input name="phone" required maxlength="20" inputmode="tel" value="${esc(item.phone||"")}"></div>
-          ${!item.id ? `
-            <div class="field full"><label>PIN de Acesso (6 números)</label><input name="pin" required minlength="6" maxlength="6" inputmode="numeric" placeholder="Ex: 123456"></div>
-          ` : `
-            <div class="field full"><label style="display:flex;align-items:center;gap:10px"><input type="checkbox" name="active" ${item.active?'checked':''} style="width:auto;min-height:auto"> Conta Ativa</label></div>
-          `}
-          <div class="form-actions">
-            <button class="btn btn-secondary" type="button" data-action="close">Cancelar</button>
-            <button class="btn btn-primary" type="submit">Salvar</button>
-          </div>
-        </form>
-      `);
-    }
-
-    function viewMechanicQR(m) {
-      if(!m) return;
-      const loginUrl = new URL(window.location.href);
-      loginUrl.search = ""; loginUrl.hash = "";
-      loginUrl.searchParams.set("mecanico_login", "1");
-      loginUrl.searchParams.set("email", m.email);
-      const urlStr = loginUrl.toString();
-
-      modal("Acesso do Mecânico", `
-        <div style="text-align:center">
-          <p>Profissional: <strong>${esc(m.name)}</strong></p>
-          <div class="qr-preview" style="margin-top:20px; display:inline-flex">
-            <canvas id="qr-mechanic-canvas"></canvas>
-          </div>
-          <p class="help" style="margin-top:16px">O mecânico deve escanear este código com o celular para acessar sua área e informar o PIN cadastrado.</p>
-          <div class="communication-link" style="margin-top:16px">${esc(urlStr)}</div>
-        </div>
-      `);
-      requestAnimationFrame(() => {
-        new QRious({element: document.getElementById('qr-mechanic-canvas'), value: urlStr, size: 220, level: 'H'});
-      });
-    }
-
-    function printOSQRModal(orderId) {
-      const o = orderOf(orderId);
-      if(!o) return;
-      const urlStr = getOSQRLink(orderId);
-      const win = window.open('', '_blank');
-      requestAnimationFrame(() => {
-        const canvas = document.createElement('canvas');
-        new QRious({element: canvas, value: urlStr, size: 300, level: 'H'});
-        const img = canvas.toDataURL("image/png");
-        win.document.write(`<html><body style="text-align:center;font-family:sans-serif;margin-top:40px"><h1>${esc(o.number)}</h1><h2>Placa: ${esc(vehicleOf(o.vehicleId)?.plate)}</h2><img src="${img}" style="margin:20px 0;"><p>Aponte a câmera (logado como mecânico) para abrir direto a OS.</p><script>window.onload=function(){window.print();}<\/script></body></html>`);
-        win.document.close();
-      });
-    }
 
     function clientForm(item={}){modal(item.id?"Editar cliente":"Novo cliente",`<form id="client-form" class="form-grid" data-id="${item.id||""}"><div class="field full"><label for="client-name">Nome completo</label><input id="client-name" name="name" required maxlength="100" value="${esc(item.name||"")}" autocomplete="name"></div><div class="field"><label for="client-phone">Telefone / WhatsApp</label><input id="client-phone" name="phone" required maxlength="20" inputmode="tel" value="${esc(item.phone||"")}" autocomplete="tel"></div><div class="field"><label for="client-email">E-mail</label><input id="client-email" name="email" type="email" maxlength="120" value="${esc(item.email||"")}" autocomplete="email"></div><div class="field full"><label for="client-document">CPF ou CNPJ <span class="help">(opcional)</span></label><input id="client-document" name="document" maxlength="18" value="${esc(item.document||"")}"></div><div class="field full"><label for="client-notes">Observações internas</label><textarea id="client-notes" name="notes" maxlength="1000">${esc(item.notes||"")}</textarea></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Salvar cliente</button></div></form>`)}
     function vehicleForm(item={}){if(!state.clients.length){toast("Cadastre um cliente antes de adicionar um veículo.","warning");clientForm();return;}modal(item.id?"Editar veículo":"Novo veículo",`<form id="vehicle-form" class="form-grid" data-id="${item.id||""}"><div class="field full"><label for="vehicle-client">Proprietário</label><select id="vehicle-client" name="clientId" required><option value="">Selecione o cliente</option>${state.clients.map(c=>`<option value="${c.id}" ${item.clientId===c.id?"selected":""}>${esc(c.name)}</option>`).join("")}</select></div><div class="field"><label for="vehicle-plate">Placa</label><input id="vehicle-plate" name="plate" required maxlength="8" value="${esc(item.plate||"")}" placeholder="ABC1D23"></div><div class="field"><label for="vehicle-year">Ano</label><input id="vehicle-year" name="year" type="number" min="1900" max="2100" value="${esc(item.year||"")}"></div><div class="field"><label for="vehicle-brand">Marca</label><input id="vehicle-brand" name="brand" required maxlength="60" value="${esc(item.brand||"")}" placeholder="Honda"></div><div class="field"><label for="vehicle-model">Modelo</label><input id="vehicle-model" name="model" required maxlength="60" value="${esc(item.model||"")}" placeholder="Civic"></div><div class="field"><label for="vehicle-color">Cor</label><input id="vehicle-color" name="color" maxlength="40" value="${esc(item.color||"")}"></div><div class="field"><label for="vehicle-mileage">Quilometragem</label><input id="vehicle-mileage" name="mileage" type="number" min="0" value="${Number(item.mileage||0)}"></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Salvar veículo</button></div></form>`)}
@@ -2130,7 +2246,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         <div class="field">
           <label for="payment-method">Forma de pagamento</label>
           <select id="payment-method" name="method">
-            <option>PIX</option><option>Dinheiro</option><option value="Cartão de Débito">Cartão de Débito</option><option value="Cartão de Crédito">Cartão de Crédito</option><option>Transferência</option><option>Outro</option>
+            ${Object.entries(PAYMENT_METHODS).map(([value,label])=>`<option value="${value}">${label}</option>`).join("")}
           </select>
         </div>
         <div class="field" id="installments-wrapper" style="display:none">
@@ -2142,7 +2258,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       
       const pm = $("#payment-method");
       pm.addEventListener("change", (e) => {
-        $("#installments-wrapper").style.display = (e.target.value === "Cartão de Crédito") ? "block" : "none";
+        $("#installments-wrapper").style.display = (e.target.value === "CREDIT_CARD") ? "block" : "none";
       });
     }
 
@@ -2154,20 +2270,83 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       $("#searchOwner")?.addEventListener("input",e=>{searchOwner=e.target.value;const cursor=e.target.selectionStart;render();requestAnimationFrame(()=>{const next=$("#searchOwner");next?.focus();next?.setSelectionRange(cursor,cursor);});}); 
     }
 
-    // ---------------------------------------------------------
-    // EVENT LISTENERS GERAIS
-    // ---------------------------------------------------------
+    // FINAL_IMPLEMENTATION_MARKER
+    // Eventos globais e submits recuperados após a interrupção da geração.
+    function setButtonBusy(form,label="Aguarde..."){const buttons=[...(form?.querySelectorAll('button[type="submit"]')||[])];if(!buttons.length)return()=>{};buttons.forEach((button,index)=>{button.dataset.originalHtml=button.innerHTML;button.disabled=true;if(index===0)button.innerHTML=label;});return()=>buttons.forEach(button=>{button.disabled=false;button.innerHTML=button.dataset.originalHtml||"Salvar";});}
+    async function copyText(value,message="Copiado."){try{await navigator.clipboard.writeText(value);toast(message);}catch(e){toast("Não foi possível copiar automaticamente.","error");}}
+    function printCanvas(canvas,title,subtitle=""){if(!canvas)return toast("QR Code ainda não está pronto.","error");const win=window.open("","_blank","noopener");if(!win)return toast("Permita pop-ups para imprimir.","warning");win.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${esc(title)}</title></head><body style="text-align:center;font-family:Arial,sans-serif;padding:40px"><h1>${esc(title)}</h1><img alt="QR Code" src="${canvas.toDataURL("image/png")}" width="320" height="320"><p>${esc(subtitle)}</p><script>window.onload=()=>window.print()<\/script></body></html>`);win.document.close();}
+    function downloadCanvas(canvas,name){if(!canvas)return;const link=document.createElement("a");link.download=name;link.href=canvas.toDataURL("image/png");link.click();}
+    function confirmPixThen(order,next){if(!(order?.showPix===true&&state.workshop.pix?.key)){next();return;}const p=state.workshop.pix;modal("Confirme os dados PIX",`<div class="stack"><div class="finance-row"><span>Tipo</span><strong>${esc(p.type)}</strong></div><div class="finance-row"><span>Chave</span><strong>${esc(p.key)}</strong></div><div class="finance-row"><span>Titular</span><strong>${esc(p.holderName)}</strong></div><div class="dialog-actions"><button class="btn btn-secondary" data-action="close">Cancelar</button><button class="btn btn-primary" id="confirm-pix-continue">Confirmar e continuar</button></div></div>`);$("#confirm-pix-continue").addEventListener("click",()=>{closeModal();next();});}
+    async function syncWorkshopPublicIndex(){const token=state.workshop.publicCheckinToken;if(token){await db.ref(`publicWorkshopOwners/${token}`).set(uid());await db.ref(`publicWorkshopCheckins/${token}`).set({workshopName:state.workshop.name||"Oficina",logoUrl:state.workshop.logoUrl||null,active:true,updatedAt:Date.now()});}}
+
     document.addEventListener("click",async e=>{
-      const viewBtn=e.target.closest("[data-view]"); if(viewBtn){e.preventDefault();navigate(viewBtn.dataset.view);return;}
-      const act=e.target.closest("[data-action]")?.dataset.action, idV=e.target.closest("[data-id]")?.dataset.id;
-      if(!act)return;
-      
-      if(act==="logout"){ await auth.signOut(); }
-      if(act==="close"){ closeModal(); }
-      if(act==="close-menu"){ setMenuOpen(false); }
-      if(act==="new-order-choice"){ newOrderChoiceModal(); }
-      if(act==="new-order-smart"){ closeModal(); smartOrderForm(); }
-      if(act==="new-order-manual"){ closeModal(); manualOrderForm(); }
-      if(act==="new-client"){ clientForm(); }
-      if(act==="view-client"){ viewClientModal(clientOf(idV)); }
-      if(act==="edit-client"){ clientForm(clientI encountered an error doing what you asked. Could you try again?
+      const viewBtn=e.target.closest("[data-view]"),actionEl=e.target.closest("[data-action]");if(viewBtn){e.preventDefault();navigate(viewBtn.dataset.view);return;}if(!actionEl)return;
+      const act=actionEl.dataset.action,idV=e.target.closest("[data-id]")?.dataset.id;
+      try{
+        if(act==="logout"||act==="logout-mechanic"){cleanupAllListeners();await auth.signOut();return;}
+        if(act==="close")return closeModal();if(act==="close-menu")return setMenuOpen(false);
+        if(act==="new-order-choice")return newOrderChoiceModal();if(act==="new-order-smart"){closeModal();return smartOrderForm();}if(act==="new-order-manual"){closeModal();return manualOrderForm();}
+        if(act==="new-client")return clientForm();if(act==="view-client")return viewClientModal(clientOf(idV));if(act==="edit-client")return clientForm(clientOf(idV));if(act==="whatsapp-recovery")return whatsappRecoveryModal(clientOf(idV));
+        if(act==="new-vehicle")return vehicleForm();if(act==="edit-vehicle")return vehicleForm(vehicleOf(idV));if(act==="open-order"){closeModal();return navigate("order-detail",idV);}
+        if(act==="new-item")return itemForm();if(act==="new-payment")return paymentForm();if(act==="edit-workshop")return workshopForm();
+        if(act==="send-whatsapp-status"){const o=orderOf(idV);return confirmPixThen(o,()=>openWhatsAppModal(o));}
+        if(act==="view-checkins")return pendingCheckinsModal();if(act==="create-from-checkin"){closeModal();return manualOrderForm(pendingCheckins.find(c=>c.id===idV),idV);}
+        if(act==="dismiss-checkin"){if(!confirm("Descartar este check-in?"))return;await db.ref(`publicCheckins/${state.workshop.publicCheckinToken}/${idV}`).remove();pendingCheckins=pendingCheckins.filter(c=>c.id!==idV);pendingCheckins.length?pendingCheckinsModal():closeModal();return toast("Check-in descartado.");}
+        if(act==="copy-public")return copyText(getPublicLink(orderOf(idV).publicToken),"Link de acompanhamento copiado.");if(act==="copy-checkin-link")return copyText(getCheckinLink(state.workshop.publicCheckinToken),"Link de check-in copiado.");
+        if(act==="print-qr")return printCanvas($("#qr-canvas"),`Check-in — ${state.workshop.name}`,"Escaneie para adiantar o atendimento.");
+        if(act==="print-mechanic-invite")return printCanvas($("#qr-mechanic-canvas"),`Acesso técnico — ${actionEl.dataset.name}`,"Convite pessoal. Não compartilhe.");
+        if(act==="download-mechanic-invite")return downloadCanvas($("#qr-mechanic-canvas"),`oficlaro-convite-${(actionEl.dataset.name||"mecanico").replace(/\W+/g,"-").toLowerCase()}.png`);
+        if(act==="print-os-qr"){const o=orderOf(idV),canvas=document.createElement("canvas");new QRious({element:canvas,value:getMechanicOSLink(o.osToken),size:320,level:"H"});return printCanvas(canvas,`${o.number} — ${vehicleName(vehicleOf(o.vehicleId))}`,"A abertura exige autenticação e atribuição.");}
+        if(act==="remove-logo"){if(!confirm("Remover a logo da oficina?"))return;if(state.workshop.logoStoragePath)await storage.ref(state.workshop.logoStoragePath).delete().catch(()=>{});state.workshop.logoUrl="";state.workshop.logoStoragePath="";await persistWorkshop();await syncWorkshopPublicIndex();updateSidebarAvatar();render();return toast("Logo removida.");}
+        if(act==="export")return exportData();if(act==="import")return $("#import-file").click();
+        if(act==="remove-mechanic"){const o=orderOf(selectedOrder),mechanicId=actionEl.dataset.mecId;o.mechanicIds=(o.mechanicIds||[]).filter(x=>x!==mechanicId);pushTimeline(o,`Mecânico ${mechanicOf(mechanicId)?.name||""} removido`,"INTERNAL");await persistOrder(o);render();return toast("Mecânico removido da OS.");}
+        if(act==="convert-recommendation"){const o=orderOf(idV),rec=(o.technicalRecommendations||[]).find(r=>r.id===actionEl.dataset.rec);if(!rec||rec.convertedItemId)return toast("Recomendação já convertida.","warning");modal("Adicionar recomendação ao orçamento",`<form id="item-form" class="form-grid"><div class="field full"><label>Descrição</label><input name="description" required maxlength="140" value="${esc(rec.description)}"></div><div class="field"><label>Tipo</label><select name="type"><option ${rec.type==="Serviço"?"selected":""}>Serviço</option><option ${rec.type==="Peça"?"selected":""}>Peça</option></select></div><div class="field"><label>Quantidade</label><input name="qty" type="number" min="1" value="${Number(rec.qty||1)}" required></div><div class="field full"><label>Valor unitário (R$)</label><input name="price" inputmode="decimal" required placeholder="0,00"></div><input type="hidden" name="recommendationId" value="${esc(rec.id)}"><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Adicionar ao orçamento</button></div></form>`);return;}
+        if(act==="return-diagnosis"){const o=orderOf(idV),comment=prompt("Comentário para o mecânico (opcional):",o.diagnosis?.reviewComment||"");if(comment===null)return;o.diagnosis={...(o.diagnosis||{}),status:"RETURNED",reviewComment:comment.trim(),reviewedAt:Date.now()};o.technicalStatus="RETURNED";pushTimeline(o,"Diagnóstico devolvido para revisão","INTERNAL");await persistOrder(o);render();return toast("Diagnóstico devolvido ao mecânico.");}
+        if(act==="mechanic-scan-os")return startScanner();if(act==="mechanic-open-os")return renderMechanicOS(idV);if(act==="mechanic-back")return renderMechanicDashboard();
+        if(act==="mechanic-reset-password"){await auth.sendPasswordResetEmail(currentUser.email);return toast("Instruções enviadas ao seu e-mail.");}
+        if(act==="mechanic-status-update"){const o=orderOf(idV),target=actionEl.dataset.target;if(!["IN_DIAGNOSIS","IN_SERVICE","TECHNICAL_TEST","TECHNICALLY_DONE"].includes(target))throw new Error("invalid_status");await emitMechanicEvent("TECH_STATUS",o,{status:target});o.technicalStatus=target;renderMechanicOS(o.id);return toast("Andamento técnico atualizado.");}
+      }catch(err){console.error(err);toast("Não foi possível concluir esta ação.","error");}
+    });
+
+    document.addEventListener("submit",async e=>{
+      if(e.target.id==="public-checkin-form"||e.target.id==="mechanic-form"||(e.target.id==="auth-form"&&new URLSearchParams(location.search).has("invite")))return;e.preventDefault();const f=e.target,d=Object.fromEntries(new FormData(f)),restore=setButtonBusy(f);if(e.submitter?.name)d[e.submitter.name]=e.submitter.value;
+      try{
+        if(f.id==="auth-form"||f.id==="mechanic-login-form"){if(isLoginMode)await auth.signInWithEmailAndPassword(d.email.trim(),d.password);else await auth.createUserWithEmailAndPassword(d.email.trim(),d.password);return;}
+        if(f.id==="setup-form"){state.workshop={ownerName:d.ownerName.trim(),name:d.workshopName.trim(),phone:d.phone.trim(),publicCheckinToken:generateToken(),pix:{type:"",key:"",holderName:""}};await persistWorkshop();await syncWorkshopPublicIndex();location.reload();return;}
+        if(f.id==="create-order-form"){
+          const normalizedPhone=phone(d.phone),plate=String(d.plate||"").toUpperCase().replace(/[^A-Z0-9]/g,"");if(plate.length<7)throw new Error("invalid_plate");const now=Date.now();let c=state.clients.find(x=>normalizedPhone&&phone(x.phone)===normalizedPhone);if(!c){c={id:id("cli"),name:d.name.trim(),phone:d.phone.trim(),email:"",document:"",notes:"",createdAt:now,updatedAt:now};state.clients.push(c);}else Object.assign(c,{name:d.name.trim()||c.name,phone:d.phone.trim()||c.phone,updatedAt:now});let v=state.vehicles.find(x=>x.plate===plate);if(!v){v={id:id("vei"),clientId:c.id,plate,brand:d.brand.trim(),model:d.model.trim(),year:d.year,color:d.color.trim(),mileage:Number(d.mileage||0),createdAt:now,updatedAt:now};state.vehicles.push(v);}else Object.assign(v,{clientId:c.id,brand:d.brand.trim()||v.brand,model:d.model.trim()||v.model,year:d.year||v.year,color:d.color.trim()||v.color,mileage:Number(d.mileage||v.mileage||0),updatedAt:now});state.counter++;const o={id:id("os"),number:`OS-${String(state.counter).padStart(6,"0")}`,publicToken:generateToken(),osToken:generateToken(),clientId:c.id,vehicleId:v.id,mileage:Number(d.mileage||v.mileage||0),expectedAt:d.expectedAt?new Date(`${d.expectedAt}T12:00:00`).getTime():null,complaint:d.complaint.trim(),status:"RECEIVED",diagnosis:null,estimate:{items:[]},payments:[],timeline:[{id:id("evt"),text:"Veículo recebido pela oficina",at:now,visibility:"PUBLIC"}],showPix:false,mechanicIds:[],technicalNotes:[],technicalRecommendations:[],diagnosticMedia:[],technicalStatus:"PENDING",createdAt:now,updatedAt:now};state.orders.push(o);await persistNewOrderData(c,v,o);await Promise.all([syncPublicOrder(o.id),publishMechanicOrder(o)]);if(d.checkinId){await db.ref(`publicCheckins/${state.workshop.publicCheckinToken}/${d.checkinId}`).remove();pendingCheckins=pendingCheckins.filter(x=>x.id!==d.checkinId);}closeModal();navigate("order-detail",o.id);return toast("Ordem criada.");
+        }
+        if(f.id==="status-form"){const o=orderOf(selectedOrder),old=o.status;o.status=d.status;pushTimeline(o,d.note.trim()||STATUS[d.status],"PUBLIC");await persistOrder(o);render();toast("Andamento atualizado.");if(old!==o.status)setTimeout(()=>confirmPixThen(o,()=>openWhatsAppModal(o)),200);return;}
+        if(f.id==="diagnosis-form"){const o=orderOf(selectedOrder);o.diagnosis={...(o.diagnosis||{}),title:d.title.trim(),description:d.description.trim(),probableCause:d.probableCause.trim(),recommendation:d.recommendation.trim(),clientDescription:d.clientDescription.trim(),internal:d.internal.trim(),status:"APPROVED",reviewedAt:Date.now(),updatedAt:Date.now()};if(o.technicalStatus==="DIAGNOSIS_DONE")o.technicalStatus="IN_SERVICE";if(o.status==="DIAGNOSING")o.status="DIAGNOSED";pushTimeline(o,"Diagnóstico revisado e aprovado pela oficina","PUBLIC");await persistOrder(o);render();return toast("Diagnóstico aprovado e salvo.");}
+        if(f.id==="item-form"){const o=orderOf(selectedOrder),item={id:id("itm"),description:d.description.trim(),type:d.type,qty:Math.max(1,Number(d.qty)),unitCents:cents(d.price),decision:"PENDING",createdAt:Date.now()};if(!item.unitCents)throw new Error("invalid_amount");o.estimate.items.push(item);if(d.recommendationId){const rec=o.technicalRecommendations.find(r=>r.id===d.recommendationId);if(rec)rec.convertedItemId=item.id;}pushTimeline(o,`Item adicionado ao orçamento: ${item.description}`,"INTERNAL");await persistOrder(o);closeModal();render();toast("Item adicionado.");setTimeout(()=>{if(confirm("Deseja avisar o cliente?"))confirmPixThen(o,()=>openWhatsAppModal(o,"BUDGET"));},250);return;}
+        if(f.id==="payment-form"){const o=orderOf(selectedOrder),amountCents=cents(d.amount);if(!amountCents)throw new Error("invalid_amount");const at=Date.now();o.payments.push({id:id("pay"),amountCents,method:d.method,installments:d.method==="CREDIT_CARD"?Math.max(1,Number(d.installments||1)):null,note:d.note.trim(),at});pushTimeline(o,`Pagamento registrado: ${money(amountCents)} (${PAYMENT_METHODS[d.method]})`,"INTERNAL");await persistOrder(o);closeModal();render();return toast("Pagamento registrado.");}
+        if(f.id==="workshop-form"){Object.assign(state.workshop,{name:d.name.trim(),ownerName:d.ownerName.trim(),phone:d.phone.trim()});await persistWorkshop();await syncWorkshopPublicIndex();$("#side-workshop").textContent=state.workshop.name;$("#side-owner").textContent=state.workshop.ownerName;updateSidebarAvatar();closeModal();render();return toast("Oficina atualizada.");}
+        if(f.id==="pix-form"){const p={type:d.type,key:d.key.trim(),holderName:d.holderName.trim()};if(!p.type&&!p.key&&!p.holderName)state.workshop.pix={type:"",key:"",holderName:""};else if(!p.type||!p.key||!p.holderName)throw new Error("invalid_pix");else state.workshop.pix=p;await persistWorkshop();return toast(p.key?"PIX salvo.":"PIX desativado.");}
+        if(f.id==="client-form"){const current=clientOf(f.dataset.id),normalized=phone(d.phone);if(state.clients.some(c=>c.id!==current?.id&&phone(c.phone)===normalized))throw new Error("duplicate_phone");const now=Date.now(),item={id:current?.id||id("cli"),name:d.name.trim(),phone:d.phone.trim(),email:d.email.trim(),document:d.document.trim(),notes:d.notes.trim(),createdAt:current?.createdAt||now,updatedAt:now};if(current)Object.assign(current,item);else state.clients.push(item);await persistCollectionItem("clients",item);closeModal();render();return toast("Cliente salvo.");}
+        if(f.id==="vehicle-form"){const current=vehicleOf(f.dataset.id),plate=d.plate.toUpperCase().replace(/[^A-Z0-9]/g,"");if(state.vehicles.some(v=>v.id!==current?.id&&v.plate===plate))throw new Error("duplicate_plate");const now=Date.now(),item={id:current?.id||id("vei"),clientId:d.clientId,plate,brand:d.brand.trim(),model:d.model.trim(),year:d.year,color:d.color.trim(),mileage:Number(d.mileage||0),createdAt:current?.createdAt||now,updatedAt:now};if(current)Object.assign(current,item);else state.vehicles.push(item);await persistCollectionItem("vehicles",item);closeModal();render();return toast("Veículo salvo.");}
+        if(f.id==="mechanic-diagnosis-form"){const o=orderOf(f.dataset.id),p={title:d.title.trim(),description:d.description.trim(),probableCause:d.probableCause.trim(),recommendation:d.recommendation.trim(),clientDescription:d.clientDescription.trim(),internal:d.internal.trim(),finalize:d.intent==="finalize"};await emitMechanicEvent("DIAGNOSIS_SAVE",o,p);o.diagnosis={...(o.diagnosis||{}),...p,status:p.finalize?"PENDING_REVIEW":"DRAFT",reviewComment:"",updatedAt:Date.now()};if(p.finalize)o.technicalStatus="DIAGNOSIS_DONE";renderMechanicOS(o.id);return toast(p.finalize?"Diagnóstico enviado para revisão.":"Rascunho salvo.");}
+        if(f.id==="mechanic-note-form"){const o=orderOf(f.dataset.id),p={id:id("note"),text:d.text.trim()};await emitMechanicEvent("NOTE_ADD",o,p);o.technicalNotes.push({...p,at:Date.now(),mechanicId:currentMechanicInfo.mechanicId});renderMechanicOS(o.id);return toast("Nota adicionada.");}
+        if(f.id==="mechanic-recommend-form"){const o=orderOf(f.dataset.id),p={id:id("rec"),type:d.type,description:d.description.trim(),qty:Math.max(1,Number(d.qty)),observation:d.observation.trim()};await emitMechanicEvent("RECOMMENDATION_ADD",o,p);o.technicalRecommendations.push({...p,addedAt:Date.now(),mechanicId:currentMechanicInfo.mechanicId});renderMechanicOS(o.id);return toast("Recomendação adicionada.");}
+      }catch(err){console.error(err);const known={invalid_plate:"Informe uma placa válida.",invalid_amount:"Informe um valor maior que zero.",invalid_pix:"Preencha tipo, chave e titular do PIX ou deixe tudo vazio.",duplicate_phone:"Já existe um cliente com este telefone.",duplicate_plate:"Já existe um veículo com esta placa."};toast(f.id==="auth-form"?firebaseErrorMessage(err):(known[err.message]||"Não foi possível salvar. Revise os dados."),"error");}finally{restore();}
+    });
+
+    // Aplicativo técnico: usa somente a projeção autorizada, nunca o cadastro administrativo.
+    function mechanicStateFromProjection(raw){const projections=Object.values(raw||{}).filter(o=>o?.assignedUids?.[currentUser.uid]);const vehicles=projections.map(o=>({id:`v_${o.orderId}`,brand:o.vehicle?.name||"Veículo",model:"",plate:o.vehicle?.plate||"",year:o.vehicle?.year||"",mileage:o.vehicle?.mileage||0}));const orders=projections.map(o=>({...o,id:o.orderId,vehicleId:`v_${o.orderId}`,estimate:{items:[]},payments:[],timeline:[],mechanicIds:[currentMechanicInfo.mechanicId],technicalNotes:o.technicalNotes||[],technicalRecommendations:o.technicalRecommendations||[],diagnosticMedia:o.diagnosticMedia||[]}));return normalizeState({version:3,workshop:{name:projections[0]?.workshopName||currentMechanicInfo.workshopName||"Oficina"},mechanics:[{id:currentMechanicInfo.mechanicId,name:currentMechanicInfo.mechanicName||"Mecânico",active:true,authUid:currentUser.uid}],vehicles,orders});}
+    async function initMechanicApp(){$("#auth-view").classList.add("hidden");$("#app").classList.add("hidden");$("#public-view").classList.add("hidden");$("#mechanic-app").classList.remove("hidden");cleanupMechanicListeners();const ref=db.ref(`mechanicInbox/${currentMechanicInfo.workshopId}/${currentUser.uid}`),cb=async snap=>{state=mechanicStateFromProjection(snap.val());$("#mechanic-workshop-name").textContent=state.workshop.name;const params=new URLSearchParams(location.search);if(params.has("os"))await openMechanicOrderToken(params.get("os"));else renderMechanicDashboard();};ref.on("value",cb);mechanicOrdersListener={ref,cb};}
+    function renderMechanicDashboard(){mechanicSelectedOrder=null;const me=mechanicOf(currentMechanicInfo.mechanicId),orders=state.orders.filter(o=>!['DELIVERED','CANCELLED'].includes(o.status)),active=window.mechanicFilter||"ALL",shown=active==="ALL"?orders:orders.filter(o=>o.technicalStatus===active),filters=[['ALL','Todos'],['PENDING','Aguardando diagnóstico'],['IN_DIAGNOSIS','Em diagnóstico'],['IN_SERVICE','Em serviço'],['TECHNICAL_TEST','Testes finais'],['TECHNICALLY_DONE','Concluídos tecnicamente']];$("#mechanic-content-area").innerHTML=`<div class="split mobile-stack"><div><h1 style="font-size:24px;margin:0">Área do Mecânico</h1><p>Olá, ${esc((me?.name||"Mecânico").split(" ")[0])}</p></div><button class="btn btn-ghost btn-sm" data-action="mechanic-reset-password">Esqueci minha senha</button></div><button class="btn btn-primary" style="width:100%;margin:18px 0" data-action="mechanic-scan-os">${icon("qr")} Escanear QR da OS</button><div class="chip-group" style="margin-bottom:18px">${filters.map(([value,label])=>`<button class="chip ${active===value?"active":""}" data-mechanic-filter="${value}">${esc(label)}</button>`).join("")}</div><h2 style="font-size:18px">Seus serviços</h2>${shown.length?`<div class="mechanic-grid">${shown.map(o=>{const v=vehicleOf(o.vehicleId);return `<article class="mechanic-card" tabindex="0" data-action="mechanic-open-os" data-id="${o.id}"><span class="mechanic-os-number">${esc(o.number)}</span><h3 class="mechanic-vehicle-name">${esc(vehicleName(v))}</h3><span class="mechanic-plate">${esc(v?.plate||"")}</span><p>${esc((o.complaint||"").slice(0,120))}</p><span class="mechanic-status ${o.technicalStatus==='TECHNICALLY_DONE'?'concluido':o.technicalStatus==='PENDING'?'pendente':'em_progresso'}">${esc(TECH_STATUS[o.technicalStatus]||o.technicalStatus)}</span></article>`}).join("")}</div>`:`<div class="empty"><h3>Nenhum serviço neste filtro</h3><p>Somente ordens atribuídas e autorizadas aparecem aqui.</p></div>`}`;$$('[data-mechanic-filter]').forEach(b=>b.addEventListener('click',()=>{window.mechanicFilter=b.dataset.mechanicFilter;renderMechanicDashboard();}));}
+    function ensureMechanicAuthorized(o){return !!(o&&currentMechanicInfo&&o.assignedUids?.[currentUser.uid]&&!['DELIVERED','CANCELLED'].includes(o.status));}
+    function renderMechanicOS(orderId){mechanicSelectedOrder=orderId;const o=orderOf(orderId);if(!ensureMechanicAuthorized(o)){toast("Esta OS não está atribuída a você.","error");return renderMechanicDashboard();}const v=vehicleOf(o.vehicleId),d=o.diagnosis||{},returned=d.status==="RETURNED"||o.technicalStatus==="RETURNED"?`<div class="notice warning">${icon("alert")}<div><strong>Diagnóstico devolvido para revisão</strong><p>${esc(d.reviewComment||"Revise o diagnóstico e reenvie.")}</p></div></div>`:"",buttons=[['IN_DIAGNOSIS','Iniciar diagnóstico'],['IN_SERVICE','Iniciar serviço'],['TECHNICAL_TEST','Iniciar testes finais'],['TECHNICALLY_DONE','Concluir parte técnica']];$("#mechanic-content-area").innerHTML=`<button class="btn btn-ghost back-link" data-action="mechanic-back">${icon("back")} Seus serviços</button><section class="order-summary"><span class="order-number">${esc(o.number)}</span><h1>${esc(vehicleName(v))}</h1><div class="order-summary-grid"><div><span>Placa</span><strong>${esc(v?.plate||"—")}</strong></div><div><span>Ano</span><strong>${esc(v?.year||"—")}</strong></div><div><span>Quilometragem</span><strong>${Number(v?.mileage||0).toLocaleString("pt-BR")} km</strong></div><div><span>Status técnico</span><strong>${esc(TECH_STATUS[o.technicalStatus]||o.technicalStatus)}</strong></div></div></section>${returned}<article class="card section-card"><div class="card-head"><div><h2>Relato do cliente</h2><p>Somente leitura</p></div></div><div class="card-pad"><p>${esc(o.complaint||"Sem relato")}</p></div></article><article class="card section-card"><div class="card-head"><div><h2>Andamento técnico</h2><p>Estados autorizados para a equipe</p></div></div><div class="card-pad chip-group">${buttons.map(([value,label])=>`<button class="btn btn-secondary btn-sm" data-action="mechanic-status-update" data-id="${o.id}" data-target="${value}" ${o.technicalStatus===value?'disabled':''}>${esc(label)}</button>`).join("")}</div></article><article class="card section-card"><div class="card-head"><div><h2>Diagnóstico</h2><p>O gestor revisará antes de publicar</p></div></div><div class="card-pad"><form id="mechanic-diagnosis-form" data-id="${o.id}" class="form-grid"><div class="field full"><label>Título</label><input name="title" required maxlength="120" value="${esc(d.title||"")}"></div><div class="field full"><label>Descrição técnica</label><textarea name="description" required maxlength="2000">${esc(d.description||"")}</textarea></div><div class="field"><label>Causa provável</label><textarea name="probableCause" maxlength="1200">${esc(d.probableCause||"")}</textarea></div><div class="field"><label>Recomendação</label><textarea name="recommendation" maxlength="1200">${esc(d.recommendation||"")}</textarea></div><div class="field full"><label>Descrição que poderá ser enviada ao cliente</label><textarea name="clientDescription" required maxlength="1600">${esc(d.clientDescription||"")}</textarea></div><div class="field full"><label>Nota interna</label><textarea name="internal" maxlength="1600">${esc(d.internal||"")}</textarea></div><div class="form-actions"><button class="btn btn-secondary" type="submit" name="intent" value="draft">Salvar rascunho</button><button class="btn btn-primary" type="submit" name="intent" value="finalize">Finalizar e enviar</button></div></form></div></article><section class="grid detail-grid"><article class="card section-card"><div class="card-head"><div><h2>Notas técnicas</h2><p>Registro interno</p></div></div><div class="card-pad"><form id="mechanic-note-form" data-id="${o.id}" class="form-grid"><div class="field full"><label>Nova nota</label><textarea name="text" required maxlength="1000"></textarea></div><div class="form-actions"><button class="btn btn-primary" type="submit">Adicionar nota</button></div></form><ol class="timeline">${(o.technicalNotes||[]).slice().sort((a,b)=>b.at-a.at).map(n=>`<li><strong>${esc(n.text)}</strong><time>${date(n.at,true)}</time></li>`).join("")}</ol></div></article><article class="card section-card"><div class="card-head"><div><h2>Peças e serviços recomendados</h2><p>Sem preços</p></div></div><div class="card-pad"><form id="mechanic-recommend-form" data-id="${o.id}" class="form-grid"><div class="field"><label>Tipo</label><select name="type"><option>Serviço</option><option>Peça</option></select></div><div class="field"><label>Quantidade</label><input name="qty" type="number" min="1" value="1" required></div><div class="field full"><label>Descrição</label><input name="description" required maxlength="300"></div><div class="field full"><label>Observação</label><input name="observation" maxlength="300"></div><div class="form-actions"><button class="btn btn-primary" type="submit">Adicionar recomendação</button></div></form>${(o.technicalRecommendations||[]).map(r=>`<div class="item-row"><strong>${esc(r.qty)} × ${esc(r.description)}</strong><p>${esc(r.type)}${r.observation?` · ${esc(r.observation)}`:""}</p></div>`).join("")}</div></article></section><article class="card section-card"><div class="card-head"><div><h2>Fotos</h2><p>Evidências internas por padrão</p></div></div><div class="card-pad"><label class="btn btn-secondary" for="mechanic-photo-input">${icon("camera")} Tirar ou escolher foto</label><input id="mechanic-photo-input" data-id="${o.id}" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden><div class="photo-grid" style="margin-top:16px">${(o.diagnosticMedia||[]).map(m=>`<a href="${esc(m.url)}" target="_blank" rel="noopener"><img class="photo-thumb" src="${esc(m.url)}" alt="Evidência técnica"></a>`).join("")}</div></div></article>`;$("#mechanic-photo-input")?.addEventListener("change",uploadMechanicPhoto);}
+    async function emitMechanicEvent(type,o,payload){if(!ensureMechanicAuthorized(o))throw new Error("not_assigned");const eventId=id("evt"),at=Date.now(),ws=currentMechanicInfo.workshopId,base=`mechanicInbox/${ws}/${currentUser.uid}/${o.id}`,updates={[`mechanic_events/${ws}/${eventId}`]:{type,orderId:o.id,mechanicId:currentMechanicInfo.mechanicId,userUid:currentUser.uid,payload,at}};if(type==="TECH_STATUS")updates[`${base}/technicalStatus`]=payload.status;if(type==="DIAGNOSIS_SAVE"){updates[`${base}/diagnosis`] ={...(o.diagnosis||{}),...payload,status:payload.finalize?"PENDING_REVIEW":"DRAFT",mechanicId:currentMechanicInfo.mechanicId,updatedAt:at};if(payload.finalize)updates[`${base}/technicalStatus`]="DIAGNOSIS_DONE";}if(type==="NOTE_ADD")updates[`${base}/technicalNotes/${payload.id}`]={...payload,mechanicId:currentMechanicInfo.mechanicId,at};if(type==="RECOMMENDATION_ADD")updates[`${base}/technicalRecommendations/${payload.id}`]={...payload,mechanicId:currentMechanicInfo.mechanicId,addedAt:at};if(type==="PHOTO_ADD")updates[`${base}/diagnosticMedia/${payload.id}`]={...payload,mechanicId:currentMechanicInfo.mechanicId,at,isPublic:false};updates[`${base}/updatedAt`]=at;await db.ref().update(updates);}
+    function compressImageAsync(file){return new Promise((resolve,reject)=>{try{compressImage(file,blob=>blob?resolve(blob):reject(new Error("compress_failed")));}catch(e){reject(e);}})}
+    async function uploadMechanicPhoto(e){const input=e.target,file=input.files?.[0],o=orderOf(input.dataset.id);if(!file)return;if(!ensureMechanicAuthorized(o))return toast("OS não autorizada.","error");if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>8*1024*1024){input.value="";return toast("Use PNG, JPEG ou WebP de até 8 MB.","error");}input.disabled=true;try{const blob=await compressImageAsync(file),photoId=id("photo"),path=`diagnosticPhotos/${currentMechanicInfo.workshopId}/${currentUser.uid}/${o.id}/${photoId}.jpg`,ref=storage.ref(path);await ref.put(blob,{contentType:"image/jpeg",customMetadata:{mechanicUid:currentUser.uid,workshopId:currentMechanicInfo.workshopId,orderId:o.id}});const url=await ref.getDownloadURL(),media={id:photoId,url,storagePath:path,isPublic:false};await emitMechanicEvent("PHOTO_ADD",o,media);o.diagnosticMedia.push({...media,mechanicId:currentMechanicInfo.mechanicId,at:Date.now()});renderMechanicOS(o.id);toast("Foto adicionada.");}catch(err){console.error(err);toast("Não foi possível enviar a foto.","error");}finally{input.disabled=false;input.value="";}}
+    async function openMechanicOrderToken(token){try{const route=(await db.ref(`mechanicOrderTokens/${token}`).once("value")).val();if(!route?.active||route.workshopId!==currentMechanicInfo.workshopId)throw new Error("invalid");const projection=(await db.ref(`mechanicInbox/${route.workshopId}/${currentUser.uid}/${route.orderId}`).once("value")).val();if(!projection?.assignedUids?.[currentUser.uid])throw new Error("not_assigned");renderMechanicOS(route.orderId);}catch(e){toast("QR inválido ou OS não atribuída a você.","error");renderMechanicDashboard();}}
+    function startScanner(){if(typeof Html5Qrcode==="undefined")return toast("Leitor de QR indisponível.","error");const overlay=$("#qr-scanner-overlay");overlay.classList.remove("hidden");const scanner=new Html5Qrcode("qr-reader"),close=async()=>{await scanner.stop().catch(()=>{});scanner.clear().catch(()=>{});overlay.classList.add("hidden");};$("#btn-close-scanner").onclick=close;scanner.start({facingMode:"environment"},{fps:10,qrbox:{width:240,height:240}},async text=>{await close();try{const token=new URL(text).searchParams.get("os");if(!token)throw new Error();await openMechanicOrderToken(token);}catch(e){toast("Este QR não pertence a uma OS válida.","error");}},()=>{}).catch(()=>{overlay.classList.add("hidden");toast("Não foi possível acessar a câmera.","error");});}
+
+    $("#logo-upload").addEventListener("change",async e=>{const file=e.target.files?.[0];if(!file)return;if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>5*1024*1024){e.target.value="";return toast("Use PNG, JPEG ou WebP de até 5 MB.","error");}try{const path=`workshopLogos/${uid()}/logo_${Date.now()}`,ref=storage.ref(path);await ref.put(file,{contentType:file.type});const url=await ref.getDownloadURL(),old=state.workshop.logoStoragePath;state.workshop.logoUrl=url;state.workshop.logoStoragePath=path;await persistWorkshop();await syncWorkshopPublicIndex();if(old)storage.ref(old).delete().catch(()=>{});updateSidebarAvatar();render();toast("Logo atualizada.");}catch(err){console.error(err);toast("Não foi possível enviar a logo.","error");}finally{e.target.value="";}});
+    $("#import-file").addEventListener("change",async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>10*1024*1024)throw new Error("too_large");const raw=JSON.parse(await file.text());if(!raw||typeof raw!=="object"||!raw.workshop||!raw.orders||!raw.clients||!raw.vehicles)throw new Error("invalid");if(!confirm("Importar este backup e substituir os dados atuais desta oficina?"))return;state=normalizeState(raw);state.updatedAt=Date.now();await saveState();await syncWorkshopPublicIndex();for(const o of state.orders)await Promise.all([syncPublicOrder(o.id),publishMechanicOrder(o)]);cleanupAdminListeners();setupCheckinListener();render();toast("Backup importado com sucesso.");}catch(err){console.error(err);toast("O arquivo não é um backup válido do Oficlaro.","error");}finally{e.target.value="";}});
+    $("#menu").addEventListener("click",()=>{if(matchMedia("(max-width:760px)").matches)setMenuOpen(!document.body.classList.contains("menu-open"));else{const collapsed=document.body.classList.toggle("sidebar-collapsed");localStorage.setItem("oficlaroSidebarCollapsed",String(collapsed));$("#menu").setAttribute("aria-expanded",String(!collapsed));}});
+    const handleViewport=()=>{const mobile=matchMedia("(max-width:760px)").matches;if(!mobile){document.body.classList.remove("menu-open");$("#sidebar").removeAttribute("inert");$("#menu").setAttribute("aria-expanded",String(!document.body.classList.contains("sidebar-collapsed")));}else setMenuOpen(false);};window.addEventListener("resize",handleViewport,{passive:true});handleViewport();
+    $("#modal").addEventListener("click",e=>{if(e.target===$("#modal"))closeModal();});document.addEventListener("keydown",e=>{if(e.key==="Escape")setMenuOpen(false);});
+  </script>
+</body>
+</html>
