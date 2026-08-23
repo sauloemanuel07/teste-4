@@ -62,7 +62,7 @@ svg{display:block}
 .stack{display:grid;gap:var(--space-5)}
 .split{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)}
 .mobile-brand,.mobile-dock{display:none}
-.menu-scrim{display:none; pointer-events:none;} /* Fixed overlay blocking */
+.menu-scrim{display:none; pointer-events:none;}
 body.menu-open .menu-scrim{display:block; pointer-events:auto;}
 
 /* Brand */
@@ -212,7 +212,7 @@ input:disabled,select:disabled,textarea:disabled{background:var(--surface-second
 .modal-field{margin-bottom:20px}
 .message-field{min-height:126px}
 .qr-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;border:1px dashed var(--border-strong);border-radius:12px;background:var(--surface-secondary)}
-.qr-preview canvas{max-width:100%;height:auto} /* QR Margin Fix */
+.qr-preview canvas{max-width:100%;height:auto}
 
 /* Tables */
 .toolbar{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:14px;flex-wrap:wrap}
@@ -368,7 +368,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
 .dialog-body{padding:20px}
 .dialog-actions{margin:20px -20px -20px;padding:14px 20px;border-top:1px solid var(--border);background:var(--surface-secondary);display:flex;justify-content:flex-end;gap:9px}
 @keyframes modal-in{from{opacity:0;transform:translateY(10px) scale(.985)}}
-.toast-region{position:fixed;right:20px;bottom:20px;z-index:200;display:grid;gap:8px; pointer-events:none;} /* Fixed overlay blocking */
+.toast-region{position:fixed;right:20px;bottom:20px;z-index:200;display:grid;gap:8px; pointer-events:none;}
 .toast{min-width:260px;max-width:390px;padding:12px 14px;border:1px solid var(--border);border-left:3px solid var(--brand);border-radius:10px;background:#fff;color:var(--text-secondary);box-shadow:var(--shadow-md);font-size:12px;animation:toast-in var(--motion-base) var(--ease); pointer-events:auto;}
 .toast.success{border-left-color:var(--success)}
 .toast.error{border-left-color:var(--danger)}
@@ -422,6 +422,34 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
 .pix-box p{margin:0 0 10px;font-size:13px;color:var(--text-secondary)}
 .pix-key{display:inline-block;padding:8px 12px;background:#fff;border:1px solid var(--border);border-radius:6px;font-family:monospace;font-size:14px;font-weight:700;letter-spacing:0.05em;margin-bottom:12px;word-break:break-all}
 .decision-actions{display:flex;gap:6px;margin-top:8px}
+
+/* Mechanic Módulo UI (Mobile First) */
+.mechanic-app{min-height:100vh;background:var(--background);color:var(--text-primary);display:flex;flex-direction:column}
+.mech-header{background:var(--brand-950);color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.mech-header h1{margin:0;font-size:18px;font-weight:680}
+.mech-header .mech-logout{color:#a9b9cb;background:transparent;border:0;padding:8px;font-size:12px;font-weight:600}
+.mech-body{padding:20px;flex:1}
+.mech-section-title{font-size:14px;color:var(--text-secondary);font-weight:700;margin:24px 0 12px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.mech-section-title:first-child{margin-top:0}
+.mech-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow-xs);display:block;text-decoration:none;color:inherit;position:relative}
+.mech-card:active{background:var(--surface-secondary)}
+.mech-card h3{margin:0 0 4px;font-size:16px;color:var(--brand-900)}
+.mech-card p{margin:0;font-size:12px;color:var(--text-muted)}
+.mech-status-badge{display:inline-block;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:700;margin-bottom:8px}
+.mech-btn{width:100%;min-height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:700;border:1px solid transparent;background:var(--brand);color:#fff;margin-top:12px}
+.mech-btn-secondary{background:var(--surface);border-color:var(--border-strong);color:var(--text-secondary)}
+.mech-btn:disabled{opacity:0.6;cursor:not-allowed}
+.mech-form-field{margin-bottom:16px}
+.mech-form-field label{display:block;font-size:12px;font-weight:680;color:var(--text-secondary);margin-bottom:6px}
+.mech-form-field input, .mech-form-field textarea{width:100%;padding:12px;border-radius:8px;border:1px solid var(--border-strong);font-size:14px;background:#fff}
+.mech-photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:10px;margin-top:12px}
+.mech-photo-item{aspect-ratio:1;border-radius:8px;background:var(--surface-secondary);border:1px solid var(--border);overflow:hidden}
+.mech-photo-item img{width:100%;height:100%;object-fit:cover}
+.mech-tech-note{padding:12px;border-radius:8px;background:var(--brand-soft);border:1px solid #cedcf0;margin-bottom:8px;font-size:13px}
+.mech-tech-note small{display:block;color:var(--text-muted);font-size:10px;margin-top:4px}
+.mech-recommendation-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px}
+.mech-recommendation-item div{font-size:13px}
+.mech-recommendation-item span{font-size:11px;color:var(--text-muted)}
 
 /* Responsive */
 @media(max-width:1120px){
@@ -517,7 +545,6 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
   .public-body{padding:0}
   .public-section{break-inside:avoid;padding-bottom:16px;margin-bottom:16px}
 }
-
   </style>
 </head>
 <body>
@@ -576,7 +603,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     </div>
   </main>
 
-  <!-- APLICAÇÃO PRINCIPAL (OFICINA) -->
+  <!-- APLICAÇÃO PRINCIPAL (OFICINA - ADMIN) -->
   <div id="app" class="app hidden">
     <a class="skip" href="#main">Ir para o conteúdo principal</a>
     <button class="menu-scrim" data-action="close-menu" aria-label="Fechar menu"></button>
@@ -591,6 +618,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         <button data-view="clients" data-tooltip="Clientes"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 20v-1.5a4.5 4.5 0 0 0-4.5-4.5h-3A4.5 4.5 0 0 0 4 18.5V20M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7-1a3 3 0 0 1 0 6m2.5 5v-1a4 4 0 0 0-2.7-3.8"/></svg></span><span>Clientes</span></button>
         <button data-view="vehicles" data-tooltip="Veículos"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 11 1.6-4.2A2 2 0 0 1 8.5 5h7a2 2 0 0 1 1.9 1.4L19 11m-15 0h16a1 1 0 0 1 1 1v5H3v-5a1 1 0 0 1 1-1Zm2 6v2m12-2v2M7 14h.01M17 14h.01"/></svg></span><span>Veículos</span></button>
         <button data-view="orders" data-tooltip="Ordens de serviço"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5h10v16H5V5h4Zm0 0V3h6v2M8 10h8M8 14h8M8 18h5"/></svg></span><span>Ordens de serviço</span></button>
+        <button data-view="team" data-tooltip="Equipe"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span>Equipe</span></button>
         <button data-view="backup" data-tooltip="Configurações"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg></span><span>Configurações</span></button>
       </nav>
       <div class="sidebar-bottom">
@@ -611,16 +639,50 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     </section>
   </div>
   
+  <!-- TELA DO MECÂNICO (ACESSO E APP) -->
+  <section id="mechanic-login-view" class="setup hidden">
+    <div class="setup-form" style="margin:auto; min-height:auto; max-width:440px; padding:40px 20px;">
+      <div style="text-align:center; margin-bottom:30px">
+        <div class="empty-icon" style="background:var(--brand-950); color:#fff; width:64px; height:64px; margin:0 auto 16px"><svg viewBox="0 0 24 24" style="width:28px;height:28px" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+        <h1 style="font-size:24px">Área do Mecânico</h1>
+        <p id="mech-login-workshop" style="color:var(--text-muted); font-size:14px; margin-top:4px">Oficina</p>
+      </div>
+      <form id="mechanic-login-form" class="form-grid stack">
+        <input type="hidden" id="mech-login-email" name="email">
+        <div class="field full">
+          <label for="mech-login-pin" style="text-align:center">Digite seu PIN de acesso (6 dígitos)</label>
+          <input id="mech-login-pin" type="password" name="pin" required minlength="6" maxlength="6" inputmode="numeric" placeholder="******" style="text-align:center; font-size:24px; letter-spacing:8px">
+        </div>
+        <div class="form-actions" style="justify-content:center; margin-top:10px">
+          <button class="btn btn-primary" type="submit" style="width:100%; min-height:54px; font-size:16px">Entrar</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <main id="mechanic-app" class="mechanic-app hidden">
+    <header class="mech-header">
+      <div>
+        <h1>Área do Mecânico</h1>
+        <div style="font-size:12px; color:#a9b9cb" id="mech-user-name">Carregando...</div>
+      </div>
+      <button class="mech-logout" data-action="mechanic-logout">Sair</button>
+    </header>
+    <div id="mech-main" class="mech-body">
+      <!-- Injetado por JS (Dashboard ou OS) -->
+    </div>
+  </main>
+
   <dialog id="modal" aria-modal="true"></dialog>
   <input id="import-file" type="file" accept="application/json,.json" hidden>
   <input id="logo-upload" type="file" accept="image/png, image/jpeg, image/webp" hidden>
+  <input id="mech-photo-upload" type="file" accept="image/*" capture="environment" hidden>
   <div id="toasts" class="toast-region" aria-live="polite"></div>
 
   <script>
     "use strict";
     if("scrollRestoration" in history) history.scrollRestoration="manual";
     
-    // Configuração de Menu Recolhido (Desktop)
     if(localStorage.getItem("oficlaroSidebarCollapsed") === "true") {
       document.body.classList.add("sidebar-collapsed");
     }
@@ -647,13 +709,25 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     // ---------------------------------------------------------
     const STATUS={RECEIVED:"Veículo recebido",DIAGNOSING:"Em diagnóstico",DIAGNOSED:"Diagnóstico concluído",AWAITING_APPROVAL:"Aguardando aprovação",WAITING_PARTS:"Aguardando peça",IN_PROGRESS:"Serviço em execução",FINAL_TESTS:"Testes finais",READY:"Veículo pronto",DELIVERED:"Entregue",CANCELLED:"Cancelado"};
     const STATUS_TONE={RECEIVED:"info",DIAGNOSING:"warning",DIAGNOSED:"info",AWAITING_APPROVAL:"warning",WAITING_PARTS:"warning",IN_PROGRESS:"info",FINAL_TESTS:"info",READY:"success",DELIVERED:"success",CANCELLED:"danger"};
+    const TECH_STATUS={PENDING:"Aguardando diagnóstico", IN_DIAGNOSIS:"Em diagnóstico", DIAGNOSIS_DONE:"Diagnóstico concluído", IN_SERVICE:"Em execução", FINAL_TESTS:"Testes finais", TECHNICALLY_DONE:"Concluído tecnicamente"};
+    const TECH_STATUS_TONE={PENDING:"warning", IN_DIAGNOSIS:"info", DIAGNOSIS_DONE:"success", IN_SERVICE:"info", FINAL_TESTS:"warning", TECHNICALLY_DONE:"success"};
     const DECISION={PENDING:"Pendente",APPROVED:"Aprovado",REJECTED:"Recusado"};
-    const TITLES={dashboard:"Visão geral",clients:"Clientes",vehicles:"Veículos",orders:"Ordens de serviço",backup:"Configurações","order-detail":"Detalhes da ordem"};
-    const fresh=()=>({version:2,workshop:{},clients:[],vehicles:[],orders:[],counter:0,updatedAt:Date.now()});
+    const TITLES={dashboard:"Visão geral",clients:"Clientes",vehicles:"Veículos",orders:"Ordens de serviço",team:"Equipe",backup:"Configurações","order-detail":"Detalhes da ordem"};
+    const fresh=()=>({version:2,workshop:{},clients:[],vehicles:[],orders:[],mechanics:[],counter:0,updatedAt:Date.now()});
+    
     let state=fresh(), view="dashboard", selectedOrder=null, search="", searchOwner="", currentUser=null, pendingCheckins=[];
     let clientFilter = "ALL", osFilter = "ALL", vehicleFilter = "ACTIVE";
-    let activeOrderListener = null; // Para aprovações em tempo real
+    let activeOrderListener = null;
+    let adminEventsListener = null;
     let knownCheckins = new Set();
+    
+    // Variáveis Módulo Mecânico
+    let isMechanicMode = false;
+    let mechanicAdminUid = null;
+    let mechanicActiveOrders = {};
+    let mechanicIndexListener = null;
+    let mechanicOrdersListeners = {};
+
     const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
     const uid=()=>currentUser?.uid;
 
@@ -677,7 +751,9 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       edit:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16-.5 4.5L8 20l11-11-4-4L4 16ZM13.5 6.5l4 4"/></svg>',
       close:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>',
       qr:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h7v7h-7zM14 17h7M17 14v7"/></svg>',
-      pen:'<svg class="icon" viewBox="0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>'
+      pen:'<svg class="icon" viewBox="0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+      camera:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+      wrench:'<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>'
     };
     const icon=name=>ICONS[name]||"";
     
@@ -703,6 +779,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     function toast(m,t="success"){ const n=document.createElement("div");n.className=`toast ${t}`;n.textContent=m;$("#toasts").append(n);setTimeout(()=>n.remove(),4200); }
     function getPublicLink(token){const url=new URL(window.location.href);url.search="";url.hash="";url.searchParams.set("acompanhar",token);return url.toString();}
     function getCheckinLink(token){const url=new URL(window.location.href);url.search="";url.hash="";url.searchParams.set("checkin",token);return url.toString();}
+    function getOSQRLink(orderId){const url=new URL(window.location.href);url.search="";url.hash="";url.searchParams.set("os_qr",orderId);return url.toString();}
     function initials(name=""){return name.trim().split(/\s+/).slice(0,2).map(part=>part[0]).join("").toUpperCase()||"OF";}
     function vehicleName(v){return v?[v.brand,v.model].filter(Boolean).join(" ")||"Veículo":"Veículo removido";}
     function statusStep(status){const groups=[['RECEIVED'],['DIAGNOSING','DIAGNOSED'],['AWAITING_APPROVAL','WAITING_PARTS'],['IN_PROGRESS','FINAL_TESTS'],['READY','DELIVERED']];const found=groups.findIndex(group=>group.includes(status));return status==='CANCELLED'?0:Math.max(0,found);}
@@ -720,7 +797,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     }
 
     // ---------------------------------------------------------
-    // PERSISTÊNCIA E SINCRONIZAÇÃO
+    // PERSISTÊNCIA E SINCRONIZAÇÃO DA OFICINA
     // ---------------------------------------------------------
     async function loadState(){
       if(!uid()) return fresh();
@@ -730,8 +807,14 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         if(val && val.version >= 1){
           val.clients = (val.clients || []).filter(Boolean);
           val.vehicles = (val.vehicles || []).filter(Boolean).map(v=>({...v,brand:v.brand||"",model:v.model||"",year:v.year||"",mileage:Number(v.mileage||0)}));
+          val.mechanics = (val.mechanics || []).filter(Boolean);
           val.orders = (val.orders || []).filter(Boolean);
           val.orders.forEach(o => {
+            o.mechanicIds = o.mechanicIds || [];
+            o.techStatus = o.techStatus || 'PENDING';
+            o.technicalNotes = o.technicalNotes || [];
+            o.diagnosticMedia = o.diagnosticMedia || [];
+            o.recommendedItems = o.recommendedItems || [];
             o.payments = o.payments || [];
             o.timeline = o.timeline || [];
             o.estimate = o.estimate || {items:[]};
@@ -758,6 +841,35 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       if(!uid()) return;
       state.updatedAt = Date.now();
       await db.ref(`workshops/${uid()}`).set(state);
+      
+      // Sincronizar dados para a área dos mecânicos
+      const mechanicSyncUpdates = {};
+      const mechanicIndexUpdates = {};
+      state.mechanics.forEach(m => mechanicIndexUpdates[m.id] = {});
+      
+      state.orders.forEach(o => {
+        if(!['DELIVERED','CANCELLED'].includes(o.status) && o.mechanicIds?.length > 0) {
+          const c = clientOf(o.clientId);
+          const v = vehicleOf(o.vehicleId);
+          mechanicSyncUpdates[o.id] = {
+            id: o.id, number: o.number, status: o.status, techStatus: o.techStatus,
+            complaint: o.complaint, diagnosis: o.diagnosis || null,
+            recommendedItems: o.recommendedItems || [],
+            diagnosticMedia: o.diagnosticMedia || [],
+            technicalNotes: o.technicalNotes || [],
+            mechanicIds: o.mechanicIds,
+            clientName: c ? c.name : 'Cliente',
+            vehicle: v ? {plate: v.plate, brand: v.brand, model: v.model, year: v.year, mileage: v.mileage} : null
+          };
+          o.mechanicIds.forEach(mId => {
+            if(mechanicIndexUpdates[mId]) mechanicIndexUpdates[mId][o.id] = true;
+          });
+        } else {
+          mechanicSyncUpdates[o.id] = null; // Remove se estiver concluída ou sem mecânico
+        }
+      });
+      await db.ref(`mechanic_orders/${uid()}`).update(mechanicSyncUpdates);
+      await db.ref(`mechanic_indexes/${uid()}`).set(mechanicIndexUpdates);
     }
 
     async function syncPublicOrder(orderId){
@@ -765,6 +877,8 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       if(!o || !o.publicToken) return;
       const c = clientOf(o.clientId);
       const v = vehicleOf(o.vehicleId);
+      const diagnosisPublic = (o.diagnosis && o.diagnosis.status === 'APPROVED') ? { title: o.diagnosis.title||'Diagnóstico', description: o.diagnosis.description } : null;
+      
       const publicData = {
         ownerUid: uid(),
         workshopName: state.workshop.name,
@@ -778,7 +892,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         status: o.status,
         expectedAt: o.expectedAt || null,
         complaint: o.complaint,
-        diagnosis: (o.diagnosis && o.diagnosis.description) ? { title: o.diagnosis.title||'Diagnóstico', description: o.diagnosis.description } : null,
+        diagnosis: diagnosisPublic,
         items: (o.estimate?.items||[]).map((i, idx)=>({ idx, desc:i.description, qty:i.qty, price:i.unitCents, decision:i.decision })),
         timeline: (o.timeline||[]).map(t=>({ text:t.text, at:t.at })),
         updatedAt: o.updatedAt
@@ -805,7 +919,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     }
 
     // ---------------------------------------------------------
-    // ROTEAMENTO INICIAL E AUTH
+    // ROTEAMENTO E AUTH
     // ---------------------------------------------------------
     let isLoginMode = true;
     function toggleAuthMode(e){
@@ -842,6 +956,8 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       const urlParams = new URLSearchParams(window.location.search);
       const isPublicTracking = urlParams.has('acompanhar');
       const isPublicCheckin = urlParams.has('checkin');
+      const isMechanicLoginUrl = urlParams.has('mecanico_login');
+      const isOSQR = urlParams.has('os_qr');
       
       if (isPublicTracking) {
         initPublicTracking(urlParams.get('acompanhar'));
@@ -851,10 +967,35 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
         initPublicCheckin(urlParams.get('checkin'));
         return;
       }
+      if (isMechanicLoginUrl && !user) {
+        initMechanicLoginUI(urlParams);
+        return;
+      }
       
       if (user) {
         currentUser = user;
+        
+        // Verifica se é Mecânico (pela convenção do e-mail criado)
+        if (user.email && user.email.startsWith('mechanic_')) {
+            isMechanicMode = true;
+            $("#auth-view").classList.add("hidden");
+            $("#mechanic-login-view").classList.add("hidden");
+            try {
+                const snap = await db.ref(`mechanic_workshop_map/${user.uid}`).once('value');
+                mechanicAdminUid = snap.val();
+                if(!mechanicAdminUid) throw new Error("Oficina não encontrada.");
+                initMechanicApp(isOSQR ? urlParams.get('os_qr') : null);
+            } catch(e) {
+                toast("Erro ao carregar acesso. Contate o gestor.", "error");
+                auth.signOut();
+            }
+            return;
+        }
+
+        // Se for ADMIN
+        isMechanicMode = false;
         $("#auth-view").classList.add("hidden");
+        $("#mechanic-login-view").classList.add("hidden");
         state = await loadState();
         if(!state.workshop?.name) {
           $("#setup").classList.remove("hidden");
@@ -869,15 +1010,32 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
           updateSidebarAvatar();
           $$("#auth-brand, #main-brand").forEach(el => el.innerHTML = getLogoHTML(state.workshop, true));
           setupCheckinListener();
+          setupAdminEventsListener();
+          
+          if(isOSQR) {
+            // Admin escaneou QR de OS.
+            const targetOs = orderOf(urlParams.get('os_qr'));
+            if(targetOs) { view = "order-detail"; selectedOrder = targetOs.id; }
+          }
+          
           render();
         }
       } else {
         currentUser = null;
         cleanupOrderListener();
+        if(adminEventsListener) { db.ref(`mechanic_events/${uid()}`).off('child_added', adminEventsListener); adminEventsListener=null; }
+        if(mechanicIndexListener && mechanicAdminUid) { db.ref(`mechanic_indexes/${mechanicAdminUid}/${currentUser?.uid}`).off('value', mechanicIndexListener); mechanicIndexListener=null; }
+        
         $("#app").classList.add("hidden");
         $("#setup").classList.add("hidden");
-        $("#auth-view").classList.remove("hidden");
-        $("#auth-brand").innerHTML = getLogoHTML(null, true);
+        $("#mechanic-app").classList.add("hidden");
+        
+        if (isMechanicLoginUrl) {
+           initMechanicLoginUI(urlParams);
+        } else {
+           $("#auth-view").classList.remove("hidden");
+           $("#auth-brand").innerHTML = getLogoHTML(null, true);
+        }
       }
     });
 
@@ -888,6 +1046,40 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       } else {
         el.textContent = initials(state.workshop.name);
       }
+    }
+
+    // ---------------------------------------------------------
+    // EVENTOS DOS MECÂNICOS -> ADMIN
+    // ---------------------------------------------------------
+    function setupAdminEventsListener() {
+        if(!uid()) return;
+        if(adminEventsListener) db.ref(`mechanic_events/${uid()}`).off('child_added', adminEventsListener);
+        adminEventsListener = async snap => {
+            const ev = snap.val();
+            const o = orderOf(ev.orderId);
+            if(o) {
+                let updated = false;
+                if(ev.type === 'TECH_STATUS') { o.techStatus = ev.status; updated = true; }
+                if(ev.type === 'ADD_NOTE') { o.technicalNotes.push({id: id('note'), text: ev.text, mechanicId: ev.mechanicId, at: ev.at}); updated = true; }
+                if(ev.type === 'ADD_RECOMMENDATION') { o.recommendedItems.push({id: id('rec'), ...ev.item, at: ev.at}); updated = true; }
+                if(ev.type === 'ADD_PHOTO') { o.diagnosticMedia.push({id: id('media'), url: ev.url, authorId: ev.mechanicId, at: ev.at, isPublic: false}); updated = true; }
+                if(ev.type === 'FINISH_DIAGNOSIS') {
+                    o.diagnosis = { ...ev.diagnosis, status: 'PENDING_REVIEW' };
+                    o.techStatus = 'DIAGNOSIS_DONE';
+                    toast(`Diagnóstico concluído: OS-${o.number}`);
+                    updated = true;
+                }
+                if (updated) {
+                    o.timeline.push({id: id('evt'), text: ev.timelineText || 'Atualização técnica (Mecânico)', at: ev.at});
+                    o.updatedAt = Date.now();
+                    await saveState(); // Re-sync state and mechanic views
+                    if(view === 'order-detail' && selectedOrder === o.id) renderOrderDetail(true);
+                    if(view === 'dashboard' || view === 'team') render();
+                }
+            }
+            snap.ref.remove();
+        };
+        db.ref(`mechanic_events/${uid()}`).on('child_added', adminEventsListener);
     }
 
     // ---------------------------------------------------------
@@ -931,7 +1123,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
           if(!item || item.decision !== 'PENDING') return toast("Decisão já registrada.");
           try {
             await db.ref(`publicOrders/${token}/items/${idx}`).update({decision, decidedAt: Date.now(), decisionSource: "CUSTOMER"});
-            initPublicTracking(token); // reload view
+            initPublicTracking(token);
             toast(decision === 'APPROVED' ? "Item aprovado!" : "Item recusado.");
           } catch(e) {
             toast("Erro ao atualizar decisão.", "error");
@@ -1010,7 +1202,6 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       document.title = "Recepção — Oficlaro";
       
       const content = $("#public-content");
-      
       content.innerHTML = `
         <div class="public-shell">
           <div class="public-brand">${getLogoHTML(null, true)}</div>
@@ -1104,7 +1295,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     }
 
     // ---------------------------------------------------------
-    // ASSISTENTE DE CADASTRO (EXTRAÇÃO SIMPLES)
+    // ASSISTENTE DE CADASTRO
     // ---------------------------------------------------------
     function extractSmartData(text) {
       const data = { phone:"", name:"", plate:"", mileage:"", brand:"", model:"", year:"", color:"", complaint: text };
@@ -1263,7 +1454,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     }
 
     // ---------------------------------------------------------
-    // RENDERIZAÇÃO E NAVEGAÇÃO DA OFICINA
+    // RENDERIZAÇÃO ADMIN
     // ---------------------------------------------------------
     function modal(title,body,wide=false){const d=$("#modal");d.classList.toggle("dialog-wide",wide);d.innerHTML=`<div class="dialog-head"><h2>${esc(title)}</h2><button class="icon-btn" data-action="close" aria-label="Fechar modal">${icon("close")}</button></div><div class="dialog-body">${body}</div>`;wireLabels(d);d.showModal()}
     function closeModal(){const d=$("#modal");if(d.open)d.close();d.classList.remove("dialog-wide")}
@@ -1275,11 +1466,12 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     function navigate(next,idValue=null){cleanupOrderListener();view=next;selectedOrder=idValue;search="";searchOwner="";setMenuOpen(false);render();$("#main").focus()}
     
     function render(){
+      if(isMechanicMode) return;
       const active=view==="order-detail"?"orders":view;
       $$('[data-view]').forEach(b=>b.setAttribute("aria-current",b.dataset.view===active?"page":"false"));
       $("#crumb").textContent=TITLES[view]||"Oficlaro";
       document.title=`${TITLES[view]||"Oficlaro"} — Oficlaro`;
-      const renderers={dashboard:renderDashboard,clients:renderClients,vehicles:renderVehicles,orders:renderOrders,backup:renderBackup,"order-detail":renderOrderDetail};
+      const renderers={dashboard:renderDashboard,clients:renderClients,vehicles:renderVehicles,orders:renderOrders,team:renderTeam,backup:renderBackup,"order-detail":renderOrderDetail};
       renderers[view]?.();
       wireLabels($("#main"));
     }
@@ -1465,6 +1657,26 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       }));
     }
 
+    function renderTeam(){
+      const term=search.toLowerCase();
+      let items=state.mechanics.filter(m=>!term||m.name.toLowerCase().includes(term));
+      
+      $("#main").innerHTML=`${pageHead("Corpo técnico","Equipe (Mecânicos)","Gerencie os acessos e visualize os serviços atribuídos a cada profissional.","new-mechanic","Novo mecânico")}
+      <div class="toolbar"><label class="field search"><span class="field-label">Buscar</span>${icon("search")}<input id="search" type="search" value="${esc(search)}" placeholder="Nome do mecânico"></label><span class="toolbar-meta">${items.length} mecânico${items.length===1?"":"s"}</span></div>
+      <section class="card">${items.length?`<div class="table-wrap"><table class="table responsive-table"><thead><tr><th>Mecânico</th><th>Status</th><th>Atribuições Ativas</th><th></th></tr></thead><tbody>${items.map(m=>{
+        const activeOS = state.orders.filter(o => o.mechanicIds?.includes(m.id) && !['DELIVERED','CANCELLED'].includes(o.status));
+        return `<tr>
+          <td data-label="Mecânico"><div class="entity-cell"><span class="avatar">${esc(initials(m.name))}</span><span class="entity-copy"><strong>${esc(m.name)}</strong><span>${esc(m.phone)}</span></span></div></td>
+          <td data-label="Status">${m.active ? '<span class="badge success">Ativo</span>' : '<span class="badge danger">Inativo</span>'}</td>
+          <td data-label="Atribuições">${activeOS.length} OS</td>
+          <td data-label="Ação"><button class="btn btn-secondary btn-sm" data-action="view-mechanic-qr" data-id="${m.id}">${icon("qr")} QR de Acesso</button> <button class="btn btn-ghost btn-sm" data-action="edit-mechanic" data-id="${m.id}">${icon("edit")}</button></td>
+        </tr>`
+      }).join("")}</tbody></table></div>`:empty("Nenhum profissional cadastrado","Crie acessos para que a equipe utilize o Módulo dos Mecânicos via celular.","new-mechanic","Cadastrar mecânico")}</section>
+      <div class="notice" style="margin-top:20px">${icon("info")}<span>Como o Firebase Auth restringe alterações de senha pelo cliente sem relogar, caso o profissional esqueça o PIN, desative-o e crie um novo acesso.</span></div>
+      `;
+      bindSearch();
+    }
+
     async function renderOrderDetail(silent = false){
       const o=orderOf(selectedOrder);if(!o){navigate("orders");return;}
       const c=clientOf(o.clientId),v=vehicleOf(o.vehicleId);
@@ -1472,10 +1684,48 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       const items=o.estimate?.items||[],subtotal=items.reduce((s,i)=>s+i.qty*i.unitCents,0),paid=(o.payments||[]).reduce((s,p)=>s+p.amountCents,0);
       const balance=subtotal-paid;
       const link = getPublicLink(o.publicToken);
+      const qrLink = getOSQRLink(o.id);
+
+      const isDiagnosisPending = o.diagnosis && o.diagnosis.status === 'PENDING_REVIEW';
+      
+      let recommendationsHTML = "";
+      if (o.recommendedItems && o.recommendedItems.length > 0) {
+        recommendationsHTML = `
+          <div class="card-head" style="border-top:1px solid var(--border); margin-top:20px; background:var(--surface-secondary)">
+            <div><h2>Recomendações Técnicas</h2><p>Serviços e peças sugeridos pelo mecânico</p></div>
+          </div>
+          <div class="card-pad" style="background:var(--warning-soft)">
+            ${o.recommendedItems.map(rec => `
+              <div class="item-row split mobile-stack" style="border-color:#e0d0b0">
+                <div><strong>${esc(rec.description)}</strong><p>${esc(rec.type)} · Qtde: ${rec.qty} ${rec.note ? `· Obs: ${esc(rec.note)}` : ''}</p></div>
+                <button class="btn btn-secondary btn-sm" data-action="convert-rec" data-rec-id="${rec.id}">${icon("plus")} Orçar item</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      let diagnosticMediaHTML = "";
+      if (o.diagnosticMedia && o.diagnosticMedia.length > 0) {
+        diagnosticMediaHTML = `
+          <div style="margin-top:20px">
+            <span class="field-label" style="display:block;margin-bottom:8px">Evidências (Fotos Internas)</span>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              ${o.diagnosticMedia.map(m => `<a href="${esc(m.url)}" target="_blank" style="display:block;width:80px;height:80px;border-radius:8px;overflow:hidden;border:1px solid var(--border)"><img src="${esc(m.url)}" style="width:100%;height:100%;object-fit:cover"></a>`).join('')}
+            </div>
+          </div>
+        `;
+      }
 
       $("#main").innerHTML=`
       <section class="order-summary" aria-labelledby="order-title">
-        <div class="order-summary-top"><div><span class="order-number">${esc(o.number)}</span><h1 id="order-title">${esc(vehicleName(v))}</h1><p class="order-summary-subtitle">${esc(v?.year||"Ano não informado")} · ${esc(v?.plate||"Sem placa")} · ${esc(c?.name||"Cliente removido")}</p></div>${badge(o.status)}</div>
+        <div class="order-summary-top">
+          <div><span class="order-number">${esc(o.number)}</span><h1 id="order-title">${esc(vehicleName(v))}</h1><p class="order-summary-subtitle">${esc(v?.year||"Ano não informado")} · ${esc(v?.plate||"Sem placa")} · ${esc(c?.name||"Cliente removido")}</p></div>
+          <div style="text-align:right">
+            ${badge(o.status)}
+            <br><span class="badge ${TECH_STATUS_TONE[o.techStatus]}" style="margin-top:6px">${esc(TECH_STATUS[o.techStatus])}</span>
+          </div>
+        </div>
         <div class="order-summary-grid">
           <div><span>Cliente</span><strong>${esc(c?.name||"—")}</strong></div>
           <div><span>Quilometragem</span><strong>${Number(o.mileage||v?.mileage||0).toLocaleString("pt-BR")} km</strong></div>
@@ -1484,13 +1734,66 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
           <div><span>Última atualização</span><strong>${date(o.updatedAt,true)}</strong></div>
         </div>
       </section>
+      
       <section class="grid detail-grid">
         <div class="stack">
-          <article class="card section-card"><div class="card-head"><div><h2>Atendimento</h2><p>Relato registrado na abertura da ordem</p></div></div><div class="card-pad"><p class="public-text">${esc(o.complaint||"Relato não informado.")}</p></div></article>
-          <article class="card section-card"><div class="card-head"><div><h2>Andamento</h2><p>Atualize o que o cliente verá no acompanhamento</p></div>${badge(o.status)}</div><div class="card-pad"><form id="status-form" class="form-grid"><div class="field full"><label for="order-status">Status atual</label><select id="order-status" name="status">${Object.entries(STATUS).map(([key,label])=>`<option value="${key}" ${o.status===key?"selected":""}>${label}</option>`).join("")}</select></div><div class="field full"><label for="status-note">Observação pública</label><input id="status-note" name="note" maxlength="240" placeholder="Ex.: Peças solicitadas ao fornecedor"><span class="help">Essa observação entra no histórico que o cliente acompanha.</span></div><div class="form-actions"><button class="btn btn-primary" type="submit">${icon("check")} Atualizar andamento</button></div></form></div></article>
-          <article class="card section-card"><div class="card-head"><div><h2>Diagnóstico</h2><p>Separe a explicação do cliente das anotações internas</p></div></div><div class="card-pad"><form id="diagnosis-form" class="form-grid"><div class="field full"><label for="diagnosis-title">Título</label><input id="diagnosis-title" name="title" maxlength="120" value="${esc(o.diagnosis?.title||"")}" placeholder="Ex.: Desgaste no sistema de freios"></div><div class="field full"><label for="diagnosis-description">Descrição para o cliente</label><textarea id="diagnosis-description" name="description" maxlength="1600" placeholder="Explique o diagnóstico em linguagem clara">${esc(o.diagnosis?.description||"")}</textarea></div><div class="field full"><label for="diagnosis-internal">Notas internas da oficina</label><textarea id="diagnosis-internal" name="internal" maxlength="1600" placeholder="Informações técnicas que não aparecem na página pública">${esc(o.diagnosis?.internal||"")}</textarea><span class="help">As notas internas permanecem somente na área administrativa.</span></div><div class="form-actions"><button class="btn btn-primary" type="submit">Salvar diagnóstico</button></div></form></div></article>
-          <article class="card section-card"><div class="card-head"><div><h2>Orçamento</h2><p>Peças, serviços e decisões do cliente</p></div><button class="btn btn-secondary btn-sm" data-action="new-item">${icon("plus")} Adicionar item</button></div><div class="card-pad">${items.length?items.map(i=>`<div class="item-row split mobile-stack"><div><strong>${esc(i.description)}</strong><p>${esc(i.type||"Serviço")} · ${i.qty} × ${money(i.unitCents)}</p></div><div class="item-price"><strong>${money(i.qty*i.unitCents)}</strong><select class="decision-control item-decision" data-id="${i.id}" aria-label="Decisão para ${esc(i.description)}"><option value="PENDING" ${i.decision==="PENDING"?"selected":""}>Pendente</option><option value="APPROVED" ${i.decision==="APPROVED"?"selected":""}>Aprovado</option><option value="REJECTED" ${i.decision==="REJECTED"?"selected":""}>Recusado</option></select></div></div>`).join("")+`<div class="total-box split"><span>Total do orçamento</span><strong>${money(subtotal)}</strong></div>`:empty("Orçamento em branco","Adicione peças e serviços para apresentar ao cliente.","new-item","Adicionar item")}</div></article>
+          
+          <article class="card section-card">
+            <div class="card-head"><div><h2>Equipe Técnica</h2><p>Profissional atribuído para diagnóstico e serviço</p></div><button class="btn btn-secondary btn-sm" data-action="print-os-qr" data-id="${o.id}">${icon("qr")} Imprimir QR da OS</button></div>
+            <div class="card-pad">
+              <div class="field">
+                <label>Mecânico responsável</label>
+                <div style="display:flex; gap:10px">
+                  <select id="os-mechanic-select" style="flex:1">
+                    <option value="">Nenhum mecânico atribuído</option>
+                    ${state.mechanics.filter(m=>m.active).map(m=>`<option value="${m.id}" ${o.mechanicIds?.includes(m.id)?'selected':''}>${esc(m.name)}</option>`).join('')}
+                  </select>
+                  <button class="btn btn-primary" id="btn-assign-mechanic">Atribuir</button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="card section-card">
+            <div class="card-head"><div><h2>Atendimento</h2><p>Relato registrado na abertura da ordem</p></div></div>
+            <div class="card-pad"><p class="public-text">${esc(o.complaint||"Relato não informado.")}</p></div>
+          </article>
+          
+          <article class="card section-card">
+            <div class="card-head"><div><h2>Andamento e Diagnóstico</h2><p>Gerencie o status e o laudo técnico</p></div></div>
+            <div class="card-pad">
+              <form id="status-form" class="form-grid">
+                <div class="field"><label for="order-status">Status (Cliente)</label><select id="order-status" name="status">${Object.entries(STATUS).map(([key,label])=>`<option value="${key}" ${o.status===key?"selected":""}>${label}</option>`).join("")}</select></div>
+                <div class="field"><label for="tech-status">Status Técnico (Interno)</label><select id="tech-status" name="techStatus">${Object.entries(TECH_STATUS).map(([key,label])=>`<option value="${key}" ${o.techStatus===key?"selected":""}>${label}</option>`).join("")}</select></div>
+                <div class="field full"><label for="status-note">Observação pública</label><input id="status-note" name="note" maxlength="240" placeholder="Ex.: Peças solicitadas ao fornecedor"><span class="help">Essa observação entra no histórico que o cliente acompanha.</span></div>
+                <div class="form-actions"><button class="btn btn-primary" type="submit">${icon("check")} Atualizar andamento</button></div>
+              </form>
+              
+              <hr style="border:0; border-top:1px solid var(--border); margin:24px 0">
+              
+              ${isDiagnosisPending ? `<div class="notice warning">${icon("alert")}<span>Diagnóstico preenchido pelo mecânico aguardando sua revisão e aprovação.</span></div>` : ''}
+              <form id="diagnosis-form" class="form-grid">
+                <div class="field full"><label for="diagnosis-title">Título do Diagnóstico</label><input id="diagnosis-title" name="title" maxlength="120" value="${esc(o.diagnosis?.title||"")}" placeholder="Ex.: Desgaste no sistema de freios"></div>
+                <div class="field full"><label for="diagnosis-description">Descrição para o cliente</label><textarea id="diagnosis-description" name="description" maxlength="1600" placeholder="Explique o diagnóstico em linguagem clara">${esc(o.diagnosis?.description||"")}</textarea></div>
+                <div class="field full"><label for="diagnosis-internal">Notas internas da oficina</label><textarea id="diagnosis-internal" name="internal" maxlength="1600" placeholder="Informações técnicas (não aparecem para cliente)">${esc(o.diagnosis?.internal||"")}</textarea></div>
+                <div class="form-actions">
+                  ${isDiagnosisPending ? `<button type="button" class="btn btn-secondary" data-action="return-diagnosis">Devolver (Revisar)</button>` : ''}
+                  <button class="btn btn-primary" type="submit">${isDiagnosisPending ? icon("check")+" Aprovar e Salvar" : "Salvar diagnóstico"}</button>
+                </div>
+              </form>
+              
+              ${diagnosticMediaHTML}
+
+            </div>
+          </article>
+          
+          <article class="card section-card">
+            <div class="card-head"><div><h2>Orçamento</h2><p>Peças, serviços e decisões do cliente</p></div><button class="btn btn-secondary btn-sm" data-action="new-item">${icon("plus")} Adicionar item</button></div>
+            ${recommendationsHTML}
+            <div class="card-pad">${items.length?items.map(i=>`<div class="item-row split mobile-stack"><div><strong>${esc(i.description)}</strong><p>${esc(i.type||"Serviço")} · ${i.qty} × ${money(i.unitCents)}</p></div><div class="item-price"><strong>${money(i.qty*i.unitCents)}</strong><select class="decision-control item-decision" data-id="${i.id}" aria-label="Decisão para ${esc(i.description)}"><option value="PENDING" ${i.decision==="PENDING"?"selected":""}>Pendente</option><option value="APPROVED" ${i.decision==="APPROVED"?"selected":""}>Aprovado</option><option value="REJECTED" ${i.decision==="REJECTED"?"selected":""}>Recusado</option></select></div></div>`).join("")+`<div class="total-box split"><span>Total do orçamento</span><strong>${money(subtotal)}</strong></div>`:empty("Orçamento em branco","Adicione peças e serviços para apresentar ao cliente.","new-item","Adicionar item")}</div>
+          </article>
         </div>
+        
         <aside class="stack">
           <section class="communication-card" aria-labelledby="communication-title">
             <h2 id="communication-title">Comunicação com o cliente</h2><p>Compartilhe um acesso simples e sempre atualizado.</p>
@@ -1498,24 +1801,56 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
             <div class="communication-actions"><a href="${esc(link)}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">${icon("external")} Abrir</a><button class="btn btn-secondary btn-sm" data-action="copy-public" data-id="${o.id}">${icon("copy")} Copiar</button><button class="btn btn-whatsapp btn-sm" data-action="send-whatsapp-status" data-id="${o.id}">${icon("whatsapp")} WhatsApp</button></div>
             <p>Sincronizado em ${date(o.updatedAt,true)}</p>
           </section>
-          <article class="card"><div class="card-head"><div><h2>Financeiro</h2><p>Informação privada da oficina</p></div></div><div class="card-pad finance-grid">
-            <div class="finance-row"><span>Total da OS</span><strong>${money(subtotal)}</strong></div>
-            <div class="finance-row"><span>Recebido</span><strong>${money(paid)}</strong></div>
-            ${(o.payments||[]).map(p => `<div class="finance-row"><span>${esc(p.method)}${p.installments ? ` · ${p.installments}x` : ''}</span><span>${money(p.amountCents)}</span></div>`).join('')}
-            <div class="finance-row balance"><span>Saldo pendente</span><strong>${money(Math.max(0,balance))}</strong></div>${balance<=0&&subtotal>0?`<div class="paid-state">Pagamento concluído</div>`:""}
-            <div class="field" style="margin-top:8px">
-              <label class="split" style="align-items:center; cursor:pointer; background:var(--surface-secondary); padding:10px 12px; border-radius:8px; border:1px solid var(--border)">
-                <span>Mostrar PIX no acompanhamento do cliente</span>
-                <input type="checkbox" id="toggle-pix" ${o.showPix ? 'checked' : ''} style="width:auto; min-height:auto; transform:scale(1.2)">
-              </label>
+          
+          <article class="card"><div class="card-head"><div><h2>Financeiro</h2><p>Informação privada da oficina</p></div></div>
+            <div class="card-pad finance-grid">
+              <div class="finance-row"><span>Total da OS</span><strong>${money(subtotal)}</strong></div>
+              <div class="finance-row"><span>Recebido</span><strong>${money(paid)}</strong></div>
+              ${(o.payments||[]).map(p => `<div class="finance-row"><span>${esc(p.method)}${p.installments ? ` · ${p.installments}x` : ''}</span><span>${money(p.amountCents)}</span></div>`).join('')}
+              <div class="finance-row balance"><span>Saldo pendente</span><strong>${money(Math.max(0,balance))}</strong></div>${balance<=0&&subtotal>0?`<div class="paid-state">Pagamento concluído</div>`:""}
+              <div class="field" style="margin-top:8px">
+                <label class="split" style="align-items:center; cursor:pointer; background:var(--surface-secondary); padding:10px 12px; border-radius:8px; border:1px solid var(--border)">
+                  <span>Mostrar PIX no acompanhamento</span>
+                  <input type="checkbox" id="toggle-pix" ${o.showPix ? 'checked' : ''} style="width:auto; min-height:auto; transform:scale(1.2)">
+                </label>
+              </div>
+              <button class="btn btn-primary" data-action="new-payment">${icon("plus")} Registrar pagamento</button>
             </div>
-            <button class="btn btn-primary" data-action="new-payment">${icon("plus")} Registrar pagamento</button>
-          </div></article>
-          <article class="card"><div class="card-head"><div><h2>Histórico</h2><p>Eventos mais recentes primeiro</p></div></div><div class="card-pad"><ol class="timeline">${[...(o.timeline||[])].sort((a,b)=>b.at-a.at).map(e=>`<li><strong>${esc(e.text)}</strong><time datetime="${new Date(e.at).toISOString()}">${date(e.at,true)}</time></li>`).join("")}</ol></div></article>
+          </article>
+          
+          <article class="card"><div class="card-head"><div><h2>Histórico e Notas</h2><p>Eventos e andamento</p></div></div>
+            <div class="card-pad">
+              <ol class="timeline">
+                ${[...(o.timeline||[]), ...(o.technicalNotes||[]).map(n=>({text: `Nota Técnica: ${n.text}`, at: n.at, isTech: true}))].sort((a,b)=>b.at-a.at).map(e=>`<li><strong style="${e.isTech?'color:var(--brand)':''}">${esc(e.text)}</strong><time datetime="${new Date(e.at).toISOString()}">${date(e.at,true)}</time></li>`).join("")}
+              </ol>
+            </div>
+          </article>
+          
           <button class="btn btn-secondary back-link" data-view="orders">${icon("back")} Voltar para ordens</button>
         </aside>
       </section>`;
       
+      $("#btn-assign-mechanic")?.addEventListener("click", async () => {
+        const val = $("#os-mechanic-select").value;
+        o.mechanicIds = val ? [val] : [];
+        const mechanic = state.mechanics.find(m => m.id === val);
+        if(mechanic) o.timeline.push({id: id('evt'), text: `Atribuído ao mecânico ${mechanic.name}`, at: Date.now()});
+        o.updatedAt = Date.now();
+        await saveState();
+        toast("Atribuição atualizada.");
+      });
+
+      $("[data-action='return-diagnosis']")?.addEventListener("click", async () => {
+        if(o.diagnosis) {
+           o.diagnosis.status = 'RETURNED';
+           o.timeline.push({id: id('evt'), text: `Diagnóstico devolvido ao mecânico para revisão.`, at: Date.now()});
+           o.updatedAt = Date.now();
+           await saveState();
+           renderOrderDetail();
+           toast("Diagnóstico devolvido para revisão da equipe técnica.");
+        }
+      });
+
       $$('.item-decision').forEach(s=>s.addEventListener("change",async e=>{
         const item=items.find(i=>i.id===e.target.dataset.id);
         item.decision=e.target.value; o.updatedAt=Date.now();
@@ -1549,7 +1884,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
                   await saveState();
                   if(view === 'order-detail' && selectedOrder === o.id) {
                      toast("O cliente respondeu ao orçamento!", "info");
-                     renderOrderDetail(true); // Redesenha a tela
+                     renderOrderDetail(true); 
                   }
               }
           }
@@ -1728,6 +2063,61 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       `).join('');
       modal("Check-ins da Recepção", `<p>Os clientes abaixo preencheram os dados via QR Code.</p>${listHTML}`, true);
     }
+    
+    function mechanicForm(item={}){
+      modal(item.id?"Editar Mecânico":"Novo Mecânico", `
+        <form id="mechanic-form" class="form-grid" data-id="${item.id||""}">
+          <div class="field full"><label>Nome do profissional</label><input name="name" required maxlength="100" value="${esc(item.name||"")}"></div>
+          <div class="field full"><label>Telefone / WhatsApp</label><input name="phone" required maxlength="20" inputmode="tel" value="${esc(item.phone||"")}"></div>
+          ${!item.id ? `
+            <div class="field full"><label>PIN de Acesso (6 números)</label><input name="pin" required minlength="6" maxlength="6" inputmode="numeric" placeholder="Ex: 123456"></div>
+          ` : `
+            <div class="field full"><label style="display:flex;align-items:center;gap:10px"><input type="checkbox" name="active" ${item.active?'checked':''} style="width:auto;min-height:auto"> Conta Ativa</label></div>
+          `}
+          <div class="form-actions">
+            <button class="btn btn-secondary" type="button" data-action="close">Cancelar</button>
+            <button class="btn btn-primary" type="submit">Salvar</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function viewMechanicQR(m) {
+      if(!m) return;
+      const loginUrl = new URL(window.location.href);
+      loginUrl.search = ""; loginUrl.hash = "";
+      loginUrl.searchParams.set("mecanico_login", "1");
+      loginUrl.searchParams.set("email", m.email);
+      const urlStr = loginUrl.toString();
+
+      modal("Acesso do Mecânico", `
+        <div style="text-align:center">
+          <p>Profissional: <strong>${esc(m.name)}</strong></p>
+          <div class="qr-preview" style="margin-top:20px; display:inline-flex">
+            <canvas id="qr-mechanic-canvas"></canvas>
+          </div>
+          <p class="help" style="margin-top:16px">O mecânico deve escanear este código com o celular para acessar sua área e informar o PIN cadastrado.</p>
+          <div class="communication-link" style="margin-top:16px">${esc(urlStr)}</div>
+        </div>
+      `);
+      requestAnimationFrame(() => {
+        new QRious({element: document.getElementById('qr-mechanic-canvas'), value: urlStr, size: 220, level: 'H'});
+      });
+    }
+
+    function printOSQRModal(orderId) {
+      const o = orderOf(orderId);
+      if(!o) return;
+      const urlStr = getOSQRLink(orderId);
+      const win = window.open('', '_blank');
+      requestAnimationFrame(() => {
+        const canvas = document.createElement('canvas');
+        new QRious({element: canvas, value: urlStr, size: 300, level: 'H'});
+        const img = canvas.toDataURL("image/png");
+        win.document.write(`<html><body style="text-align:center;font-family:sans-serif;margin-top:40px"><h1>${esc(o.number)}</h1><h2>Placa: ${esc(vehicleOf(o.vehicleId)?.plate)}</h2><img src="${img}" style="margin:20px 0;"><p>Aponte a câmera (logado como mecânico) para abrir direto a OS.</p><script>window.onload=function(){window.print();}<\/script></body></html>`);
+        win.document.close();
+      });
+    }
 
     function clientForm(item={}){modal(item.id?"Editar cliente":"Novo cliente",`<form id="client-form" class="form-grid" data-id="${item.id||""}"><div class="field full"><label for="client-name">Nome completo</label><input id="client-name" name="name" required maxlength="100" value="${esc(item.name||"")}" autocomplete="name"></div><div class="field"><label for="client-phone">Telefone / WhatsApp</label><input id="client-phone" name="phone" required maxlength="20" inputmode="tel" value="${esc(item.phone||"")}" autocomplete="tel"></div><div class="field"><label for="client-email">E-mail</label><input id="client-email" name="email" type="email" maxlength="120" value="${esc(item.email||"")}" autocomplete="email"></div><div class="field full"><label for="client-document">CPF ou CNPJ <span class="help">(opcional)</span></label><input id="client-document" name="document" maxlength="18" value="${esc(item.document||"")}"></div><div class="field full"><label for="client-notes">Observações internas</label><textarea id="client-notes" name="notes" maxlength="1000">${esc(item.notes||"")}</textarea></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Salvar cliente</button></div></form>`)}
     function vehicleForm(item={}){if(!state.clients.length){toast("Cadastre um cliente antes de adicionar um veículo.","warning");clientForm();return;}modal(item.id?"Editar veículo":"Novo veículo",`<form id="vehicle-form" class="form-grid" data-id="${item.id||""}"><div class="field full"><label for="vehicle-client">Proprietário</label><select id="vehicle-client" name="clientId" required><option value="">Selecione o cliente</option>${state.clients.map(c=>`<option value="${c.id}" ${item.clientId===c.id?"selected":""}>${esc(c.name)}</option>`).join("")}</select></div><div class="field"><label for="vehicle-plate">Placa</label><input id="vehicle-plate" name="plate" required maxlength="8" value="${esc(item.plate||"")}" placeholder="ABC1D23"></div><div class="field"><label for="vehicle-year">Ano</label><input id="vehicle-year" name="year" type="number" min="1900" max="2100" value="${esc(item.year||"")}"></div><div class="field"><label for="vehicle-brand">Marca</label><input id="vehicle-brand" name="brand" required maxlength="60" value="${esc(item.brand||"")}" placeholder="Honda"></div><div class="field"><label for="vehicle-model">Modelo</label><input id="vehicle-model" name="model" required maxlength="60" value="${esc(item.model||"")}" placeholder="Civic"></div><div class="field"><label for="vehicle-color">Cor</label><input id="vehicle-color" name="color" maxlength="40" value="${esc(item.color||"")}"></div><div class="field"><label for="vehicle-mileage">Quilometragem</label><input id="vehicle-mileage" name="mileage" type="number" min="0" value="${Number(item.mileage||0)}"></div><div class="form-actions"><button class="btn btn-secondary" type="button" data-action="close">Cancelar</button><button class="btn btn-primary" type="submit">Salvar veículo</button></div></form>`)}
@@ -1765,7 +2155,7 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
     }
 
     // ---------------------------------------------------------
-    // EVENT LISTENERS E CONTROLES DE FORMULÁRIO
+    // EVENT LISTENERS GERAIS
     // ---------------------------------------------------------
     document.addEventListener("click",async e=>{
       const viewBtn=e.target.closest("[data-view]"); if(viewBtn){e.preventDefault();navigate(viewBtn.dataset.view);return;}
@@ -1780,193 +2170,4 @@ dialog::backdrop{background:rgba(4,16,31,.54);backdrop-filter:blur(3px)}
       if(act==="new-order-manual"){ closeModal(); manualOrderForm(); }
       if(act==="new-client"){ clientForm(); }
       if(act==="view-client"){ viewClientModal(clientOf(idV)); }
-      if(act==="edit-client"){ clientForm(clientOf(idV)); }
-      if(act==="whatsapp-recovery"){ whatsappRecoveryModal(clientOf(idV)); }
-      if(act==="new-vehicle"){ vehicleForm(); }
-      if(act==="edit-vehicle"){ vehicleForm(vehicleOf(idV)); }
-      if(act==="open-order"){ closeModal(); navigate("order-detail", idV); }
-      if(act==="new-item"){ itemForm(); }
-      if(act==="new-payment"){ paymentForm(); }
-      if(act==="edit-workshop"){ workshopForm(); }
-      if(act==="send-whatsapp-status"){ openWhatsAppModal(orderOf(idV)); }
-      if(act==="view-checkins"){ pendingCheckinsModal(); }
-      if(act==="create-from-checkin"){ closeModal(); manualOrderForm(pendingCheckins.find(c=>c.id===idV), idV); }
-      if(act==="dismiss-checkin"){ 
-        await db.ref(`publicCheckins/${state.workshop.publicCheckinToken}/${idV}`).remove(); 
-        toast("Check-in descartado.");
-        pendingCheckins = pendingCheckins.filter(c => c.id !== idV);
-        if(pendingCheckins.length < 1) closeModal(); else pendingCheckinsModal();
-      }
-      if(act==="copy-public"){
-        const order=orderOf(idV);if(!order)return;
-        try{await navigator.clipboard.writeText(getPublicLink(order.publicToken));toast("Link de acompanhamento copiado.");}
-        catch{toast("Não foi possível copiar o link automaticamente.","error");}
-      }
-      if(act==="copy-checkin-link"){
-        try{await navigator.clipboard.writeText(getCheckinLink(state.workshop.publicCheckinToken));toast("Link de check-in copiado.");}
-        catch{toast("Não foi possível copiar o link automaticamente.","error");}
-      }
-      if(act==="print-qr"){
-        const win = window.open('', '_blank');
-        const img = $("#qr-canvas").toDataURL("image/png");
-        win.document.write(`<html><body style="text-align:center;font-family:sans-serif;margin-top:50px"><h1>Check-in da Oficina</h1><img src="${img}" style="width:300px;height:300px;margin:20px 0;"><p>Aponte a câmera do celular para preencher seus dados.</p><script>window.onload=function(){window.print();}<\/script></body></html>`);
-        win.document.close();
-      }
-      if(act==="remove-logo"){
-        if(confirm("Remover a logo da oficina?")) {
-          state.workshop.logoUrl = "";
-          await saveState();
-          updateSidebarAvatar();
-          $$("#auth-brand, #main-brand").forEach(el => el.innerHTML = getLogoHTML(state.workshop, true));
-          render();
-        }
-      }
-      if(act==="export"){ exportData(); }
-      if(act==="import"){ $("#import-file").click(); }
-    });
-    
-    document.addEventListener("submit", async e=>{
-      if(e.target.id === "public-checkin-form") return;
-      e.preventDefault(); const f=e.target, d=Object.fromEntries(new FormData(f));
-      const submitBtn = f.querySelector('button[type="submit"]');
-      const origText = submitBtn ? submitBtn.innerHTML : "";
-      if(submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = "Aguarde..."; }
-
-      try {
-        // AUTH (LOGIN/REGISTER)
-        if(f.id==="auth-form"){
-            if(isLoginMode) await auth.signInWithEmailAndPassword(d.email, d.password);
-            else await auth.createUserWithEmailAndPassword(d.email, d.password);
-            return;
-        }
-        
-        // SETUP INICIAL
-        if(f.id==="setup-form"){
-          state.workshop = { ownerName:d.ownerName.trim(), name:d.workshopName.trim(), phone:d.phone.trim(), publicCheckinToken: generateToken(), pix: {type:"",key:"",holderName:""} };
-          await saveState();
-          location.reload();
-          return;
-        }
-
-        // CRIAÇÃO DE OS
-        if(f.id==="create-order-form"){
-          // Avoid duplicate client
-          let cl = state.clients.find(c => phone(c.phone) === phone(d.phone) || (c.name.toLowerCase() === d.name.toLowerCase().trim() && phone(d.phone)));
-          if(!cl) { cl = { id:id("cli"), name:d.name.trim(), phone:d.phone.trim(), email:"", document:"", notes:"", createdAt:Date.now(), updatedAt:Date.now() }; state.clients.push(cl); }
-          
-          // Avoid duplicate vehicle
-          const normalizedPlate=d.plate.toUpperCase().replace(/[^A-Z0-9]/g,"");
-          let ve = state.vehicles.find(v => v.plate === normalizedPlate);
-          if(!ve) { ve = { id:id("vei"), clientId:cl.id, plate:normalizedPlate, brand:d.brand.trim(), model:d.model.trim(), year:d.year, color:d.color.trim(), mileage:Number(d.mileage||0), createdAt:Date.now(), updatedAt:Date.now() }; state.vehicles.push(ve); }
-
-          state.counter++; const now=Date.now();
-          const o={ id:id("os"), number:`OS-${String(state.counter).padStart(6,"0")}`, publicToken:generateToken(), clientId:cl.id, vehicleId:ve.id, mileage:Number(d.mileage), expectedAt:d.expectedAt?new Date(d.expectedAt+"T12:00:00").getTime():null, complaint:d.complaint.trim(), status:"RECEIVED", diagnosis:null, estimate:{items:[]}, payments:[], timeline:[{id:id("evt"),text:"Veículo recebido pela oficina",at:now}], showPix:false, createdAt:now, updatedAt:now };
-          state.orders.push(o);
-          
-          if (d.checkinId) {
-            await db.ref(`publicCheckins/${state.workshop.publicCheckinToken}/${d.checkinId}`).remove();
-            pendingCheckins = pendingCheckins.filter(c => c.id !== d.checkinId);
-          }
-
-          await saveState(); await syncPublicOrder(o.id);
-          closeModal(); navigate("order-detail", o.id); toast("Ordem Criada!");
-        }
-
-        // ATUALIZAR STATUS DA OS
-        if(f.id==="status-form"){
-          const o=orderOf(selectedOrder), oldSt=o.status;
-          o.status=d.status; o.updatedAt=Date.now();
-          o.timeline.push({id:id("evt"),text:d.note.trim()||STATUS[d.status], at:o.updatedAt});
-          await saveState(); await syncPublicOrder(o.id);
-          render(); toast("Atualizado com sucesso.");
-          if (oldSt !== d.status) openWhatsAppModal(o); 
-        }
-        
-        // FORMS MENORES
-        if(f.id==="diagnosis-form"){ const o=orderOf(selectedOrder); o.diagnosis={title:d.title.trim(), description:d.description.trim(), internal:d.internal.trim(), updatedAt:Date.now()}; o.updatedAt=Date.now(); await saveState(); await syncPublicOrder(o.id); render(); toast("Diagnóstico salvo."); }
-        
-        if(f.id==="item-form"){ 
-          const o=orderOf(selectedOrder); 
-          o.estimate.items.push({id:id("itm"), description:d.description.trim(), type:d.type, qty:Math.max(1,Number(d.qty)), unitCents:cents(d.price), decision:"PENDING"}); 
-          o.updatedAt=Date.now(); await saveState(); await syncPublicOrder(o.id); 
-          closeModal(); render(); toast("Item adicionado."); 
-          setTimeout(() => { if(confirm("Deseja enviar WhatsApp informando o orçamento para aprovação?")) openWhatsAppModal(o, "BUDGET"); }, 300);
-        }
-        
-        if(f.id==="payment-form"){ 
-          const o=orderOf(selectedOrder), value=cents(d.amount); 
-          if(!value){toast("Informe um valor maior que zero.","error");return;}
-          const now=Date.now();
-          o.payments.push({id:id("pay"),amountCents:value,method:d.method,installments:d.method==="Cartão de Crédito"?Number(d.installments||1):null,note:d.note.trim(),at:now});
-          o.timeline.push({id:id("evt"),text:`Pagamento registrado: ${money(value)} (${d.method})`,at:now});
-          o.updatedAt=now;await saveState();closeModal();render();toast("Pagamento registrado."); 
-        }
-        
-        if(f.id==="workshop-form"){ Object.assign(state.workshop,{name:d.name.trim(),ownerName:d.ownerName.trim(),phone:d.phone.trim()});await saveState();$("#side-workshop").textContent=state.workshop.name;$("#side-owner").textContent=state.workshop.ownerName;$$("#auth-brand, #main-brand").forEach(el => el.innerHTML = getLogoHTML(state.workshop, true));closeModal();render();toast("Dados da oficina atualizados."); }
-        if(f.id==="pix-form"){ state.workshop.pix = {type:d.type, key:d.key.trim(), holderName:d.holderName.trim()}; await saveState(); toast("PIX salvo."); }
-        
-        if(f.id==="client-form"){ const current=clientOf(f.dataset.id),now=Date.now(),item={id:current?.id||id("cli"),name:d.name.trim(),phone:d.phone.trim(),email:d.email.trim(),document:d.document.trim(),notes:d.notes.trim(),createdAt:current?.createdAt||now,updatedAt:now};current?Object.assign(current,item):state.clients.push(item);await saveState();closeModal();render();toast("Cliente salvo."); }
-        if(f.id==="vehicle-form"){ const current=vehicleOf(f.dataset.id),now=Date.now(),item={id:current?.id||id("vei"),clientId:d.clientId,plate:d.plate.toUpperCase().replace(/[^A-Z0-9]/g,""),brand:d.brand.trim(),model:d.model.trim(),year:d.year,color:d.color.trim(),mileage:Number(d.mileage||0),createdAt:current?.createdAt||now,updatedAt:now};current?Object.assign(current,item):state.vehicles.push(item);await saveState();closeModal();render();toast("Veículo salvo."); }
-      } catch (err) {
-        if(f.id==="auth-form") toast(err.message.includes('user-not-found') ? 'Usuário não encontrado.' : err.message.includes('wrong-password') ? 'Senha incorreta.' : 'Erro na autenticação. Verifique os dados.', 'error');
-        else toast("Ocorreu um erro ao salvar.", "error");
-      } finally {
-        if(submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = origText; }
-      }
-    });
-
-    $("#logo-upload").addEventListener("change", async e => {
-      const file = e.target.files[0];
-      if(!file) return;
-      if(file.size > 2 * 1024 * 1024) return toast("A imagem deve ter no máximo 2MB.", "error");
-      toast("Enviando logo...");
-      try {
-        const ref = storage.ref(`workshops/${uid()}/branding/logo_${Date.now()}`);
-        await ref.put(file);
-        const url = await ref.getDownloadURL();
-        state.workshop.logoUrl = url;
-        await saveState();
-        updateSidebarAvatar();
-        $$("#auth-brand, #main-brand").forEach(el => el.innerHTML = getLogoHTML(state.workshop, true));
-        render();
-        toast("Logo atualizada com sucesso!");
-      } catch (err) {
-        toast("Erro ao enviar logo. Verifique sua conexão e permissões.", "error");
-      }
-      e.target.value = "";
-    });
-
-    $("#menu").addEventListener("click", () => {
-      if(window.innerWidth > 760) {
-        const isCollapsed = document.body.classList.toggle("sidebar-collapsed");
-        localStorage.setItem("oficlaroSidebarCollapsed", isCollapsed);
-      } else {
-        setMenuOpen(!document.body.classList.contains("menu-open"));
-      }
-    });
-
-    $("#modal").addEventListener("click",e=>{if(e.target===$("#modal"))closeModal();});
-    document.addEventListener("keydown",e=>{if(e.key==="Escape")setMenuOpen(false);});
-    window.addEventListener("resize",()=>{ if(window.innerWidth<=760) setMenuOpen(document.body.classList.contains("menu-open")); });
-    setMenuOpen(false);
-
-    $("#import-file").addEventListener("change",async e=>{
-      const file=e.target.files[0];if(!file)return;
-      try{
-        const data=JSON.parse(await file.text());
-        if(!data.workshop||!Array.isArray(data.clients)||!Array.isArray(data.vehicles)||!Array.isArray(data.orders))throw new Error("invalid");
-        if(!confirm("Importar este backup e substituir os dados atuais desta oficina?"))return;
-        state={...fresh(),...data,version:2,updatedAt:Date.now()};
-        state.workshop.publicCheckinToken=state.workshop.publicCheckinToken||generateToken();
-        state.orders.forEach(o=>{o.publicToken=o.publicToken||generateToken();o.timeline=o.timeline||[];o.payments=o.payments||[];o.estimate=o.estimate||{items:[]};o.estimate.items=o.estimate.items||[];});
-        await saveState();
-        await Promise.all(state.orders.map(o=>syncPublicOrder(o.id)));
-        setupCheckinListener();
-        render();toast("Backup importado com sucesso.");
-      }catch(error){console.error(error);toast("O arquivo selecionado não é um backup válido do Oficlaro.","error");}
-      finally{e.target.value="";}
-    });
-    
-  </script>
-</body>
-</html>
+      if(act==="edit-client"){ clientForm(clientI encountered an error doing what you asked. Could you try again?
