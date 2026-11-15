@@ -1,0 +1,98 @@
+/* Reference: 1600 × 883. The complete composition scales uniformly. */
+.admin-app {
+  width: 1600px;
+  min-height: 883px;
+  zoom: var(--desktop-scale, 1);
+  background: #003b19;
+}
+.admin-app .admin-topbar {
+  height: 190px;
+  border: 0;
+  background: #002d13;
+}
+.admin-app .admin-topbar::before {
+  inset: 0;
+  background: url('assets/referencia-admin.jpeg') 0 0 / 1600px 883px no-repeat;
+  clip-path: polygon(490px 0, 1245px 0, 1245px 156px, 1600px 156px, 1600px 190px, 0 190px, 0 181px, 490px 181px);
+}
+.admin-app .admin-topbar::after { display: none; }
+.admin-brand-lockup {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 490px;
+  height: 181px;
+  background: url('assets/referencia-admin.jpeg') 0 0 / 1600px 883px no-repeat;
+}
+.admin-app .top-actions {
+  position: absolute;
+  top: 38px;
+  left: 1260px;
+  right: auto;
+  width: 311px;
+  height: 64px;
+  margin: 0;
+  padding: 0;
+  gap: 17px;
+  align-items: center;
+}
+.admin-app .top-icon { width: 45px; height: 56px; padding: 0; }
+.admin-app .top-icon .art-bell { position: absolute; top: 0; left: 0; }
+.admin-app .badge { top: -3px; right: -8px; width: 29px; height: 29px; font-size: 20px; }
+.admin-app .account-separator { height: 54px; width: 1px; background: #c7cfb329; }
+.admin-app .account { padding: 0; gap: 12px; height: 58px; }
+.admin-app .account-name { display: block; font-size: 24px; line-height: 28px; font-weight: 700; letter-spacing: -.8px; }
+.admin-app .account-role { display: block; margin: 2px 0 0; font-size: 21px; line-height: 24px; }
+.admin-app .account-chevron { font-size: 19px; margin-left: 0; }
+.admin-app .dropdown { top: 111px; right: 29px; }
+.admin-app .admin-main {
+  width: 1554px;
+  min-height: 693px;
+  margin: 0 23px;
+  padding: 22px 0 0 27px;
+  border: 0;
+  background: #faf7ef;
+  color: #050d46;
+}
+.admin-app .admin-title-row { display: flex; flex-direction: row; align-items: center; gap: 16px; height: 53px; }
+.admin-app .admin-main h1 { font-size: 36px; line-height: 43px; margin: 0 0 10px; letter-spacing: -.8px; }
+.admin-app .admin-title-row .back { font-size: 15px; margin: 0 28px 10px 0; padding: 9px 0; }
+.admin-app .greeting { display: flex; align-items: baseline; height: 33px; line-height: 33px; margin: 0 0 30px; white-space: nowrap; font-size: 27px; font-weight: 700; letter-spacing: -1px; }
+.admin-app .greeting small { display: inline; font-family: 'Arial Narrow', Arial, sans-serif; font-size: 18px; font-weight: 400; letter-spacing: -.3px; margin: 0 0 0 10px; }
+.admin-app .admin-cards { grid-template-columns: 486px 493px 506px; gap: 20px; }
+.admin-app .admin-card { height: 194px; background: #fcfcfc; border: 1px solid #deded9; border-radius: 10px; box-shadow: 0 2px 3px #0002; }
+.admin-app .admin-card-head { height: 58px; min-height: 0; padding: 14px 20px; background: #003b13; font-size: 24px; line-height: 30px; font-family: 'Arial Narrow', Arial, sans-serif; font-weight: 700; }
+.admin-app .admin-card-content { height: 134px; min-height: 0; padding: 13px 18px; gap: 26px; }
+.admin-app .profile-text { line-height: 29px; font-family: 'Arial Narrow', Arial, sans-serif; }
+.admin-app .admin-card-content .profile-text strong { font-family: Arial, sans-serif; font-size: 28px; letter-spacing: -1px; line-height: 33px; }
+.admin-app .admin-card-content .profile-text span { font-size: 25px; margin: 0; }
+.admin-app .admin-card-content .profile-text .email { font-size: 24px; letter-spacing: -.6px; }
+.admin-app .access-date { font-size: 27px; letter-spacing: -.8px; white-space: nowrap; }
+.admin-app .admin-card:nth-child(3) .admin-card-content { padding-left: 22px; padding-right: 27px; gap: 26px; }
+.admin-app .sessions-number { font-size: 56px; line-height: 67px; }
+.admin-app .manage { font-family: 'Arial Narrow', Arial, sans-serif; font-size: 25px; font-weight: 700; line-height: 30px; padding: 0; text-decoration-color: #c5a642; text-underline-offset: 4px; }
+.admin-app .users-card { width: 1525px; height: 204px; margin-top: 22px; background: #fcfcfc; border: 1px solid #deded9; border-radius: 10px; }
+.admin-app .users-head { height: 66px; min-height: 0; padding: 0 20px; gap: 20px; font-size: 27px; font-family: 'Arial Narrow', Arial, sans-serif; font-weight: 700; background: #003b13; }
+.admin-app .users-head .divider { height: 33px; }
+.admin-app .user-stats { height: 136px; min-height: 0; padding: 23px 0 0; gap: 0; grid-template-columns: 272px 289px 292px 323px 1fr; }
+.admin-app .user-stat { justify-content: flex-start; align-items: center; height: 112px; padding: 0 0 22px 67px; gap: 24px; border-right: 2px solid #d8d8d8; }
+.admin-app .user-stat:nth-child(2) { padding-left: 68px; }
+.admin-app .user-stat:nth-child(3) { padding-left: 61px; }
+.admin-app .user-stat:nth-child(4) { padding-left: 60px; }
+.admin-app .user-stat:nth-child(5) { padding-left: 48px; border: 0; }
+.admin-app .user-stat > .admin-art { margin: 0; }
+.admin-app .user-stat strong { font-size: 42px; line-height: 46px; }
+.admin-app .user-stat div > span { display: block; font-family: 'Arial Narrow', Arial, sans-serif; font-size: 25px; line-height: 30px; margin-top: 2px; white-space: nowrap; }
+/* Original decorative artwork, cropped without stretching; all values remain HTML. */
+.admin-art { display: inline-block; flex: none; background: url('assets/referencia-admin.jpeg') no-repeat; background-size: 1600px 883px; }
+.art-profile { width: 106px; height: 106px; background-position: -68px -400px; }
+.art-calendar { width: 96px; height: 96px; background-position: -575px -404px; }
+.art-monitor { width: 96px; height: 96px; background-position: -1092px -404px; }
+.art-home { width: 38px; height: 38px; background-position: -72px -558px; }
+.art-users { width: 62px; height: 65px; background-position: -117px -647px; }
+.art-active { width: 62px; height: 65px; background-position: -390px -647px; }
+.art-inactive { width: 62px; height: 65px; background-position: -674px -647px; }
+.art-locked { width: 58px; height: 65px; background-position: -963px -647px; }
+.art-first { width: 66px; height: 65px; background-position: -1274px -647px; }
+.art-bell { width: 43px; height: 50px; background-position: -1260px -44px; }
+.art-account { width: 53px; height: 53px; background-position: -1341px -46px; }
